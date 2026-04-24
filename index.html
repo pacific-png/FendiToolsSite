@@ -58,12 +58,12 @@
         .main-app { opacity: 0; transition: opacity 0.8s ease; width: 100%; max-width: 560px; z-index: 5; position: relative; display: none; }
         .main-app.visible { display: block; opacity: 1; }
 
-        /* USER PROFILE CARD - with margin to clear settings button */
+        /* USER PROFILE CARD - with extra top margin to clear settings button */
         .user-profile {
             background: rgba(0,0,0,0.5);
             border-radius: 3rem;
             padding: 0.5rem 1rem;
-            margin-top: 0.5rem;
+            margin-top: 2rem;          /* pushes profile down below the settings gear */
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
@@ -234,7 +234,7 @@
             .spam-row { flex-direction: column; gap: 0.5rem; }
             .current-value { max-width: 130px; font-size: 0.75rem; }
             .user-avatar { width: 36px; height: 36px; }
-            .user-profile { margin-top: 0.2rem; }
+            .user-profile { margin-top: 1.5rem; }   /* smaller top margin on mobile */
         }
     </style>
 </head>
