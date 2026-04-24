@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>FENDI'S WEBHOOK FUCKER | Discord Tool</title>
+    <title>FENDI'S WEBHOOK FUCKER</title>
+    <link rel="icon" type="image/png" href="https://i.ibb.co/gL0cffbC/New-Project-7.png">
     <style>
         * {
             margin: 0;
@@ -19,8 +20,18 @@
             align-items: center;
             font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
             padding: 1.5rem;
-            cursor: default;
+            position: relative;
             overflow-x: hidden;
+        }
+
+        #snowCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
 
         .grid-backdrop {
@@ -31,22 +42,14 @@
             height: 100%;
             z-index: 0;
             background-image: 
-                repeating-linear-gradient(90deg, 
-                    rgba(200, 30, 50, 0.35) 0px, 
-                    rgba(200, 30, 50, 0.35) 1.5px,
-                    transparent 1.5px,
-                    transparent 45px),
-                repeating-linear-gradient(0deg, 
-                    rgba(200, 30, 50, 0.35) 0px, 
-                    rgba(200, 30, 50, 0.35) 1.5px,
-                    transparent 1.5px,
-                    transparent 45px),
-                radial-gradient(circle at 80% 20%, rgba(130, 0, 0, 0.6), rgba(0, 0, 0, 0.95));
+                repeating-linear-gradient(90deg, rgba(200,30,50,0.35) 0px, rgba(200,30,50,0.35) 1.5px, transparent 1.5px, transparent 45px),
+                repeating-linear-gradient(0deg, rgba(200,30,50,0.35) 0px, rgba(200,30,50,0.35) 1.5px, transparent 1.5px, transparent 45px),
+                radial-gradient(circle at 50% 50%, rgba(20,0,0,0.65), rgba(0,0,0,0.9));
             background-blend-mode: overlay, overlay, normal;
             pointer-events: none;
-            transition: background-image 0.08s linear;
         }
 
+        /* Loading screen */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -59,127 +62,122 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1), visibility 0.8s;
+            transition: opacity 1s ease, visibility 1s ease;
             opacity: 1;
             visibility: visible;
         }
-
-        .loading-screen.hide {
-            opacity: 0;
-            visibility: hidden;
+        .loading-screen.hide { opacity: 0; visibility: hidden; }
+        .loading-content { text-align: center; animation: fadeUp 0.8s ease-out; }
+        @keyframes fadeUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-
-        .loading-content {
-            text-align: center;
-            transform: translateY(-20px);
-            animation: floatUp 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(30px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-
         .loading-logo {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #ff4d4d, #ff9999, #cc2222);
+            background: linear-gradient(135deg, #ff4d4d, #ff9999);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
             margin-bottom: 1rem;
         }
-
-        @media (max-width: 550px) {
-            .loading-logo { font-size: 1.8rem; }
-        }
-
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
+        .spinner {
+            width: 70px;
+            height: 70px;
             margin: 1.5rem auto;
-            border: 3px solid rgba(255, 80, 80, 0.2);
-            border-top: 3px solid #ff4d4d;
-            border-right: 3px solid #ff8888;
+            border: 4px solid rgba(255,80,80,0.2);
+            border-top: 4px solid #ff4d4d;
             border-radius: 50%;
             animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
+        @keyframes spin { to { transform: rotate(360deg); } }
         .loading-discord-link {
             margin-top: 2rem;
-            background: rgba(30, 10, 10, 0.7);
-            backdrop-filter: blur(4px);
-            padding: 0.8rem 1.5rem;
+            background: rgba(30,10,10,0.7);
+            padding: 0.7rem 1.5rem;
             border-radius: 3rem;
             border: 1px solid #ff5555;
             cursor: pointer;
-            transition: all 0.3s;
             display: inline-block;
         }
+        .loading-discord-link a { color: #ffdddd; text-decoration: none; font-weight: 600; }
+        .loading-text { color: #ffaaaa; font-size: 0.85rem; margin-top: 1rem; }
 
-        .loading-discord-link:hover {
-            background: #c72a2a;
-            transform: scale(1.05);
-        }
-
-        .loading-discord-link a {
-            color: #ffdddd;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .loading-text {
-            color: #ffaaaa;
-            font-size: 0.85rem;
-            margin-top: 1rem;
-        }
-
+        /* Main app */
         .main-app {
             opacity: 0;
-            transition: opacity 0.6s ease;
+            transition: opacity 0.8s ease;
             width: 100%;
             max-width: 560px;
-        }
-
-        .main-app.visible {
-            opacity: 1;
-        }
-
-        .tilt-wrapper {
-            perspective: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
+            z-index: 5;
             position: relative;
         }
+        .main-app.visible { opacity: 1; }
 
+        /* Top-left logo + tools menu */
+        .top-left-logo {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            cursor: pointer;
+        }
+        .top-left-logo img {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,80,80,0.5);
+            transition: transform 0.2s;
+        }
+        .top-left-logo img:hover { transform: scale(1.05); }
+        .tools-menu {
+            position: fixed;
+            top: 70px;
+            left: 15px;
+            background: rgba(15,5,5,0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid #ff4d4d;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            min-width: 160px;
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+        }
+        .tools-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        .tools-menu h4 { color: #ffaaaa; font-size: 0.8rem; text-align: center; border-bottom: 1px solid #ff5555; margin-bottom: 0.5rem; }
+        .tool-item {
+            padding: 0.5rem 0.8rem;
+            color: #ffcccc;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+        }
+        .tool-item:hover { background: rgba(200,50,50,0.5); }
+        .tool-item.placeholder { opacity: 0.6; cursor: not-allowed; }
+
+        /* Tilt card */
+        .tilt-wrapper { perspective: 1200px; width: 100%; }
         .tilt-card {
-            background: rgba(10, 5, 5, 0.75);
+            background: rgba(10,5,5,0.75);
             backdrop-filter: blur(12px);
             border-radius: 2rem;
-            border: 1px solid rgba(255, 50, 50, 0.5);
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5);
-            padding: 2rem 2rem 2.2rem;
+            border: 1px solid rgba(255,50,50,0.5);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+            padding: 2rem;
             width: 100%;
-            transition: transform 0.05s linear;
+            transition: transform 0.05s linear, height 0.4s cubic-bezier(0.2,0.9,0.4,1.1);
             transform-style: preserve-3d;
             position: relative;
         }
-
         .settings-btn {
             position: absolute;
             top: 1.2rem;
             right: 1.2rem;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 80, 80, 0.6);
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,80,80,0.6);
             color: #ffaaaa;
             width: 38px;
             height: 38px;
@@ -189,159 +187,138 @@
             justify-content: center;
             cursor: pointer;
             font-size: 1.3rem;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(4px);
+            transition: all 0.2s;
             z-index: 20;
         }
+        .settings-btn:hover { background: rgba(180,30,30,0.7); transform: rotate(30deg); }
 
-        .settings-btn:hover {
-            background: rgba(180, 30, 30, 0.7);
-            color: white;
-            transform: rotate(30deg);
-        }
-
-        .panel-container {
-            position: relative;
-            width: 100%;
-        }
-
+        .panel-container { width: 100%; }
         .panel {
             width: 100%;
-            transition: opacity 0.5s, transform 0.6s;
+            transition: opacity 0.35s, transform 0.4s;
         }
-
         .panel-main.slide-out {
-            animation: slideOutLeft 0.6s forwards;
+            animation: slideOutLeft 0.4s forwards;
         }
-
         .panel-settings.slide-in {
-            animation: slideInRight 0.6s forwards;
+            animation: slideInRight 0.4s forwards;
         }
-
         .panel-settings.slide-out {
-            animation: slideOutRight 0.6s forwards;
+            animation: slideOutRight 0.4s forwards;
         }
-
         .panel-main.slide-in {
-            animation: slideInLeft 0.6s forwards;
+            animation: slideInLeft 0.4s forwards;
         }
-
         @keyframes slideOutLeft {
             0% { transform: translateX(0); opacity: 1; }
-            100% { transform: translateX(-40px); opacity: 0; display: none; }
+            100% { transform: translateX(-30px); opacity: 0; display: none; }
         }
-
         @keyframes slideInRight {
-            0% { transform: translateX(40px); opacity: 0; }
+            0% { transform: translateX(30px); opacity: 0; }
             100% { transform: translateX(0); opacity: 1; }
         }
-
         @keyframes slideOutRight {
             0% { transform: translateX(0); opacity: 1; }
-            100% { transform: translateX(40px); opacity: 0; display: none; }
+            100% { transform: translateX(30px); opacity: 0; display: none; }
         }
-
         @keyframes slideInLeft {
-            0% { transform: translateX(-40px); opacity: 0; }
+            0% { transform: translateX(-30px); opacity: 0; }
             100% { transform: translateX(0); opacity: 1; }
         }
 
-        .title {
+        /* Glowing typewriter title with eternal loop */
+        .glow-title {
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.7rem;
             font-weight: 800;
+            margin-bottom: 0.5rem;
+            min-height: 4rem;
+        }
+        .typed-text {
             background: linear-gradient(135deg, #ff4d4d, #ff9999, #cc2222);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            margin-bottom: 0.3rem;
+            text-shadow: 0 0 15px rgba(255,50,50,0.6), 0 0 30px rgba(200,20,20,0.4);
+            animation: glowPulse 2s ease-in-out infinite alternate;
         }
-
+        @keyframes glowPulse {
+            0% { text-shadow: 0 0 5px rgba(255,50,50,0.4), 0 0 10px rgba(200,20,20,0.3); }
+            100% { text-shadow: 0 0 20px rgba(255,80,80,0.8), 0 0 35px rgba(255,40,40,0.6); }
+        }
+        /* Red "BOT CUSTOMIZATION" text */
+        .settings-title-red {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ff4d4d;
+            text-shadow: 0 0 8px rgba(255,50,50,0.5);
+            margin-bottom: 0.5rem;
+        }
         .sub {
             text-align: center;
             color: #ffb7b7;
             font-size: 0.7rem;
             margin-bottom: 1.5rem;
-            border-bottom: 1px dashed rgba(255, 80, 80, 0.4);
+            border-bottom: 1px dashed rgba(255,80,80,0.4);
             display: inline-block;
-            padding-bottom: 6px;
+            padding-bottom: 4px;
         }
 
+        /* Form elements */
         .input-group {
             margin-bottom: 1.2rem;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
         }
-
         label {
             font-weight: 600;
             font-size: 0.8rem;
             color: #ffcfcf;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-
         input, textarea {
-            background: rgba(0, 0, 0, 0.65);
+            background: rgba(0,0,0,0.65);
             border: 1px solid #a12323;
             border-radius: 1.2rem;
-            padding: 0.8rem 1.2rem;
+            padding: 0.8rem 1rem;
             font-size: 0.9rem;
             color: #f0e6e6;
             outline: none;
+            font-family: inherit;
+            width: 100%;
         }
-
-        input:focus, textarea:focus {
-            border-color: #ff4d4d;
-            box-shadow: 0 0 0 2px rgba(255, 77, 77, 0.4);
-        }
-
-        textarea {
-            min-height: 90px;
-        }
+        input:focus, textarea:focus { border-color: #ff4d4d; box-shadow: 0 0 0 2px rgba(255,77,77,0.4); }
+        textarea { min-height: 90px; }
 
         .toggle-group {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.2rem;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0,0,0,0.4);
             padding: 0.6rem 1rem;
             border-radius: 2rem;
-            border: 1px solid rgba(255, 70, 70, 0.3);
+            border: 1px solid rgba(255,70,70,0.3);
+            margin-bottom: 1.2rem;
         }
-
-        .toggle-label {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #ffcfcf;
-        }
-
+        .toggle-label { font-size: 0.8rem; color: #ffcfcf; }
         .switch {
             position: relative;
             display: inline-block;
             width: 48px;
             height: 24px;
         }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
+        .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-color: #4a0e0e;
             transition: 0.25s;
             border-radius: 24px;
         }
-
         .slider:before {
             position: absolute;
             content: "";
@@ -353,52 +330,34 @@
             transition: 0.25s;
             border-radius: 50%;
         }
-
-        input:checked + .slider {
-            background-color: #c72a2a;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(24px);
-            background-color: white;
-        }
+        input:checked + .slider { background-color: #c72a2a; }
+        input:checked + .slider:before { transform: translateX(24px); }
 
         .spam-options-wrapper {
             overflow: hidden;
-            transition: all 0.7s;
+            transition: max-height 0.5s cubic-bezier(0.34,1.2,0.64,1), opacity 0.4s, margin 0.3s;
             max-height: 0;
             opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        .spam-options-wrapper.expanded {
-            max-height: 280px;
-            opacity: 1;
-            margin-bottom: 1.2rem;
-            transform: translateY(0);
-        }
-
-        .spam-options {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 1.5rem;
-            padding: 0.8rem;
-            border: 1px solid rgba(255, 70, 70, 0.3);
-        }
-
-        .spam-row {
-            display: flex;
-            gap: 0.8rem;
-        }
-
-        .spam-row .input-group {
-            flex: 1;
             margin-bottom: 0;
         }
+        .spam-options-wrapper.expanded {
+            max-height: 250px;
+            opacity: 1;
+            margin-bottom: 1.2rem;
+        }
+        .spam-options {
+            background: rgba(0,0,0,0.3);
+            border-radius: 1.5rem;
+            padding: 0.8rem;
+            border: 1px solid rgba(255,70,70,0.3);
+        }
+        .spam-row { display: flex; gap: 0.8rem; }
+        .spam-row .input-group { flex: 1; margin-bottom: 0; }
 
         button {
             background: linear-gradient(95deg, #c72a2a, #8b0000);
             border: none;
-            padding: 0.8rem 1.2rem;
+            padding: 0.8rem;
             width: 100%;
             font-weight: bold;
             font-size: 1rem;
@@ -407,86 +366,63 @@
             cursor: pointer;
             transition: all 0.25s;
         }
+        button:hover { background: linear-gradient(95deg, #e03a3a, #a80000); transform: scale(0.98); }
+        .close-settings { background: linear-gradient(95deg, #3a1a1a, #2a0a0a); margin-top: 0.8rem; }
 
-        button:hover {
-            background: linear-gradient(95deg, #e03a3a, #a80000);
-            transform: scale(0.98);
-        }
-
-        .close-settings {
-            background: linear-gradient(95deg, #3a1a1a, #2a0a0a);
-            margin-top: 0.8rem;
-        }
-
+        /* Custom file upload */
         .custom-file-upload {
             background: linear-gradient(95deg, #5a1a1a, #3a0a0a);
             border: 1px solid #a12323;
             border-radius: 1.2rem;
-            padding: 0.7rem 1.2rem;
+            padding: 0.7rem 1rem;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
             color: #ffcccc;
             font-weight: 500;
             font-size: 0.9rem;
         }
+        .custom-file-upload:hover { background: linear-gradient(95deg, #7a2a2a, #5a1a1a); border-color: #ff6666; }
+        input[type="file"] { display: none; }
 
-        .custom-file-upload:hover {
-            background: linear-gradient(95deg, #7a2a2a, #5a1a1a);
-            border-color: #ff6666;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
+        /* Current settings rows with RED text */
         .current-row {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0,0,0,0.5);
             border-radius: 1rem;
             padding: 0.7rem 1rem;
             margin-bottom: 0.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid rgba(255, 80, 80, 0.3);
+            border: 1px solid rgba(255,80,80,0.3);
         }
-
-        .current-label {
-            font-size: 0.75rem;
-            color: #ffaaaa;
-            font-weight: 500;
-        }
-
+        .current-label { font-size: 0.8rem; color: #ff6666; font-weight: 600; letter-spacing: 0.5px; }
         .current-value {
-            font-size: 0.8rem;
-            color: #ffdddd;
-            max-width: 180px;
+            font-size: 0.85rem;
+            color: #ffaaaa;
+            max-width: 200px;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-family: monospace;
         }
-
         .edit-btn {
-            background: rgba(180, 30, 30, 0.6);
+            background: rgba(180,30,30,0.6);
             border: none;
             padding: 0.3rem 0.8rem;
             border-radius: 2rem;
             color: white;
             cursor: pointer;
             font-size: 0.7rem;
-            width: auto;
         }
+        .edit-btn:hover { background: #c72a2a; }
 
-        .edit-btn:hover {
-            background: #c72a2a;
-        }
-
+        /* Modals - full width inputs */
         .edit-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0,0,0,0.85);
             backdrop-filter: blur(8px);
             z-index: 1000;
             display: flex;
@@ -494,95 +430,58 @@
             justify-content: center;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
-
-        .edit-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .edit-overlay.active { opacity: 1; visibility: visible; }
         .edit-modal {
-            background: rgba(15, 5, 5, 0.95);
+            background: rgba(15,5,5,0.95);
             backdrop-filter: blur(12px);
             border: 1px solid #ff4d4d;
             border-radius: 2rem;
             padding: 1.5rem;
             width: 90%;
-            max-width: 380px;
+            max-width: 400px;
             transform: scale(0.9);
             transition: transform 0.3s;
         }
+        .edit-overlay.active .edit-modal { transform: scale(1); }
+        .edit-modal h3 { color: #ffaaaa; margin-bottom: 1rem; text-align: center; }
+        .edit-modal .input-group { width: 100%; }
+        .edit-modal input { width: 100%; }
+        .edit-actions { display: flex; gap: 0.8rem; margin-top: 1rem; }
+        .edit-actions button { padding: 0.5rem; margin: 0; }
 
-        .edit-overlay.active .edit-modal {
-            transform: scale(1);
-        }
-
-        .edit-modal h3 {
-            color: #ffaaaa;
-            margin-bottom: 1rem;
-            text-align: center;
-            font-size: 1.2rem;
-        }
-
-        .edit-actions {
-            display: flex;
-            gap: 0.8rem;
-            margin-top: 0.5rem;
-        }
-
-        .edit-actions button {
-            padding: 0.5rem;
-            margin: 0;
-        }
-
+        /* Console - red themed, first line red */
         .status-msg {
             margin-top: 1rem;
-            padding: 0.7rem 1rem;
-            border-radius: 2rem;
-            min-height: 55px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 80, 80, 0.5);
-            font-family: monospace;
-            font-size: 0.7rem;
-            max-height: 140px;
+            padding: 0.7rem;
+            border-radius: 1rem;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #ff5555;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            max-height: 130px;
             overflow-y: auto;
         }
-
         .console-line {
-            padding: 2px 0;
-            border-bottom: 1px solid rgba(255, 80, 80, 0.2);
-            color: #ffdddd;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255,80,80,0.2);
+            color: #ffaa88;
         }
-
-        .console-line.success {
-            color: #88ff88;
-        }
-
-        .console-line.error {
-            color: #ff8888;
-        }
-
-        .console-line.info {
-            color: #ffcc88;
-        }
+        .console-line.success { color: #88ff88; text-shadow: 0 0 2px #00aa00; }
+        .console-line.error { color: #ff8888; text-shadow: 0 0 2px #aa0000; }
+        .console-line.info { color: #ffcc88; text-shadow: 0 0 2px #aa6600; }
+        .console-line.red-start { color: #ff4444; font-weight: bold; }
 
         .preview-thumb {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             object-fit: cover;
-            margin-right: 5px;
             border: 1px solid #ff8888;
+            margin-right: 6px;
         }
-
-        .flex-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
+        .flex-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
         footer {
             text-align: center;
             font-size: 0.65rem;
@@ -590,20 +489,10 @@
             opacity: 0.7;
             color: #aa8888;
         }
-
-        .join-link {
-            color: #ff8888;
-            cursor: pointer;
-            text-decoration: underline;
-            transition: color 0.2s;
-        }
-
-        .join-link:hover {
-            color: #ff4444;
-        }
-
+        .join-link { color: #ff8888; cursor: pointer; text-decoration: underline; }
+        .join-link:hover { color: #ff4444; }
         .view-img-btn {
-            background: rgba(80, 80, 150, 0.5);
+            background: rgba(80,80,150,0.5);
             border: none;
             padding: 0.2rem 0.6rem;
             border-radius: 1rem;
@@ -613,492 +502,494 @@
         }
 
         @media (max-width: 550px) {
-            .tilt-card {
-                padding: 1.2rem;
-            }
-            .title {
-                font-size: 1.2rem;
-            }
-            .spam-row {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
+            .tilt-card { padding: 1.2rem; }
+            .glow-title { font-size: 1.3rem; min-height: 3rem; }
+            .spam-row { flex-direction: column; gap: 0.5rem; }
+            .current-value { max-width: 130px; font-size: 0.75rem; }
         }
     </style>
 </head>
 <body>
 
 <div class="grid-backdrop"></div>
+<canvas id="snowCanvas"></canvas>
+
+<div class="top-left-logo" id="logoBtn">
+    <img src="https://i.ibb.co/gL0cffbC/New-Project-7.png" alt="Menu">
+</div>
+<div id="toolsMenu" class="tools-menu">
+    <h4>Other Tools</h4>
+    <div class="tool-item placeholder">Webhook Analyzer</div>
+    <div class="tool-item placeholder">Message Stats</div>
+    <div class="tool-item placeholder">Theme Editor</div>
+    <div class="tool-item placeholder">Quick Spammer</div>
+</div>
 
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-content">
         <div class="loading-logo">FENDI'S WEBHOOK FUCKER</div>
-        <div class="loading-spinner"></div>
-        <div class="loading-discord-link" id="loadingDiscordLink">
-            <a href="#" target="_blank">JOIN discord.gg/funerals</a>
-        </div>
-        <div class="loading-text">Loading tool...</div>
+        <div class="spinner"></div>
+        <div class="loading-discord-link" id="loadingJoin"><a href="#">JOIN discord.gg/funerals</a></div>
+        <div class="loading-text">Loading...</div>
     </div>
 </div>
 
 <div id="mainApp" class="main-app">
     <div class="tilt-wrapper">
         <div class="tilt-card" id="tiltCard">
-            <div class="settings-btn" id="settingsButton">⚙</div>
-            <div class="panel-container">
+            <div class="settings-btn" id="settingsBtn">⚙</div>
+            <div class="panel-container" id="panelContainer">
+                <!-- MAIN PANEL -->
                 <div id="mainPanel" class="panel panel-main">
-                    <div class="title">FENDI'S WEBHOOK FUCKER</div>
-                    <div style="text-align: center;"><span class="sub">discord.gg/funerals</span></div>
-                    
-                    <div class="input-group">
-                        <label>Discord Webhook URL</label>
-                        <input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/...">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>Message content</label>
-                        <textarea id="messageContent" placeholder="Your message here... Supports markdown"></textarea>
-                    </div>
-                    
-                    <div class="toggle-group">
-                        <span class="toggle-label">Clear message after sending</span>
-                        <label class="switch">
-                            <input type="checkbox" id="clearToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div class="toggle-group">
-                        <span class="toggle-label">Spam Webhook</span>
-                        <label class="switch">
-                            <input type="checkbox" id="spamToggle">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                    
-                    <div id="spamOptionsWrapper" class="spam-options-wrapper">
+                    <div class="glow-title"><span class="typed-text" id="typewriterTarget"></span></div>
+                    <div style="text-align:center;"><span class="sub">discord.gg/funerals</span></div>
+                    <div class="input-group"><label>Discord Webhook URL</label><input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/..."></div>
+                    <div class="input-group"><label>Message</label><textarea id="messageContent" placeholder="Your message here... supports markdown"></textarea></div>
+                    <div class="toggle-group"><span class="toggle-label">Clear message after sending</span><label class="switch"><input type="checkbox" id="clearToggle"><span class="slider"></span></label></div>
+                    <div class="toggle-group"><span class="toggle-label">Spam Webhook</span><label class="switch"><input type="checkbox" id="spamToggle"><span class="slider"></span></label></div>
+                    <div id="spamWrapper" class="spam-options-wrapper">
                         <div class="spam-options">
-                            <div class="spam-row">
-                                <div class="input-group">
-                                    <label>Amount (1-50)</label>
-                                    <input type="number" id="spamAmount" min="1" max="50" value="5">
-                                </div>
-                                <div class="input-group">
-                                    <label>Interval (ms, min 50)</label>
-                                    <input type="number" id="spamInterval" min="50" max="5000" value="100" step="10">
-                                </div>
-                            </div>
-                            <small style="color:#ffaaaa; display:block; margin-top:6px;">* Faster spam = lower interval (min 50ms)</small>
+                            <div class="spam-row"><div class="input-group"><label>Amount (1-50)</label><input type="number" id="spamAmount" min="1" max="50" value="5"></div><div class="input-group"><label>Interval (ms)</label><input type="number" id="spamInterval" min="50" max="5000" value="100" step="10"></div></div>
+                            <small style="color:#ffaaaa;">* Lower interval = faster spam (min 50ms)</small>
                         </div>
                     </div>
-                    
                     <button id="sendBtn">SEND MESSAGE</button>
-                    
-                    <div id="statusMessage" class="status-msg">
-                        <div class="console-line info">> System ready</div>
-                    </div>
-                    
-                    <footer>
-                        <span id="joinServerBtn" class="join-link">Join discord.gg/funerals</span> | secure webhook sender
-                    </footer>
+                    <div id="console" class="status-msg"><div class="console-line red-start">> System ready</div></div>
+                    <footer><span id="joinFooter" class="join-link">Join discord.gg/funerals</span> | secure webhook sender</footer>
                 </div>
-                
+
+                <!-- SETTINGS PANEL with red title -->
                 <div id="settingsPanel" class="panel panel-settings" style="display: none;">
-                    <div class="title">BOT CUSTOMIZATION</div>
-                    <div style="text-align: center;"><span class="sub">current settings</span></div>
-                    
-                    <div class="current-row">
-                        <div><span class="current-label">Current Name:</span> <span id="currentNameValue" class="current-value">Default</span></div>
-                        <button class="edit-btn" id="editNameBtn">Edit</button>
-                    </div>
-                    
-                    <div class="current-row">
-                        <div class="flex-row">
-                            <span class="current-label">Current Picture:</span>
-                            <span id="currentPicText" class="current-value">Default</span>
-                            <span id="viewPicBtn" style="display:none;">
-                                <button class="view-img-btn" id="openPicBtn">View</button>
-                            </span>
-                        </div>
-                        <button class="edit-btn" id="editPicBtn">Edit</button>
-                    </div>
-                    
+                    <div class="settings-title-red">BOT CUSTOMIZATION</div>
+                    <div style="text-align:center;"><span class="sub">current settings</span></div>
+                    <div class="current-row"><div><span class="current-label">Bot Name:</span> <span id="currentName" class="current-value">Default</span></div><button class="edit-btn" id="editNameBtn">Edit</button></div>
+                    <div class="current-row"><div class="flex-row"><span class="current-label">Avatar:</span><span id="currentPic" class="current-value">Default</span><span id="viewPicBtn" style="display:none;"><button class="view-img-btn" id="openPicBtn">View</button></span></div><button class="edit-btn" id="editPicBtn">Edit</button></div>
                     <button id="closeSettingsBtn" class="close-settings">CLOSE SETTINGS</button>
-                    <div style="margin-top: 0.8rem; font-size: 0.65rem; text-align:center; opacity:0.6;">
-                        customize bot name and avatar for webhook messages
-                    </div>
+                    <div style="margin-top:0.8rem; font-size:0.65rem; text-align:center; opacity:0.6;">Customize bot name & avatar for webhooks</div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div id="editNameModal" class="edit-overlay">
-    <div class="edit-modal">
-        <h3>Edit Bot Name</h3>
-        <input type="text" id="editNameInput" placeholder="Custom name">
-        <div class="edit-actions">
-            <button id="saveNameBtn">Save</button>
-            <button id="cancelNameBtn" style="background:#3a1a1a;">Cancel</button>
-        </div>
-    </div>
-</div>
-
-<div id="editPicModal" class="edit-overlay">
-    <div class="edit-modal">
-        <h3>Edit Bot Picture</h3>
-        <div class="input-group">
-            <label>Image URL</label>
-            <input type="text" id="editPicUrl" placeholder="https://...">
-        </div>
-        <div style="text-align: center; margin: 10px 0;">OR</div>
-        <label class="custom-file-upload" id="customUploadLabel">Choose Image from PC</label>
-        <input type="file" id="editFileUpload" accept="image/jpeg,image/png,image/gif,image/webp">
-        <div id="editPreviewThumb" style="margin-top: 10px; text-align:center;"></div>
-        <div class="edit-actions" style="margin-top: 15px;">
-            <button id="savePicBtn">Save</button>
-            <button id="cancelPicBtn" style="background:#3a1a1a;">Cancel</button>
-        </div>
-    </div>
-</div>
+<!-- Modals -->
+<div id="nameModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Name</h3><input type="text" id="nameInput" placeholder="Custom name" style="width:100%"><div class="edit-actions"><button id="saveNameBtn">Save</button><button id="cancelNameBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
+<div id="picModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Avatar</h3><div class="input-group"><label>Image URL</label><input type="text" id="picUrlInput" placeholder="https://..."></div><div style="text-align:center; margin:10px 0;">OR</div><label class="custom-file-upload" id="uploadLabel">Choose Image from PC</label><input type="file" id="fileUpload" accept="image/jpeg,image/png,image/gif,image/webp"><div id="picPreview" style="margin-top:10px; text-align:center;"></div><div class="edit-actions"><button id="savePicBtn">Save</button><button id="cancelPicBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
 
 <script>
     (function() {
+        // ========== THOCKY KEYBOARD SOUND ==========
+        const thockSound = new Audio('https://www.myinstants.com/media/sounds/mechanical-keyboard-2.mp3');
+        thockSound.volume = 0.12;
+        function playThock() {
+            const clone = thockSound.cloneNode();
+            clone.volume = 0.1;
+            clone.play().catch(e => console.log("Sound blocked"));
+        }
+        // Listen for keydown on input and textarea elements
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('keydown', playThock);
+        });
+        
+        // ========== ETERNAL TYPEWRITER WITH GLOW ==========
+        const phrases = ["FENDI'S WEBHOOK FUCKER"];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const targetSpan = document.getElementById('typewriterTarget');
+        function typeEffect() {
+            const currentPhrase = phrases[phraseIndex];
+            if (isDeleting) {
+                targetSpan.innerHTML = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                if (charIndex === 0) {
+                    isDeleting = false;
+                    phraseIndex = (phraseIndex + 1) % phrases.length;
+                    setTimeout(typeEffect, 500);
+                    return;
+                }
+                setTimeout(typeEffect, 40);
+            } else {
+                targetSpan.innerHTML = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+                if (charIndex === currentPhrase.length) {
+                    isDeleting = true;
+                    setTimeout(typeEffect, 1500);
+                    return;
+                }
+                setTimeout(typeEffect, 70);
+            }
+        }
+        typeEffect();
+
+        // ========== LOADING SCREEN ==========
         const loadingScreen = document.getElementById('loadingScreen');
         const mainApp = document.getElementById('mainApp');
-        
         setTimeout(() => {
             loadingScreen.classList.add('hide');
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 mainApp.classList.add('visible');
             }, 800);
-        }, 1500);
-        
-        const joinButtons = document.querySelectorAll('#loadingDiscordLink, #joinServerBtn');
-        joinButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.open('https://discord.gg/funerals', '_blank');
-            });
+        }, 2800);
+
+        // ========== JOIN SERVER BUTTONS ==========
+        const joinBtns = ['loadingJoin', 'joinFooter'];
+        joinBtns.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('click', (e) => { e.preventDefault(); window.open('https://discord.gg/funerals', '_blank'); });
         });
-        
+
+        // ========== TOOLS MENU ==========
+        const logo = document.getElementById('logoBtn');
+        const toolsMenu = document.getElementById('toolsMenu');
+        logo.addEventListener('click', (e) => { e.stopPropagation(); toolsMenu.classList.toggle('active'); });
+        document.addEventListener('click', (e) => { if (!toolsMenu.contains(e.target) && !logo.contains(e.target)) toolsMenu.classList.remove('active'); });
+
+        // ========== SNOW PARTICLES ==========
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        function initSnow() {
+            particles = [];
+            for (let i = 0; i < 140; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 3 + 1.5,
+                    speedY: Math.random() * 1.2 + 0.4,
+                    speedX: (Math.random() - 0.5) * 0.2,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+        }
+        function drawSnow() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let p of particles) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(180, 40, 40, ${p.alpha})`;
+                ctx.fill();
+                p.y += p.speedY;
+                p.x += p.speedX;
+                if (p.y > canvas.height) { p.y = 0; p.x = Math.random() * canvas.width; }
+                if (p.x > canvas.width) p.x = 0;
+                if (p.x < 0) p.x = canvas.width;
+            }
+            requestAnimationFrame(drawSnow);
+        }
+        window.addEventListener('resize', () => { resizeCanvas(); initSnow(); });
+        resizeCanvas();
+        initSnow();
+        drawSnow();
+
+        // ========== TILT EFFECT ==========
         const card = document.getElementById('tiltCard');
-        const MAX_ROTATE = 5;
-        
-        function handleMouseMove(e) {
-            if (!card) return;
+        const maxTilt = 5;
+        function onMouseMove(e) {
             const rect = card.getBoundingClientRect();
-            const x = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-            const y = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-            const rotY = Math.min(Math.max(x, -1), 1) * MAX_ROTATE;
-            const rotX = -Math.min(Math.max(y, -1), 1) * MAX_ROTATE;
+            const x = (e.clientX - (rect.left + rect.width/2)) / (rect.width/2);
+            const y = (e.clientY - (rect.top + rect.height/2)) / (rect.height/2);
+            const rotY = Math.min(Math.max(x, -1), 1) * maxTilt;
+            const rotX = -Math.min(Math.max(y, -1), 1) * maxTilt;
             card.style.transition = 'transform 0.05s linear';
             card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(3px)`;
         }
-        
         card.addEventListener('mouseleave', () => {
             card.style.transition = 'transform 0.5s cubic-bezier(0.2,0.9,0.4,1.1)';
             card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
         });
         card.addEventListener('mouseenter', () => card.style.transition = 'transform 0.05s linear');
-        window.addEventListener('mousemove', handleMouseMove);
-        
+        window.addEventListener('mousemove', onMouseMove);
+
+        // ========== PANEL SWITCHING WITH HEIGHT ANIMATION ==========
         const mainPanel = document.getElementById('mainPanel');
         const settingsPanel = document.getElementById('settingsPanel');
-        const settingsBtn = document.getElementById('settingsButton');
+        const settingsBtn = document.getElementById('settingsBtn');
         const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-        let animating = false;
+        let isSwitching = false;
         let settingsVisible = false;
-        
+
+        function getPanelHeight(panel) {
+            const clone = panel.cloneNode(true);
+            clone.style.position = 'absolute';
+            clone.style.visibility = 'hidden';
+            clone.style.display = 'block';
+            document.body.appendChild(clone);
+            const h = clone.offsetHeight;
+            document.body.removeChild(clone);
+            return h;
+        }
+
+        function animateHeight(targetHeight) {
+            const startHeight = card.offsetHeight;
+            if (startHeight === targetHeight) return;
+            card.style.transition = 'height 0.4s cubic-bezier(0.2,0.9,0.4,1.1)';
+            card.style.height = targetHeight + 'px';
+            setTimeout(() => {
+                card.style.height = 'auto';
+                card.style.transition = '';
+            }, 450);
+        }
+
         function openSettings() {
-            if (animating) return;
-            animating = true;
+            if (isSwitching) return;
+            isSwitching = true;
             settingsVisible = true;
             settingsPanel.style.display = 'block';
             settingsPanel.style.opacity = '0';
-            settingsPanel.style.transform = 'translateX(40px)';
+            settingsPanel.style.transform = 'translateX(30px)';
             mainPanel.classList.add('slide-out');
             setTimeout(() => {
                 mainPanel.style.display = 'none';
                 mainPanel.classList.remove('slide-out');
-                settingsPanel.style.transition = 'transform 0.6s, opacity 0.5s';
+                settingsPanel.style.transition = 'opacity 0.35s, transform 0.4s';
                 settingsPanel.style.transform = 'translateX(0)';
                 settingsPanel.style.opacity = '1';
-                setTimeout(() => animating = false, 600);
-            }, 300);
+                const newH = getPanelHeight(settingsPanel);
+                animateHeight(newH);
+                setTimeout(() => { isSwitching = false; }, 450);
+            }, 200);
         }
-        
+
         function closeSettings() {
-            if (animating) return;
-            animating = true;
+            if (isSwitching) return;
+            isSwitching = true;
             settingsVisible = false;
-            settingsPanel.style.transition = 'transform 0.6s, opacity 0.5s';
-            settingsPanel.style.transform = 'translateX(40px)';
+            settingsPanel.style.transition = 'opacity 0.35s, transform 0.4s';
+            settingsPanel.style.transform = 'translateX(30px)';
             settingsPanel.style.opacity = '0';
             setTimeout(() => {
                 settingsPanel.style.display = 'none';
                 settingsPanel.style.transform = '';
                 mainPanel.style.display = 'block';
                 mainPanel.style.opacity = '0';
-                mainPanel.style.transform = 'translateX(-40px)';
+                mainPanel.style.transform = 'translateX(-30px)';
                 mainPanel.classList.add('slide-in');
+                const newH = getPanelHeight(mainPanel);
+                animateHeight(newH);
                 setTimeout(() => {
                     mainPanel.style.transform = '';
                     mainPanel.style.opacity = '';
                     mainPanel.classList.remove('slide-in');
-                    animating = false;
-                }, 600);
-            }, 300);
+                    isSwitching = false;
+                }, 450);
+            }, 200);
         }
-        
+
         settingsBtn.addEventListener('click', () => settingsVisible ? closeSettings() : openSettings());
         closeSettingsBtn.addEventListener('click', closeSettings);
-        
-        const spamToggle = document.getElementById('spamToggle');
-        const spamWrapper = document.getElementById('spamOptionsWrapper');
-        spamToggle.addEventListener('change', () => spamToggle.checked ? spamWrapper.classList.add('expanded') : spamWrapper.classList.remove('expanded'));
-        
-        let currentBotName = '';
-        let currentPicture = '';
-        const currentNameSpan = document.getElementById('currentNameValue');
-        const currentPicText = document.getElementById('currentPicText');
-        const viewPicBtn = document.getElementById('viewPicBtn');
-        
-        function updateSettingsDisplay() {
-            currentNameSpan.textContent = currentBotName && currentBotName.trim() ? currentBotName : 'Default';
-            if (currentPicture && currentPicture.trim()) {
-                currentPicText.innerHTML = `<span style="display:flex;align-items:center;gap:5px;"><img src="${currentPicture}" class="preview-thumb"> Custom</span>`;
-                viewPicBtn.style.display = 'inline-block';
+
+        // ========== SPAM TOGGLE ==========
+        const spamCheck = document.getElementById('spamToggle');
+        const spamWrapper = document.getElementById('spamWrapper');
+        spamCheck.addEventListener('change', () => {
+            if (spamCheck.checked) spamWrapper.classList.add('expanded');
+            else spamWrapper.classList.remove('expanded');
+            setTimeout(() => {
+                if (settingsVisible) animateHeight(getPanelHeight(settingsPanel));
+                else animateHeight(getPanelHeight(mainPanel));
+            }, 50);
+        });
+
+        // ========== BOT CUSTOMIZATION DATA ==========
+        let botName = '';
+        let botAvatar = '';
+        const nameSpan = document.getElementById('currentName');
+        const picSpan = document.getElementById('currentPic');
+        const viewPic = document.getElementById('viewPicBtn');
+        function updateUI() {
+            nameSpan.innerText = botName.trim() ? botName : 'Default';
+            if (botAvatar && botAvatar.trim()) {
+                picSpan.innerHTML = `<span style="display:flex;align-items:center;gap:5px;"><img src="${botAvatar}" class="preview-thumb" onerror="this.style.display='none'"> Custom</span>`;
+                viewPic.style.display = 'inline-block';
             } else {
-                currentPicText.textContent = 'Default';
-                viewPicBtn.style.display = 'none';
+                picSpan.innerText = 'Default';
+                viewPic.style.display = 'none';
             }
         }
-        
-        const editNameModal = document.getElementById('editNameModal');
-        const editNameInput = document.getElementById('editNameInput');
-        document.getElementById('editNameBtn').addEventListener('click', () => {
-            editNameInput.value = currentBotName;
-            editNameModal.classList.add('active');
-        });
-        document.getElementById('saveNameBtn').addEventListener('click', () => {
-            currentBotName = editNameInput.value.trim();
-            updateSettingsDisplay();
-            editNameModal.classList.remove('active');
-        });
-        document.getElementById('cancelNameBtn').addEventListener('click', () => editNameModal.classList.remove('active'));
-        
-        const editPicModal = document.getElementById('editPicModal');
-        const editPicUrl = document.getElementById('editPicUrl');
-        const editFileUpload = document.getElementById('editFileUpload');
-        const editPreviewThumb = document.getElementById('editPreviewThumb');
-        let tempPictureData = '';
-        
-        document.getElementById('editPicBtn').addEventListener('click', () => {
-            tempPictureData = currentPicture;
-            editPicUrl.value = (currentPicture && !currentPicture.startsWith('data:')) ? currentPicture : '';
-            editPreviewThumb.innerHTML = '';
-            if (currentPicture) {
+
+        // Name modal
+        const nameModal = document.getElementById('nameModal');
+        const nameInput = document.getElementById('nameInput');
+        const editName = document.getElementById('editNameBtn');
+        editName.addEventListener('click', () => { nameInput.value = botName; nameModal.classList.add('active'); });
+        document.getElementById('saveNameBtn').addEventListener('click', () => { botName = nameInput.value.trim(); updateUI(); nameModal.classList.remove('active'); });
+        document.getElementById('cancelNameBtn').addEventListener('click', () => nameModal.classList.remove('active'));
+
+        // Picture modal
+        const picModal = document.getElementById('picModal');
+        const picUrlInput = document.getElementById('picUrlInput');
+        const fileUpload = document.getElementById('fileUpload');
+        const picPreview = document.getElementById('picPreview');
+        let tempPic = '';
+        const editPic = document.getElementById('editPicBtn');
+        editPic.addEventListener('click', () => {
+            tempPic = botAvatar;
+            picUrlInput.value = (botAvatar && !botAvatar.startsWith('data:')) ? botAvatar : '';
+            picPreview.innerHTML = '';
+            if (botAvatar) {
                 const img = document.createElement('img');
-                img.src = currentPicture;
+                img.src = botAvatar;
                 img.style.width = '48px';
                 img.style.height = '48px';
                 img.style.borderRadius = '50%';
                 img.style.border = '1px solid #ff8888';
-                editPreviewThumb.appendChild(img);
+                picPreview.appendChild(img);
             }
-            editPicModal.classList.add('active');
+            picModal.classList.add('active');
         });
-        
-        function closePicModal() {
-            editPicModal.classList.remove('active');
-            tempPictureData = '';
-            editFileUpload.value = '';
-            editPicUrl.value = '';
-        }
-        
-        editPicUrl.addEventListener('input', () => {
-            if (editPicUrl.value.trim()) {
-                tempPictureData = editPicUrl.value.trim();
+        function closePicModal() { picModal.classList.remove('active'); tempPic = ''; fileUpload.value = ''; picUrlInput.value = ''; picPreview.innerHTML = ''; }
+        picUrlInput.addEventListener('input', () => {
+            if (picUrlInput.value.trim()) {
+                tempPic = picUrlInput.value.trim();
                 const img = document.createElement('img');
-                img.src = tempPictureData;
+                img.src = tempPic;
                 img.style.width = '48px';
                 img.style.height = '48px';
                 img.style.borderRadius = '50%';
-                editPreviewThumb.innerHTML = '';
-                editPreviewThumb.appendChild(img);
-            } else if (!editFileUpload.files.length) {
-                editPreviewThumb.innerHTML = '';
-                tempPictureData = '';
+                img.style.border = '1px solid #ff8888';
+                picPreview.innerHTML = '';
+                picPreview.appendChild(img);
+            } else if (!fileUpload.files.length) {
+                picPreview.innerHTML = '';
+                tempPic = '';
             }
         });
-        
-        editFileUpload.addEventListener('change', (e) => {
+        fileUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
-                    tempPictureData = ev.target.result;
-                    editPicUrl.value = '';
+                    tempPic = ev.target.result;
+                    picUrlInput.value = '';
                     const img = document.createElement('img');
-                    img.src = tempPictureData;
+                    img.src = tempPic;
                     img.style.width = '48px';
                     img.style.height = '48px';
                     img.style.borderRadius = '50%';
-                    editPreviewThumb.innerHTML = '';
-                    editPreviewThumb.appendChild(img);
+                    img.style.border = '1px solid #ff8888';
+                    picPreview.innerHTML = '';
+                    picPreview.appendChild(img);
                 };
                 reader.readAsDataURL(file);
-            }
+            } else if (file) alert('Please select an image file');
         });
-        
         document.getElementById('savePicBtn').addEventListener('click', () => {
-            if (tempPictureData) {
-                currentPicture = tempPictureData;
-                updateSettingsDisplay();
-            }
+            if (tempPic) { botAvatar = tempPic; updateUI(); }
             closePicModal();
         });
         document.getElementById('cancelPicBtn').addEventListener('click', closePicModal);
-        document.getElementById('openPicBtn').addEventListener('click', () => {
-            if (currentPicture) window.open(currentPicture, '_blank');
-        });
-        
+        document.getElementById('openPicBtn').addEventListener('click', () => { if (botAvatar) window.open(botAvatar, '_blank'); });
+
+        // ========== WEBHOOK LOGIC ==========
         const webhookInput = document.getElementById('webhookUrl');
         const messageInput = document.getElementById('messageContent');
         const sendBtn = document.getElementById('sendBtn');
-        const statusConsole = document.getElementById('statusMessage');
+        const consoleDiv = document.getElementById('console');
         const clearToggle = document.getElementById('clearToggle');
-        const spamAmountInput = document.getElementById('spamAmount');
-        const spamIntervalInput = document.getElementById('spamInterval');
-        
-        let isSending = false;
-        let abortFlag = false;
-        
-        function addConsoleLine(text, type = 'info') {
+        const spamAmount = document.getElementById('spamAmount');
+        const spamInterval = document.getElementById('spamInterval');
+        let sending = false, stopSpam = false;
+
+        function addLog(text, type = 'info') {
             const line = document.createElement('div');
             line.className = `console-line ${type}`;
             line.textContent = `> ${new Date().toLocaleTimeString()} - ${text}`;
-            statusConsole.appendChild(line);
-            statusConsole.scrollTop = statusConsole.scrollHeight;
-            while (statusConsole.children.length > 30) statusConsole.removeChild(statusConsole.firstChild);
+            consoleDiv.appendChild(line);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            while (consoleDiv.children.length > 30) consoleDiv.removeChild(consoleDiv.firstChild);
         }
-        
+
         function isValidWebhook(url) {
             return /^https:\/\/discord\.com\/api\/webhooks\/(\d+)\/([a-zA-Z0-9_\-]+)/i.test(url.trim());
         }
-        
-        async function sendMessage(webhookUrl, content) {
-            const payload = { content };
-            if (currentBotName && currentBotName.trim()) payload.username = currentBotName.trim();
-            if (currentPicture && currentPicture.trim()) payload.avatar_url = currentPicture.trim();
-            
-            const response = await fetch(webhookUrl, {
+
+        async function sendSingle(webhook, msg) {
+            const payload = { content: msg };
+            if (botName.trim()) payload.username = botName.trim();
+            if (botAvatar.trim()) payload.avatar_url = botAvatar.trim();
+            const res = await fetch(webhook, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             return true;
         }
-        
-        async function runSpam(webhookUrl, content, amount, interval) {
+
+        async function runSpam(webhook, msg, amount, interval) {
             let success = 0;
             for (let i = 1; i <= amount; i++) {
-                if (abortFlag) {
-                    addConsoleLine(`Spam stopped. Sent ${success}/${amount}`, 'info');
-                    return success;
-                }
+                if (stopSpam) { addLog(`Spam stopped. Sent ${success}/${amount}`, 'info'); return success; }
                 try {
-                    await sendMessage(webhookUrl, content);
+                    await sendSingle(webhook, msg);
                     success++;
-                    addConsoleLine(`[${success}/${amount}] Sent`, 'success');
+                    addLog(`[${success}/${amount}] Sent`, 'success');
                 } catch (err) {
-                    addConsoleLine(`[${i}] Failed: ${err.message}`, 'error');
+                    addLog(`[${i}] Failed: ${err.message}`, 'error');
                     if (i - success > 5) break;
                 }
                 if (i < amount) await new Promise(r => setTimeout(r, interval));
             }
             return success;
         }
-        
+
         async function handleSend() {
-            if (isSending) {
-                if (spamToggle.checked) {
-                    abortFlag = true;
-                    addConsoleLine('Aborting spam...', 'info');
-                }
+            if (sending) {
+                if (spamCheck.checked) { stopSpam = true; addLog('Aborting spam...', 'info'); }
                 return;
             }
-            
             const webhook = webhookInput.value.trim();
             const msg = messageInput.value.trim();
-            
-            if (!webhook) {
-                addConsoleLine('Missing webhook URL', 'error');
-                return;
+            if (!webhook) { addLog('Missing webhook URL', 'error'); return; }
+            if (!msg) { addLog('Missing message', 'error'); return; }
+            if (!isValidWebhook(webhook)) { addLog('Invalid webhook URL', 'error'); return; }
+
+            const isSpam = spamCheck.checked;
+            let amount = 1, interval = 100;
+            if (isSpam) {
+                amount = Math.min(50, Math.max(1, parseInt(spamAmount.value) || 1));
+                interval = Math.min(5000, Math.max(50, parseInt(spamInterval.value) || 100));
             }
-            if (!msg) {
-                addConsoleLine('Missing message', 'error');
-                return;
-            }
-            if (!isValidWebhook(webhook)) {
-                addConsoleLine('Invalid webhook URL. Must be a valid Discord webhook URL.', 'error');
-                return;
-            }
-            
-            const spamEnabled = spamToggle.checked;
-            let amount = 1;
-            let interval = 100;
-            if (spamEnabled) {
-                amount = Math.min(50, Math.max(1, parseInt(spamAmountInput.value) || 1));
-                interval = Math.min(5000, Math.max(50, parseInt(spamIntervalInput.value) || 100));
-            }
-            
-            isSending = true;
-            abortFlag = false;
-            sendBtn.textContent = spamEnabled ? 'SPAMMING (click to stop)' : 'SENDING...';
-            
+            sending = true;
+            stopSpam = false;
+            sendBtn.textContent = isSpam ? 'SPAMMING (click to stop)' : 'SENDING...';
             try {
-                if (spamEnabled && amount > 1) {
-                    addConsoleLine(`Starting spam: ${amount} messages with ${interval}ms interval`, 'info');
+                if (isSpam && amount > 1) {
+                    addLog(`Starting spam: ${amount} messages, ${interval}ms interval`, 'info');
                     const sent = await runSpam(webhook, msg, amount, interval);
-                    addConsoleLine(`Spam finished: ${sent}/${amount} sent`, sent > 0 ? 'success' : 'error');
+                    addLog(`Spam finished: ${sent}/${amount} sent`, sent > 0 ? 'success' : 'error');
                     if (clearToggle.checked && sent > 0) messageInput.value = '';
                 } else {
-                    await sendMessage(webhook, msg);
-                    addConsoleLine('Message sent successfully!', 'success');
+                    await sendSingle(webhook, msg);
+                    addLog('Message sent successfully!', 'success');
                     if (clearToggle.checked) messageInput.value = '';
                 }
             } catch (err) {
-                addConsoleLine(`Error: ${err.message}`, 'error');
+                addLog(`Error: ${err.message}`, 'error');
             } finally {
-                isSending = false;
+                sending = false;
                 sendBtn.textContent = 'SEND MESSAGE';
             }
         }
-        
         sendBtn.addEventListener('click', handleSend);
-        messageInput.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleSend();
+        messageInput.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleSend(); });
+
+        // ========== DYNAMIC GRID LIGHTING ==========
+        const gridBackdrop = document.querySelector('.grid-backdrop');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            gridBackdrop.style.backgroundImage = `
+                repeating-linear-gradient(90deg, rgba(200,30,50,0.4) 0px, rgba(200,30,50,0.4) 1.5px, transparent 1.5px, transparent 45px),
+                repeating-linear-gradient(0deg, rgba(200,30,50,0.4) 0px, rgba(200,30,50,0.4) 1.5px, transparent 1.5px, transparent 45px),
+                radial-gradient(circle at ${x}% ${y}%, rgba(130,0,0,0.7), rgba(0,0,0,0.95))
+            `;
         });
-        
-        const grid = document.querySelector('.grid-backdrop');
-        if (grid) {
-            document.addEventListener('mousemove', (e) => {
-                const x = (e.clientX / window.innerWidth) * 100;
-                const y = (e.clientY / window.innerHeight) * 100;
-                grid.style.backgroundImage = `
-                    repeating-linear-gradient(90deg, rgba(200,30,50,0.4) 0px, rgba(200,30,50,0.4) 1.5px, transparent 1.5px, transparent 45px),
-                    repeating-linear-gradient(0deg, rgba(200,30,50,0.4) 0px, rgba(200,30,50,0.4) 1.5px, transparent 1.5px, transparent 45px),
-                    radial-gradient(circle at ${x}% ${y}%, rgba(130,0,0,0.7), rgba(0,0,0,0.95))
-                `;
-            });
-        }
-        
-        updateSettingsDisplay();
-        settingsPanel.style.display = 'none';
+
+        updateUI();
     })();
 </script>
 </body>
