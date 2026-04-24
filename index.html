@@ -6,7 +6,6 @@
     <title>FENDI'S WEBHOOK FUCKER</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/gL0cffbC/New-Project-7.png">
     <style>
-        /* ===================== ALL STYLES ===================== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
@@ -59,17 +58,19 @@
         .main-app { opacity: 0; transition: opacity 0.8s ease; width: 100%; max-width: 560px; z-index: 5; position: relative; display: none; }
         .main-app.visible { display: block; opacity: 1; }
 
-        /* USER PROFILE CARD */
+        /* USER PROFILE CARD - with margin to clear settings button */
         .user-profile {
             background: rgba(0,0,0,0.5);
             border-radius: 3rem;
             padding: 0.5rem 1rem;
+            margin-top: 0.5rem;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 1rem;
             border: 1px solid rgba(255,80,80,0.4);
             backdrop-filter: blur(4px);
+            position: relative;
         }
         .user-avatar {
             width: 48px;
@@ -233,6 +234,7 @@
             .spam-row { flex-direction: column; gap: 0.5rem; }
             .current-value { max-width: 130px; font-size: 0.75rem; }
             .user-avatar { width: 36px; height: 36px; }
+            .user-profile { margin-top: 0.2rem; }
         }
     </style>
 </head>
@@ -427,7 +429,6 @@
             document.getElementById('logoutDiscordBtn').addEventListener('click', () => {
                 localStorage.removeItem("discord_access_token");
                 container.style.display = 'none';
-                // Optionally reload or just hide – user can re-login by refreshing? We'll leave as is.
                 alert("Logged out. Refresh the page to re-authenticate.");
             });
         }
