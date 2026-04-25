@@ -1055,6 +1055,124 @@
         
         updateUI();
     })();
+    // ========== MUSIC PLAYER WITH PERSISTENCE (red theme) ==========
+const tracks = [
+    { title: "Pass Out", url: "./songs/PassOut.mp3" },
+    { title: "VYZEE", url: "./songs/VYZEE.mp3" },
+    { title: "Phantom", url: "./songs/Phantom.mp3" },
+    { title: "Track 10", url: "./songs/Track10.mp3" }
+];
+
+let currentTrackIndex = 0;
+let audio = null;
+let isPlaying = false;
+let musicStarted = false;
+
+const trackTitleSpan = document.getElementById('trackTitle');
+const playPauseBtn = document.getElementById('playPauseBtn');
+const prevBtn = document.getElementById('prevTrackBtn');
+const nextBtn = document.getElementById('nextTrackBtn');
+const backBtn = document.getElementById('backToLanding');
+
+// Save current music state (track, position, playing status)
+function saveMusicState() {
+    if (audio) {
+        localStorage.setItem('musicTrackIndex', currentTrackIndex);
+        localStorage.setItem('musicCurrentTime', audio.currentTime);
+        localStorage.setItem('musicPlaying', isPlaying);
+    }
+}
+
+// Load previously saved music state
+function loadMusicState() {
+    const savedIndex = localStorage.getItem('musicTrackIndex');
+    const savedTime = parseFloat(localStorage.getItem('musicCurrentTime'));
+    const savedPlaying = localStorage.getItem('musicPlaying') === 'true';
+
+    if (savedIndex !== null && tracks[savedIndex]) {
+        currentTrackIndex = parseInt(savedIndex);
+        loadTrack(currentTrackIndex, false);
+        if (!isNaN(savedTime) && audio) audio.currentTime = savedTime;
+        if (savedPlaying) {
+            audio.play().catch(e => console.log);
+            isPlaying = true;
+            playPauseBtn.textContent = '⏸';
+        }
+    } else {
+        loadTrack(0, false);
+    }
+}
+
+// Load a specific track (optionally autoplay)
+function loadTrack(index, autoPlay = false) {
+    if (audio) {
+        audio.pause();
+        audio = null;
+    }
+    audio = new Audio(tracks[index].url);
+    audio.loop = false;
+    audio.volume = 0.5;
+    trackTitleSpan.textContent = tracks[index].title;
+    audio.addEventListener('ended', () => nextTrack());
+    if (autoPlay || (musicStarted && isPlaying)) {
+        audio.play().catch(e => console.log);
+        isPlaying = true;
+        playPauseBtn.textContent = '⏸';
+    } else {
+        isPlaying = false;
+        playPauseBtn.textContent = '▶';
+    }
+}
+
+// Start the music player (called by your original showMainAppAndStart function)
+function startMusic() {
+    if (musicStarted) return;
+    musicStarted = true;
+    loadMusicState();
+    setInterval(saveMusicState, 2000);
+    window.addEventListener('beforeunload', saveMusicState);
+}
+
+// Control functions (already used in the original page)
+function playPause() {
+    if (!musicStarted) startMusic();
+    if (!audio) return;
+    if (isPlaying) {
+        audio.pause();
+        playPauseBtn.textContent = '▶';
+    } else {
+        audio.play();
+        playPauseBtn.textContent = '⏸';
+    }
+    isPlaying = !isPlaying;
+}
+
+function nextTrack() {
+    if (!musicStarted) startMusic();
+    currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+    loadTrack(currentTrackIndex, true);
+}
+
+function prevTrack() {
+    if (!musicStarted) startMusic();
+    currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+    loadTrack(currentTrackIndex, true);
+}
+
+playPauseBtn.addEventListener('click', playPause);
+prevBtn.addEventListener('click', prevTrack);
+nextBtn.addEventListener('click', nextTrack);
+
+// Back button: save music state and go to the landing page
+if (backBtn) {
+    backBtn.addEventListener('click', () => {
+        saveMusicState();
+        window.location.href = '/';
+    });
+}
+<!-- BACK BUTTON (red theme) -->
+<div class="back-link" id="backToLanding">← Back to Tools</div>
+// Optional: if your original code already defined these functions, remove the duplicates.
 </script>
 </body>
 </html>
