@@ -6,22 +6,42 @@
     <title>FENDI'S WEBHOOK FUCKER</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/gL0cffbC/New-Project-7.png">
     <style>
-        /* ========== YOUR ORIGINAL RED THEME (full styles, same as before) ========== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ====================== ORIGINAL RED THEME (full, working) ====================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             min-height: 100vh;
             background: radial-gradient(circle at 20% 30%, #1a0000, #000000);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            font-family: 'Poppins', 'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
             padding: 1.5rem;
             position: relative;
             overflow-x: hidden;
         }
-        #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+        #snowCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
         .grid-backdrop {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
             background-image: 
                 repeating-linear-gradient(90deg, rgba(200,30,50,0.35) 0px, rgba(200,30,50,0.35) 1.5px, transparent 1.5px, transparent 45px),
                 repeating-linear-gradient(0deg, rgba(200,30,50,0.35) 0px, rgba(200,30,50,0.35) 1.5px, transparent 1.5px, transparent 45px),
@@ -29,33 +49,130 @@
             background-blend-mode: overlay, overlay, normal;
             pointer-events: none;
         }
-        /* LOADING SCREEN */
-        .loading-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 30% 40%, #0a0000, #000000);
-            backdrop-filter: blur(8px); z-index: 1000;
-            display: flex; align-items: center; justify-content: center;
-            transition: opacity 1s ease, visibility 1s ease;
-            opacity: 1; visibility: visible;
-        }
-        .loading-screen.hide { opacity: 0; visibility: hidden; }
-        .loading-content { text-align: center; animation: fadeUp 0.8s ease-out; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-        @keyframes fadeUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .loading-logo { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #ff4d4d, #ff9999); background-clip: text; -webkit-background-clip: text; color: transparent; }
-        .spinner { width: 70px; height: 70px; border: 4px solid rgba(255,80,80,0.2); border-top: 4px solid #ff4d4d; border-radius: 50%; animation: spin 1s ease infinite; transition: opacity 0.4s ease; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .enter-btn {
-            background: linear-gradient(95deg, #c72a2a, #8b0000); border: none; padding: 1rem 2rem; font-size: 1.5rem; font-weight: bold;
-            color: white; border-radius: 3rem; cursor: pointer; box-shadow: 0 0 20px rgba(255,50,50,0.5);
-            width: auto; display: none; opacity: 0; transform: scale(0.8);
-        }
-        .enter-btn.show { display: inline-block; animation: popIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards; }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.5); } 80% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
-        .enter-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255,80,80,0.8); }
-        .loading-discord-link { background: rgba(30,10,10,0.7); padding: 0.7rem 1.5rem; border-radius: 3rem; border: 1px solid #ff5555; cursor: pointer; display: inline-block; }
-        .loading-discord-link a { color: #ffdddd; text-decoration: none; font-weight: 600; }
 
-        /* MAIN APP */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 40%, #0a0000, #000000);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease, visibility 1s ease;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loading-content {
+            text-align: center;
+            animation: fadeUp 0.8s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        @keyframes fadeUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .loading-logo {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff4d4d, #ff9999);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .spinner {
+            width: 70px;
+            height: 70px;
+            margin: 1.5rem auto;
+            border: 4px solid rgba(255,80,80,0.2);
+            border-top: 4px solid #ff4d4d;
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            transition: opacity 0.4s ease;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .enter-btn {
+            background: linear-gradient(95deg, #c72a2a, #8b0000);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            border-radius: 3rem;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,50,50,0.5);
+            width: auto;
+            display: none;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        .enter-btn.show {
+            display: inline-block;
+            animation: popIn 0.5s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            80% {
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .enter-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255,80,80,0.8);
+        }
+
+        .loading-discord-link {
+            background: rgba(30,10,10,0.7);
+            padding: 0.7rem 1.5rem;
+            border-radius: 3rem;
+            border: 1px solid #ff5555;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .loading-discord-link a {
+            color: #ffdddd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
         .main-app {
             opacity: 0;
             transition: opacity 0.8s ease;
@@ -64,15 +181,13 @@
             z-index: 5;
             position: relative;
             display: none;
-            animation: fadeScale 0.5s cubic-bezier(0.2,0.9,0.4,1.1);
         }
-        @keyframes fadeScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .main-app.visible { display: block; opacity: 1; }
 
-        /* USER PROFILE CARD */
+        .main-app.visible {
+            display: block;
+            opacity: 1;
+        }
+
         .user-profile {
             background: rgba(0,0,0,0.5);
             border-radius: 3rem;
@@ -84,44 +199,174 @@
             gap: 1rem;
             border: 1px solid rgba(255,80,80,0.4);
             backdrop-filter: blur(4px);
+            position: relative;
         }
-        .user-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #ff8888; object-fit: cover; background: #1a0000; }
-        .user-info { flex: 1; }
-        .user-name { color: #ffdddd; font-weight: 600; font-size: 0.9rem; }
-        .user-tag { color: #ffaaaa; font-size: 0.7rem; opacity: 0.8; }
-        .logout-btn { background: rgba(180,30,30,0.6); border: none; padding: 0.3rem 0.8rem; border-radius: 2rem; color: white; cursor: pointer; font-size: 0.7rem; transition: 0.2s; }
-        .logout-btn:hover { background: #c72a2a; }
 
-        /* VERSION TAG */
-        .version-tag { position: fixed; bottom: 10px; right: 10px; color: #ff4444; opacity: 0.5; font-size: 12px; font-family: monospace; z-index: 9999; pointer-events: none; }
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #ff8888;
+            object-fit: cover;
+            background: #1a0000;
+        }
 
-        /* TOP-LEFT LOGO & MENU */
-        .top-left-logo { position: fixed; top: 15px; left: 15px; z-index: 100; cursor: pointer; }
-        .top-left-logo img { width: 45px; height: 45px; border-radius: 12px; border: 1px solid rgba(255,80,80,0.5); transition: transform 0.2s; }
-        .top-left-logo img:hover { transform: scale(1.05); }
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            color: #ffdddd;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-tag {
+            color: #ffaaaa;
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+
+        .logout-btn {
+            background: rgba(180,30,30,0.6);
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            color: white;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #c72a2a;
+        }
+
+        .version-tag {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #ff4444;
+            opacity: 0.5;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .top-left-logo {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            cursor: pointer;
+        }
+
+        .top-left-logo img {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,80,80,0.5);
+            transition: transform 0.2s;
+        }
+
+        .top-left-logo img:hover {
+            transform: scale(1.05);
+        }
+
         .tools-menu {
-            position: fixed; top: 70px; left: 15px; background: rgba(15,5,5,0.95); backdrop-filter: blur(12px);
-            border: 1px solid #ff4d4d; border-radius: 1rem; padding: 0.8rem; min-width: 180px; z-index: 99;
-            opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s;
+            position: fixed;
+            top: 70px;
+            left: 15px;
+            background: rgba(15,5,5,0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid #ff4d4d;
+            border-radius: 1rem;
+            padding: 0.8rem;
+            min-width: 180px;
+            z-index: 99;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s;
         }
-        .tools-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
-        .tools-menu h4 { color: #ffaaaa; font-size: 0.8rem; text-align: center; border-bottom: 1px solid #ff5555; margin-bottom: 0.5rem; }
-        .tool-item { padding: 0.5rem 0.8rem; color: #ffcccc; cursor: pointer; border-radius: 0.5rem; font-size: 0.8rem; transition: 0.2s; }
-        .tool-item:hover { background: rgba(200,50,50,0.5); }
-        .placeholder-item { opacity: 0.6; cursor: not-allowed; }
-        .placeholder-item:hover { background: none; }
 
-        /* MUSIC PLAYER */
+        .tools-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .tools-menu h4 {
+            color: #ffaaaa;
+            font-size: 0.8rem;
+            text-align: center;
+            border-bottom: 1px solid #ff5555;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-item {
+            padding: 0.5rem 0.8rem;
+            color: #ffcccc;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .tool-item:hover {
+            background: rgba(200,50,50,0.5);
+        }
+
+        .placeholder-item {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .placeholder-item:hover {
+            background: none;
+        }
+
         .music-player {
-            position: fixed; top: 15px; right: 15px; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px);
-            border-radius: 3rem; border: 1px solid rgba(255,50,50,0.6); padding: 0.5rem 1rem; z-index: 101;
-            display: flex; align-items: center; gap: 0.8rem; font-size: 0.8rem;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 3rem;
+            border: 1px solid rgba(255,50,50,0.6);
+            padding: 0.5rem 1rem;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.8rem;
         }
-        .music-player button { background: none; border: none; color: #ffaaaa; font-size: 1.2rem; cursor: pointer; padding: 0; width: 28px; transition: 0.2s; }
-        .music-player button:hover { color: #ff8888; transform: scale(1.05); }
-        .music-player .track-title { color: #ffcfcf; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
 
-        /* BACK BUTTON */
+        .music-player button {
+            background: none;
+            border: none;
+            color: #ffaaaa;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 28px;
+            transition: 0.2s;
+        }
+
+        .music-player button:hover {
+            color: #ff8888;
+            transform: scale(1.05);
+        }
+
+        .music-player .track-title {
+            color: #ffcfcf;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 0.75rem;
+        }
+
         .back-link {
             position: fixed;
             bottom: 15px;
@@ -137,108 +382,558 @@
             transition: 0.2s;
             color: #ffdddd;
         }
-        .back-link:hover { background: #c72a2a; border-color: #ff8888; transform: scale(1.02); }
 
-        /* TILT CARD & FORM ELEMENTS (same as your original working version) */
-        .tilt-wrapper { perspective: 1200px; width: 100%; }
+        .back-link:hover {
+            background: #c72a2a;
+            border-color: #ff8888;
+            transform: scale(1.02);
+        }
+
+        .tilt-wrapper {
+            perspective: 1200px;
+            width: 100%;
+        }
+
         .tilt-card {
-            background: rgba(10,5,5,0.75); backdrop-filter: blur(12px); border-radius: 2rem;
-            border: 1px solid rgba(255,50,50,0.5); box-shadow: 0 25px 45px rgba(0,0,0,0.5);
-            padding: 2rem; width: 100%; transition: transform 0.05s linear, height 0.4s cubic-bezier(0.2,0.9,0.4,1.1);
-            transform-style: preserve-3d; position: relative;
+            background: rgba(10,5,5,0.75);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: 1px solid rgba(255,50,50,0.5);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+            padding: 2rem;
+            width: 100%;
+            transition: transform 0.05s linear, height 0.4s cubic-bezier(0.2,0.9,0.4,1.1);
+            transform-style: preserve-3d;
+            position: relative;
         }
+
         .settings-btn {
-            position: absolute; top: 1.2rem; right: 1.2rem; background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,80,80,0.6); color: #ffaaaa; width: 38px; height: 38px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.3rem;
-            transition: all 0.2s; z-index: 20;
+            position: absolute;
+            top: 1.2rem;
+            right: 1.2rem;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,80,80,0.6);
+            color: #ffaaaa;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            transition: all 0.2s;
+            z-index: 20;
         }
-        .settings-btn:hover { background: rgba(180,30,30,0.7); transform: rotate(30deg); }
 
-        .panel-container { width: 100%; }
-        .panel { width: 100%; transition: opacity 0.35s, transform 0.4s; }
-        .panel-main.slide-out { animation: slideOutLeft 0.4s forwards; }
-        .panel-settings.slide-in { animation: slideInRight 0.4s forwards; }
-        .panel-settings.slide-out { animation: slideOutRight 0.4s forwards; }
-        .panel-main.slide-in { animation: slideInLeft 0.4s forwards; }
-        @keyframes slideOutLeft { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(-30px); opacity: 0; display: none; } }
-        @keyframes slideInRight { 0% { transform: translateX(30px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        @keyframes slideOutRight { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(30px); opacity: 0; display: none; } }
-        @keyframes slideInLeft { 0% { transform: translateX(-30px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
+        .settings-btn:hover {
+            background: rgba(180,30,30,0.7);
+            transform: rotate(30deg);
+        }
 
-        .glow-title { text-align: center; font-size: 1.7rem; font-weight: 800; margin-bottom: 0.5rem; min-height: 4rem; transition: opacity 0.5s ease; }
-        .typed-text { background: linear-gradient(135deg, #ff4d4d, #ff9999, #cc2222); background-clip: text; -webkit-background-clip: text; color: transparent; text-shadow: 0 0 15px rgba(255,50,50,0.6), 0 0 30px rgba(200,20,20,0.4); animation: glowPulse 2s ease-in-out infinite alternate; }
-        @keyframes glowPulse { 0% { text-shadow: 0 0 5px rgba(255,50,50,0.4), 0 0 10px rgba(200,20,20,0.3); } 100% { text-shadow: 0 0 20px rgba(255,80,80,0.8), 0 0 35px rgba(255,40,40,0.6); } }
-        .settings-title-red { text-align: center; font-size: 1.3rem; font-weight: 800; color: #ff4d4d; text-shadow: 0 0 8px rgba(255,50,50,0.5); margin-bottom: 0.5rem; }
-        .sub { text-align: center; color: #ffb7b7; font-size: 0.7rem; margin-bottom: 1.5rem; border-bottom: 1px dashed rgba(255,80,80,0.4); display: inline-block; padding-bottom: 4px; }
+        .panel-container {
+            width: 100%;
+        }
 
-        .input-group { margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
-        label { font-weight: 600; font-size: 0.8rem; color: #ffcfcf; text-transform: uppercase; letter-spacing: 0.5px; }
-        input, textarea { background: rgba(0,0,0,0.65); border: 1px solid #a12323; border-radius: 1.2rem; padding: 0.8rem 1rem; font-size: 0.9rem; color: #f0e6e6; outline: none; font-family: inherit; width: 100%; }
-        input:focus, textarea:focus { border-color: #ff4d4d; box-shadow: 0 0 0 2px rgba(255,77,77,0.4); }
-        textarea { min-height: 90px; }
+        .panel {
+            width: 100%;
+            transition: opacity 0.35s, transform 0.4s;
+        }
 
-        .toggle-group { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 0.6rem 1rem; border-radius: 2rem; border: 1px solid rgba(255,70,70,0.3); margin-bottom: 1.2rem; }
-        .toggle-label { font-size: 0.8rem; color: #ffcfcf; }
-        .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4a0e0e; transition: 0.25s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: #ffb7b7; transition: 0.25s; border-radius: 50%; }
-        input:checked + .slider { background-color: #c72a2a; }
-        input:checked + .slider:before { transform: translateX(24px); background-color: white; }
+        .panel-main.slide-out {
+            animation: slideOutLeft 0.4s forwards;
+        }
 
-        .spam-options-wrapper { overflow: hidden; transition: max-height 0.5s cubic-bezier(0.34,1.2,0.64,1), opacity 0.4s, margin 0.3s; max-height: 0; opacity: 0; margin-bottom: 0; }
-        .spam-options-wrapper.expanded { max-height: 250px; opacity: 1; margin-bottom: 1.2rem; }
-        .spam-options { background: rgba(0,0,0,0.3); border-radius: 1.5rem; padding: 0.8rem; border: 1px solid rgba(255,70,70,0.3); }
-        .spam-row { display: flex; gap: 0.8rem; }
-        .spam-row .input-group { flex: 1; margin-bottom: 0; }
+        .panel-settings.slide-in {
+            animation: slideInRight 0.4s forwards;
+        }
 
-        button { background: linear-gradient(95deg, #c72a2a, #8b0000); border: none; padding: 0.8rem; width: 100%; font-weight: bold; font-size: 1rem; color: white; border-radius: 3rem; cursor: pointer; transition: all 0.25s; }
-        button:hover { background: linear-gradient(95deg, #e03a3a, #a80000); transform: scale(0.98); }
-        .close-settings { background: linear-gradient(95deg, #3a1a1a, #2a0a0a); margin-top: 0.8rem; }
+        .panel-settings.slide-out {
+            animation: slideOutRight 0.4s forwards;
+        }
 
-        .custom-file-upload { background: linear-gradient(95deg, #5a1a1a, #3a0a0a); border: 1px solid #a12323; border-radius: 1.2rem; padding: 0.7rem 1rem; text-align: center; cursor: pointer; color: #ffcccc; font-weight: 500; font-size: 0.9rem; display: inline-block; width: 100%; }
-        .custom-file-upload:hover { background: linear-gradient(95deg, #7a2a2a, #5a1a1a); border-color: #ff6666; }
-        input[type="file"] { display: none; }
+        .panel-main.slide-in {
+            animation: slideInLeft 0.4s forwards;
+        }
 
-        .current-row { background: rgba(0,0,0,0.5); border-radius: 1rem; padding: 0.7rem 1rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,80,80,0.3); }
-        .current-label { font-size: 0.8rem; color: #ff6666; font-weight: 600; letter-spacing: 0.5px; }
-        .current-value { font-size: 0.85rem; color: #ffaaaa; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-family: monospace; }
-        .edit-btn { background: rgba(180,30,30,0.6); border: none; padding: 0.3rem 0.8rem; border-radius: 2rem; color: white; cursor: pointer; font-size: 0.7rem; }
-        .edit-btn:hover { background: #c72a2a; }
+        @keyframes slideOutLeft {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-30px);
+                opacity: 0;
+                display: none;
+            }
+        }
 
-        .edit-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; }
-        .edit-overlay.active { opacity: 1; visibility: visible; }
-        .edit-modal { background: rgba(15,5,5,0.95); backdrop-filter: blur(12px); border: 1px solid #ff4d4d; border-radius: 2rem; padding: 1.5rem; width: 90%; max-width: 400px; transform: scale(0.9); transition: transform 0.3s; }
-        .edit-overlay.active .edit-modal { transform: scale(1); }
-        .edit-modal h3 { color: #ffaaaa; margin-bottom: 1rem; text-align: center; }
-        .edit-modal .input-group { width: 100%; }
-        .edit-modal input { width: 100%; }
-        .edit-actions { display: flex; gap: 0.8rem; margin-top: 1rem; }
-        .edit-actions button { padding: 0.5rem; margin: 0; }
+        @keyframes slideInRight {
+            0% {
+                transform: translateX(30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
 
-        /* CONSOLE */
-        .status-msg { margin-top: 1rem; padding: 0.7rem; border-radius: 1rem; background: rgba(0,0,0,0.7); border: 1px solid #ff5555; font-family: 'Courier New', monospace; font-size: 0.75rem; max-height: 130px; overflow-y: auto; }
-        .console-line { padding: 3px 0; border-bottom: 1px solid rgba(255,80,80,0.2); color: #ffaa88; }
-        .console-line.success { color: #88ff88; text-shadow: 0 0 2px #00aa00; }
-        .console-line.error { color: #ff8888; text-shadow: 0 0 2px #aa0000; }
-        .console-line.info { color: #ffcc88; text-shadow: 0 0 2px #aa6600; }
-        .console-line.red-start { color: #ff4444; font-weight: bold; }
+        @keyframes slideOutRight {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(30px);
+                opacity: 0;
+                display: none;
+            }
+        }
 
-        .preview-thumb { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #ff8888; margin-right: 6px; }
-        .flex-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        footer { text-align: center; font-size: 0.65rem; margin-top: 1.2rem; opacity: 0.7; color: #aa8888; }
-        .join-link { color: #ff8888; cursor: pointer; text-decoration: underline; }
-        .join-link:hover { color: #ff4444; }
-        .view-img-btn { background: rgba(80,80,150,0.5); border: none; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.65rem; cursor: pointer; color: white; }
+        @keyframes slideInLeft {
+            0% {
+                transform: translateX(-30px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .glow-title {
+            text-align: center;
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            min-height: 4rem;
+            transition: opacity 0.5s ease;
+        }
+
+        .typed-text {
+            background: linear-gradient(135deg, #ff4d4d, #ff9999, #cc2222);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(255,50,50,0.6), 0 0 30px rgba(200,20,20,0.4);
+            animation: glowPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                text-shadow: 0 0 5px rgba(255,50,50,0.4), 0 0 10px rgba(200,20,20,0.3);
+            }
+            100% {
+                text-shadow: 0 0 20px rgba(255,80,80,0.8), 0 0 35px rgba(255,40,40,0.6);
+            }
+        }
+
+        .settings-title-red {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ff4d4d;
+            text-shadow: 0 0 8px rgba(255,50,50,0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .sub {
+            text-align: center;
+            color: #ffb7b7;
+            font-size: 0.7rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px dashed rgba(255,80,80,0.4);
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #ffcfcf;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input,
+        textarea {
+            background: rgba(0,0,0,0.65);
+            border: 1px solid #a12323;
+            border-radius: 1.2rem;
+            padding: 0.8rem 1rem;
+            font-size: 0.9rem;
+            color: #f0e6e6;
+            outline: none;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #ff4d4d;
+            box-shadow: 0 0 0 2px rgba(255,77,77,0.4);
+        }
+
+        textarea {
+            min-height: 90px;
+        }
+
+        .toggle-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0,0,0,0.4);
+            padding: 0.6rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(255,70,70,0.3);
+            margin-bottom: 1.2rem;
+        }
+
+        .toggle-label {
+            font-size: 0.8rem;
+            color: #ffcfcf;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #4a0e0e;
+            transition: 0.25s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #ffb7b7;
+            transition: 0.25s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #c72a2a;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(24px);
+            background-color: white;
+        }
+
+        .spam-options-wrapper {
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.4s, margin 0.3s;
+            max-height: 0;
+            opacity: 0;
+            margin-bottom: 0;
+        }
+
+        .spam-options-wrapper.expanded {
+            max-height: 250px;
+            opacity: 1;
+            margin-bottom: 1.2rem;
+        }
+
+        .spam-options {
+            background: rgba(0,0,0,0.3);
+            border-radius: 1.5rem;
+            padding: 0.8rem;
+            border: 1px solid rgba(255,70,70,0.3);
+        }
+
+        .spam-row {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .spam-row .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        button {
+            background: linear-gradient(95deg, #c72a2a, #8b0000);
+            border: none;
+            padding: 0.8rem;
+            width: 100%;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            border-radius: 3rem;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        button:hover {
+            background: linear-gradient(95deg, #e03a3a, #a80000);
+            transform: scale(0.98);
+        }
+
+        .close-settings {
+            background: linear-gradient(95deg, #3a1a1a, #2a0a0a);
+            margin-top: 0.8rem;
+        }
+
+        .custom-file-upload {
+            background: linear-gradient(95deg, #5a1a1a, #3a0a0a);
+            border: 1px solid #a12323;
+            border-radius: 1.2rem;
+            padding: 0.7rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            color: #ffcccc;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .custom-file-upload:hover {
+            background: linear-gradient(95deg, #7a2a2a, #5a1a1a);
+            border-color: #ff6666;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .current-row {
+            background: rgba(0,0,0,0.5);
+            border-radius: 1rem;
+            padding: 0.7rem 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,80,80,0.3);
+        }
+
+        .current-label {
+            font-size: 0.8rem;
+            color: #ff6666;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .current-value {
+            font-size: 0.85rem;
+            color: #ffaaaa;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: monospace;
+        }
+
+        .edit-btn {
+            background: rgba(180,30,30,0.6);
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 2rem;
+            color: white;
+            cursor: pointer;
+            font-size: 0.7rem;
+        }
+
+        .edit-btn:hover {
+            background: #c72a2a;
+        }
+
+        .edit-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .edit-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .edit-modal {
+            background: rgba(15,5,5,0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid #ff4d4d;
+            border-radius: 2rem;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 400px;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .edit-overlay.active .edit-modal {
+            transform: scale(1);
+        }
+
+        .edit-modal h3 {
+            color: #ffaaaa;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .edit-modal .input-group {
+            width: 100%;
+        }
+
+        .edit-modal input {
+            width: 100%;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .edit-actions button {
+            padding: 0.5rem;
+            margin: 0;
+        }
+
+        .status-msg {
+            margin-top: 1rem;
+            padding: 0.7rem;
+            border-radius: 1rem;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid #ff5555;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            max-height: 130px;
+            overflow-y: auto;
+        }
+
+        .console-line {
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255,80,80,0.2);
+            color: #ffaa88;
+        }
+
+        .console-line.success {
+            color: #88ff88;
+            text-shadow: 0 0 2px #00aa00;
+        }
+
+        .console-line.error {
+            color: #ff8888;
+            text-shadow: 0 0 2px #aa0000;
+        }
+
+        .console-line.info {
+            color: #ffcc88;
+            text-shadow: 0 0 2px #aa6600;
+        }
+
+        .console-line.red-start {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .preview-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #ff8888;
+            margin-right: 6px;
+        }
+
+        .flex-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.65rem;
+            margin-top: 1.2rem;
+            opacity: 0.7;
+            color: #aa8888;
+        }
+
+        .join-link {
+            color: #ff8888;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .join-link:hover {
+            color: #ff4444;
+        }
+
+        .view-img-btn {
+            background: rgba(80,80,150,0.5);
+            border: none;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.65rem;
+            cursor: pointer;
+            color: white;
+        }
 
         @media (max-width: 550px) {
-            .tilt-card { padding: 1.2rem; }
-            .glow-title { font-size: 1.3rem; min-height: 3rem; }
-            .spam-row { flex-direction: column; gap: 0.5rem; }
-            .current-value { max-width: 130px; font-size: 0.75rem; }
-            .user-avatar { width: 36px; height: 36px; }
-            .user-profile { margin-top: 1.5rem; }
+            .tilt-card {
+                padding: 1.2rem;
+            }
+            .glow-title {
+                font-size: 1.3rem;
+                min-height: 3rem;
+            }
+            .spam-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .current-value {
+                max-width: 130px;
+                font-size: 0.75rem;
+            }
+            .user-avatar {
+                width: 36px;
+                height: 36px;
+            }
+            .user-profile {
+                margin-top: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -290,20 +985,31 @@
                     <div class="toggle-group"><span class="toggle-label">Spam Webhook</span><label class="switch"><input type="checkbox" id="spamToggle"><span class="slider"></span></label></div>
                     <div id="spamWrapper" class="spam-options-wrapper">
                         <div class="spam-options">
-                            <div class="spam-row"><div class="input-group"><label>Amount (1-50)</label><input type="number" id="spamAmount" min="1" max="50" value="5"></div><div class="input-group"><label>Interval (ms)</label><input type="number" id="spamInterval" min="50" max="5000" value="100" step="10"></div></div>
+                            <div class="spam-row">
+                                <div class="input-group"><label>Amount (1-50)</label><input type="number" id="spamAmount" min="1" max="50" value="5"></div>
+                                <div class="input-group"><label>Interval (ms)</label><input type="number" id="spamInterval" min="50" max="5000" value="100" step="10"></div>
+                            </div>
                             <small style="color:#ffaaaa;">* Lower interval = faster spam (min 50ms)</small>
                         </div>
                     </div>
                     <button id="sendBtn">SEND MESSAGE</button>
-                    <div id="console" class="status-msg"><div class="console-line red-start">> System ready</div></div>
+                    <div id="console" class="status-msg">
+                        <div class="console-line red-start">> System ready</div>
+                    </div>
                     <footer><span id="joinFooter" class="join-link">Join discord.gg/funerals</span> | secure webhook sender</footer>
                 </div>
 
                 <div id="settingsPanel" class="panel panel-settings" style="display: none;">
                     <div class="settings-title-red">BOT CUSTOMIZATION</div>
                     <div style="text-align:center;"><span class="sub">current settings</span></div>
-                    <div class="current-row"><div><span class="current-label">Bot Name:</span> <span id="currentName" class="current-value">Default</span></div><button class="edit-btn" id="editNameBtn">Edit</button></div>
-                    <div class="current-row"><div class="flex-row"><span class="current-label">Avatar:</span><span id="currentPic" class="current-value">Default</span><span id="viewPicBtn" style="display:none;"><button class="view-img-btn" id="openPicBtn">View</button></span></div><button class="edit-btn" id="editPicBtn">Edit</button></div>
+                    <div class="current-row">
+                        <div><span class="current-label">Bot Name:</span> <span id="currentName" class="current-value">Default</span></div>
+                        <button class="edit-btn" id="editNameBtn">Edit</button>
+                    </div>
+                    <div class="current-row">
+                        <div class="flex-row"><span class="current-label">Avatar:</span><span id="currentPic" class="current-value">Default</span><span id="viewPicBtn" style="display:none;"><button class="view-img-btn" id="openPicBtn">View</button></span></div>
+                        <button class="edit-btn" id="editPicBtn">Edit</button>
+                    </div>
                     <button id="closeSettingsBtn" class="close-settings">CLOSE SETTINGS</button>
                     <div style="margin-top:0.8rem; font-size:0.65rem; text-align:center; opacity:0.6;">Customize bot name & avatar for webhooks</div>
                 </div>
@@ -312,8 +1018,24 @@
     </div>
 </div>
 
-<div id="nameModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Name</h3><input type="text" id="nameInput" placeholder="Custom name" style="width:100%"><div class="edit-actions"><button id="saveNameBtn">Save</button><button id="cancelNameBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
-<div id="picModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Avatar</h3><div class="input-group"><label>Image URL</label><input type="text" id="picUrlInput" placeholder="https://..."></div><div style="text-align:center; margin:10px 0;">OR</div><label for="fileUpload" class="custom-file-upload">Choose Image from PC</label><input type="file" id="fileUpload" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment"><div id="picPreview" style="margin-top:10px; text-align:center;"></div><div class="edit-actions"><button id="savePicBtn">Save</button><button id="cancelPicBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
+<div id="nameModal" class="edit-overlay">
+    <div class="edit-modal">
+        <h3>Edit Bot Name</h3>
+        <input type="text" id="nameInput" placeholder="Custom name" style="width:100%">
+        <div class="edit-actions"><button id="saveNameBtn">Save</button><button id="cancelNameBtn" style="background:#3a1a1a;">Cancel</button></div>
+    </div>
+</div>
+<div id="picModal" class="edit-overlay">
+    <div class="edit-modal">
+        <h3>Edit Bot Avatar</h3>
+        <div class="input-group"><label>Image URL</label><input type="text" id="picUrlInput" placeholder="https://..."></div>
+        <div style="text-align:center; margin:10px 0;">OR</div>
+        <label for="fileUpload" class="custom-file-upload">Choose Image from PC</label>
+        <input type="file" id="fileUpload" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment">
+        <div id="picPreview" style="margin-top:10px; text-align:center;"></div>
+        <div class="edit-actions"><button id="savePicBtn">Save</button><button id="cancelPicBtn" style="background:#3a1a1a;">Cancel</button></div>
+    </div>
+</div>
 
 <div class="version-tag">v2.0</div>
 
@@ -323,7 +1045,7 @@
         const skipLoading = sessionStorage.getItem('skipLoading') === 'true';
         if (skipLoading) {
             sessionStorage.removeItem('skipLoading');
-            // Immediately hide loading screen and show main app
+            // Hide loading screen, show main app immediately
             document.getElementById('loadingScreen').style.display = 'none';
             document.getElementById('mainApp').classList.add('visible');
             // Start / restore music
@@ -438,7 +1160,7 @@
             }
         }
 
-        // ========== MUSIC PLAYER (shared, with persistence) ==========
+        // ========== MUSIC PLAYER (persistent) ==========
         const tracks = [
             { title: "Pass Out", url: "./songs/PassOut.mp3" },
             { title: "VYZEE", url: "./songs/VYZEE.mp3" },
@@ -539,7 +1261,7 @@
         prevBtn.addEventListener('click', prevTrack);
         nextBtn.addEventListener('click', nextTrack);
 
-        // Back buttons (save state before leaving)
+        // Back buttons
         function goBackToLanding() {
             saveMusicState();
             sessionStorage.setItem('skipLoading', 'true');
@@ -737,8 +1459,26 @@
             });
         }
 
-        // ========== REST OF THE SPAMMER LOGIC (panel switching, bot customization, webhook sending) ==========
-        // This is identical to your original working code – I will include the essential parts.
+        // ========== TILT EFFECT ==========
+        const card = document.getElementById('tiltCard');
+        const maxTilt = 5;
+        function onMouseMove(e) {
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
+            const y = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
+            const rotY = Math.min(Math.max(x, -1), 1) * maxTilt;
+            const rotX = -Math.min(Math.max(y, -1), 1) * maxTilt;
+            card.style.transition = 'transform 0.05s linear';
+            card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(3px)`;
+        }
+        card.addEventListener('mouseleave', () => {
+            card.style.transition = 'transform 0.5s cubic-bezier(0.2,0.9,0.4,1.1)';
+            card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
+        });
+        card.addEventListener('mouseenter', () => card.style.transition = 'transform 0.05s linear');
+        window.addEventListener('mousemove', onMouseMove);
+
+        // ========== REST OF THE SPAMMER LOGIC (webhook sending, panel switching, etc.) ==========
         const webhookUrlInput = document.getElementById('webhookUrl');
         const messageInput = document.getElementById('messageContent');
         const sendBtn = document.getElementById('sendBtn');
@@ -774,7 +1514,9 @@
             while (consoleDiv.children.length > 30) consoleDiv.removeChild(consoleDiv.firstChild);
         }
 
-        function isValidWebhook(url) { return /^https:\/\/discord\.com\/api\/webhooks\/(\d+)\/([a-zA-Z0-9_\-]+)/i.test(url.trim()); }
+        function isValidWebhook(url) {
+            return /^https:\/\/discord\.com\/api\/webhooks\/(\d+)\/([a-zA-Z0-9_\-]+)/i.test(url.trim());
+        }
 
         async function sendSingle(webhook, msg) {
             const payload = { content: msg };
@@ -792,7 +1534,10 @@
         async function runSpam(webhook, msg, amount, interval) {
             let success = 0;
             for (let i = 1; i <= amount; i++) {
-                if (stopSpam) { addLog(`Spam stopped. Sent ${success}/${amount}`, 'info'); return success; }
+                if (stopSpam) {
+                    addLog(`Spam stopped. Sent ${success}/${amount}`, 'info');
+                    return success;
+                }
                 try {
                     await sendSingle(webhook, msg);
                     success++;
@@ -807,16 +1552,37 @@
         }
 
         async function handleSend() {
-            if (sending) { if (spamCheck.checked) { stopSpam = true; addLog('Aborting spam...', 'info'); } return; }
+            if (sending) {
+                if (spamCheck.checked) {
+                    stopSpam = true;
+                    addLog('Aborting spam...', 'info');
+                }
+                return;
+            }
             const webhook = webhookUrlInput.value.trim();
             const msg = messageInput.value.trim();
-            if (!webhook) { addLog('Missing webhook URL', 'error'); return; }
-            if (!msg) { addLog('Missing message', 'error'); return; }
-            if (!isValidWebhook(webhook)) { addLog('Invalid webhook URL.', 'error'); return; }
+            if (!webhook) {
+                addLog('Missing webhook URL', 'error');
+                return;
+            }
+            if (!msg) {
+                addLog('Missing message', 'error');
+                return;
+            }
+            if (!isValidWebhook(webhook)) {
+                addLog('Invalid webhook URL. Must be a valid Discord webhook URL.', 'error');
+                return;
+            }
             const isSpam = spamCheck.checked;
-            let amount = 1, interval = 100;
-            if (isSpam) { amount = Math.min(50, Math.max(1, parseInt(spamAmount.value) || 1)); interval = Math.min(5000, Math.max(50, parseInt(spamInterval.value) || 100)); }
-            sending = true; stopSpam = false; sendBtn.textContent = isSpam ? 'SPAMMING (click to stop)' : 'SENDING...';
+            let amount = 1,
+                interval = 100;
+            if (isSpam) {
+                amount = Math.min(50, Math.max(1, parseInt(spamAmount.value) || 1));
+                interval = Math.min(5000, Math.max(50, parseInt(spamInterval.value) || 100));
+            }
+            sending = true;
+            stopSpam = false;
+            sendBtn.textContent = isSpam ? 'SPAMMING (click to stop)' : 'SENDING...';
             try {
                 if (isSpam && amount > 1) {
                     addLog(`Starting spam: ${amount} messages, ${interval}ms interval`, 'info');
@@ -828,11 +1594,17 @@
                     addLog('Message sent successfully!', 'success');
                     if (clearToggle.checked) messageInput.value = '';
                 }
-            } catch (err) { addLog(`Error: ${err.message}`, 'error'); }
-            finally { sending = false; sendBtn.textContent = 'SEND MESSAGE'; }
+            } catch (err) {
+                addLog(`Error: ${err.message}`, 'error');
+            } finally {
+                sending = false;
+                sendBtn.textContent = 'SEND MESSAGE';
+            }
         }
         sendBtn.addEventListener('click', handleSend);
-        messageInput.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleSend(); });
+        messageInput.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleSend();
+        });
 
         spamCheck.addEventListener('change', () => {
             if (spamCheck.checked) spamWrapper.classList.add('expanded');
@@ -842,8 +1614,15 @@
         // Name modal
         const nameModal = document.getElementById('nameModal');
         const nameInput = document.getElementById('nameInput');
-        document.getElementById('editNameBtn').addEventListener('click', () => { nameInput.value = botName; nameModal.classList.add('active'); });
-        document.getElementById('saveNameBtn').addEventListener('click', () => { botName = nameInput.value.trim(); updateUI(); nameModal.classList.remove('active'); });
+        document.getElementById('editNameBtn').addEventListener('click', () => {
+            nameInput.value = botName;
+            nameModal.classList.add('active');
+        });
+        document.getElementById('saveNameBtn').addEventListener('click', () => {
+            botName = nameInput.value.trim();
+            updateUI();
+            nameModal.classList.remove('active');
+        });
         document.getElementById('cancelNameBtn').addEventListener('click', () => nameModal.classList.remove('active'));
 
         // Picture modal
@@ -867,7 +1646,13 @@
             }
             picModal.classList.add('active');
         });
-        function closePicModal() { picModal.classList.remove('active'); tempPic = ''; fileUpload.value = ''; picUrlInput.value = ''; picPreview.innerHTML = ''; }
+        function closePicModal() {
+            picModal.classList.remove('active');
+            tempPic = '';
+            fileUpload.value = '';
+            picUrlInput.value = '';
+            picPreview.innerHTML = '';
+        }
         picUrlInput.addEventListener('input', () => {
             if (picUrlInput.value.trim()) {
                 tempPic = picUrlInput.value.trim();
@@ -879,7 +1664,10 @@
                 img.style.border = '1px solid #ff8888';
                 picPreview.innerHTML = '';
                 picPreview.appendChild(img);
-            } else if (!fileUpload.files.length) { picPreview.innerHTML = ''; tempPic = ''; }
+            } else if (!fileUpload.files.length) {
+                picPreview.innerHTML = '';
+                tempPic = '';
+            }
         });
         fileUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -900,16 +1688,25 @@
                 reader.readAsDataURL(file);
             } else if (file) alert('Please select an image file');
         });
-        document.getElementById('savePicBtn').addEventListener('click', () => { if (tempPic) { botAvatar = tempPic; updateUI(); } closePicModal(); });
+        document.getElementById('savePicBtn').addEventListener('click', () => {
+            if (tempPic) {
+                botAvatar = tempPic;
+                updateUI();
+            }
+            closePicModal();
+        });
         document.getElementById('cancelPicBtn').addEventListener('click', closePicModal);
-        document.getElementById('openPicBtn').addEventListener('click', () => { if (botAvatar) window.open(botAvatar, '_blank'); });
+        document.getElementById('openPicBtn').addEventListener('click', () => {
+            if (botAvatar) window.open(botAvatar, '_blank');
+        });
 
         // Panel switching (settings)
         const mainPanel = document.getElementById('mainPanel');
         const settingsPanel = document.getElementById('settingsPanel');
         const settingsBtn = document.getElementById('settingsBtn');
         const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-        let isSwitching = false, settingsVisible = false;
+        let isSwitching = false,
+            settingsVisible = false;
         function getPanelHeight(panel) {
             const clone = panel.cloneNode(true);
             clone.style.position = 'absolute';
@@ -925,7 +1722,10 @@
             if (startHeight === targetHeight) return;
             card.style.transition = 'height 0.4s cubic-bezier(0.2,0.9,0.4,1.1)';
             card.style.height = targetHeight + 'px';
-            setTimeout(() => { card.style.height = 'auto'; card.style.transition = ''; }, 450);
+            setTimeout(() => {
+                card.style.height = 'auto';
+                card.style.transition = '';
+            }, 450);
         }
         function openSettings() {
             if (isSwitching) return;
@@ -943,7 +1743,9 @@
                 settingsPanel.style.opacity = '1';
                 const newH = getPanelHeight(settingsPanel);
                 animateHeight(newH);
-                setTimeout(() => { isSwitching = false; }, 450);
+                setTimeout(() => {
+                    isSwitching = false;
+                }, 450);
             }, 200);
         }
         function closeSettings() {
@@ -973,30 +1775,14 @@
         settingsBtn.addEventListener('click', () => settingsVisible ? closeSettings() : openSettings());
         closeSettingsBtn.addEventListener('click', closeSettings);
 
-        // Tilt effect
-        const card = document.getElementById('tiltCard');
-        const maxTilt = 5;
-        function onMouseMove(e) {
-            const rect = card.getBoundingClientRect();
-            const x = (e.clientX - (rect.left + rect.width/2)) / (rect.width/2);
-            const y = (e.clientY - (rect.top + rect.height/2)) / (rect.height/2);
-            const rotY = Math.min(Math.max(x, -1), 1) * maxTilt;
-            const rotX = -Math.min(Math.max(y, -1), 1) * maxTilt;
-            card.style.transition = 'transform 0.05s linear';
-            card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(3px)`;
-        }
-        card.addEventListener('mouseleave', () => {
-            card.style.transition = 'transform 0.5s cubic-bezier(0.2,0.9,0.4,1.1)';
-            card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
-        });
-        card.addEventListener('mouseenter', () => card.style.transition = 'transform 0.05s linear');
-        window.addEventListener('mousemove', onMouseMove);
-
         // JOIN buttons
         const joinBtns = ['loadingJoin', 'joinFooter'];
         joinBtns.forEach(id => {
             const el = document.getElementById(id);
-            if (el) el.addEventListener('click', (e) => { e.preventDefault(); window.open('https://discord.gg/funerals', '_blank'); });
+            if (el) el.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://discord.gg/funerals', '_blank');
+            });
         });
 
         // Fendi menu toggle
@@ -1016,7 +1802,10 @@
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
         function initSnow() {
             particles = [];
             for (let i = 0; i < 140; i++) {
@@ -1039,13 +1828,19 @@
                 ctx.fill();
                 p.y += p.speedY;
                 p.x += p.speedX;
-                if (p.y > canvas.height) { p.y = 0; p.x = Math.random() * canvas.width; }
+                if (p.y > canvas.height) {
+                    p.y = 0;
+                    p.x = Math.random() * canvas.width;
+                }
                 if (p.x > canvas.width) p.x = 0;
                 if (p.x < 0) p.x = canvas.width;
             }
             requestAnimationFrame(drawSnow);
         }
-        window.addEventListener('resize', () => { resizeCanvas(); initSnow(); });
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initSnow();
+        });
         resizeCanvas();
         initSnow();
         drawSnow();
@@ -1055,7 +1850,9 @@
         window.addEventListener('scroll', () => {
             document.body.classList.add('scrolling');
             clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => { document.body.classList.remove('scrolling'); }, 150);
+            scrollTimeout = setTimeout(() => {
+                document.body.classList.remove('scrolling');
+            }, 150);
         });
         const styleBlur = document.createElement('style');
         styleBlur.textContent = 'body.scrolling { filter: blur(2px); transition: filter 0.15s ease-out; } body { transition: filter 0.15s ease-out; }';
@@ -1065,7 +1862,9 @@
         let audioCtx = null;
         function playThock() {
             try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
                 const now = audioCtx.currentTime;
                 const oscillator = audioCtx.createOscillator();
                 const gainNode = audioCtx.createGain();
@@ -1079,6 +1878,45 @@
             } catch(e) {}
         }
         document.querySelectorAll('input, textarea').forEach(el => el.addEventListener('keydown', playThock));
+
+        // Typewriter effect
+        const titleText = "FENDI'S WEBHOOK FUCKER";
+        const targetSpan = document.getElementById('typewriterTarget');
+        let idx = 0;
+        let typingActive = true;
+        function typeWriter() {
+            if (!typingActive) return;
+            if (idx < titleText.length) {
+                targetSpan.innerHTML = titleText.substring(0, idx + 1);
+                idx++;
+                setTimeout(typeWriter, 70);
+            } else {
+                typingActive = false;
+                const titleContainer = document.querySelector('.glow-title');
+                titleContainer.style.transition = 'opacity 0.5s ease';
+                titleContainer.style.opacity = '0';
+                setTimeout(() => {
+                    targetSpan.innerHTML = '';
+                    titleContainer.style.opacity = '1';
+                    idx = 0;
+                    typingActive = true;
+                    typeWriter();
+                }, 1500);
+            }
+        }
+        typeWriter();
+
+        // Dynamic grid lighting
+        const gridBackdrop = document.querySelector('.grid-backdrop');
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth) * 100;
+            const y = (e.clientY / window.innerHeight) * 100;
+            gridBackdrop.style.backgroundImage = `
+                repeating-linear-gradient(90deg, rgba(200,30,50,0.4) 0px, rgba(200,30,50,0.4) 1.5px, transparent 1.5px, transparent 45px),
+                repeating-linear-gradient(0deg, rgba(200,30,50,0.4) 0px, rgba(200,30,50,0.4) 1.5px, transparent 1.5px, transparent 45px),
+                radial-gradient(circle at ${x}% ${y}%, rgba(130,0,0,0.7), rgba(0,0,0,0.95))
+            `;
+        });
 
         updateUI();
     })();
